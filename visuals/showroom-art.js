@@ -41,11 +41,11 @@ function createCapeCarArt(kind){
  const doors=kind==='bus'
  ?'<path d="M446 287 L452 362 M550 286 L559 362" stroke="#091b29" stroke-width="3" opacity=".6"/>'
  :'<path d="M443 293 L454 365" stroke="#091b29" stroke-width="3" opacity=".55"/><path d="M461 309 L477 309" stroke="#f0f8ff" stroke-width="5" stroke-linecap="round" opacity=".8"/>';
- const svg=\`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="510" viewBox="0 0 1000 510" role="img" aria-label="\${kind} vehicle at Cape Town showroom">
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="510" viewBox="0 0 1000 510" role="img" aria-label="${kind} vehicle at Cape Town showroom">
  <defs>
   <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#101e3d"/><stop offset=".54" stop-color="#33617d"/><stop offset=".91" stop-color="#e5a478"/></linearGradient>
   <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263c52"/><stop offset="1" stop-color="#101c2b"/></linearGradient>
-  <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="\${p.accent}"/><stop offset=".18" stop-color="\${p.c}"/><stop offset=".61" stop-color="\${p.c}"/><stop offset="1" stop-color="#1b2e48"/></linearGradient>
+  <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${p.accent}"/><stop offset=".18" stop-color="${p.c}"/><stop offset=".61" stop-color="${p.c}"/><stop offset="1" stop-color="#1b2e48"/></linearGradient>
   <linearGradient id="windows" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c3ebff"/><stop offset=".25" stop-color="#53859e"/><stop offset=".75" stop-color="#182b44"/><stop offset="1" stop-color="#0c1b30"/></linearGradient>
   <radialGradient id="glow"><stop stop-color="#ffd6a6" stop-opacity=".8"/><stop offset="1" stop-color="#ffd5a6" stop-opacity="0"/></radialGradient>
   <filter id="shadow"><feGaussianBlur stdDeviation="9"/></filter>
@@ -63,14 +63,14 @@ function createCapeCarArt(kind){
  <ellipse cx="477" cy="401" rx="348" ry="54" fill="#000d1b" opacity=".65" filter="url(#shadow)"/>
  <ellipse cx="470" cy="405" rx="343" ry="49" fill="#7bbad0" opacity=".15"/>
  <g>
- <path d="M158 341 Q150 321 166 305 L203 300 L250 302 \${roof.slice(1)} L698 304 Q754 307 779 332 L797 350 Q802 364 792 375 L167 375 Q148 369 158 341Z" fill="url(#paint)" stroke="\${p.accent}" stroke-opacity=".6" stroke-width="3"/>
- \${bed}
- <path d="\${roof}" fill="url(#paint)" stroke="#cceaff" stroke-opacity=".42" stroke-width="3"/>
- <path d="\${glass}" fill="url(#windows)" stroke="#b6ddf4" stroke-width="3" stroke-opacity=".65"/>
+ <path d="M158 341 Q150 321 166 305 L203 300 L250 302 ${roof.slice(1)} L698 304 Q754 307 779 332 L797 350 Q802 364 792 375 L167 375 Q148 369 158 341Z" fill="url(#paint)" stroke="${p.accent}" stroke-opacity=".6" stroke-width="3"/>
+ ${bed}
+ <path d="${roof}" fill="url(#paint)" stroke="#cceaff" stroke-opacity=".42" stroke-width="3"/>
+ <path d="${glass}" fill="url(#windows)" stroke="#b6ddf4" stroke-width="3" stroke-opacity=".65"/>
  <path d="M446 252 L455 293" stroke="#0b1b31" stroke-width="6" opacity=".7"/>
  <path d="M282 313 Q429 306 642 317 L771 337" stroke="#ffffff" opacity=".45" stroke-width="4" fill="none"/>
  <path d="M169 357 Q439 346 786 358" stroke="#0a1b32" opacity=".6" stroke-width="11" fill="none"/>
- \${detail}\${doors}
+ ${detail}${doors}
  <path d="M771 324 L786 337 L786 348 L755 348 Q746 336 754 329 Z" fill="#fff8db"/>
  <path d="M766 333 L792 341" stroke="#fff9d7" stroke-width="5" opacity=".85"/>
  <path d="M167 328 L179 322 L181 346 L163 348 Z" fill="#ff6b62"/>
@@ -83,7 +83,7 @@ function createCapeCarArt(kind){
  <path d="M0 505 H1000" stroke="#f39d66" stroke-width="6" opacity=".4"/>
  <text x="26" y="45" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="3" fill="#eaf6ff" opacity=".8">CAPE TOWN / PREMIUM FLEET</text>
  <circle cx="955" cy="35" r="5" fill="#ffbd70"/><circle cx="939" cy="35" r="5" fill="#ffbd70" opacity=".5"/>
- </svg>\`;
+ </svg>`;
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 il=createCapeCarArt('hatch'); Rt=createCapeCarArt('bakkie'); Rn=createCapeCarArt('sport'); So=createCapeCarArt('super'); Sc=createCapeCarArt('hyper');
