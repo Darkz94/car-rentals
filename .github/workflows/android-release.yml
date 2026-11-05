@@ -5,6 +5,7 @@ on:
     paths:
       - 'index.html'
       - 'assets/**'
+      - 'icons/**'
       - 'android/**'
       - '.github/workflows/android-release.yml'
   workflow_dispatch:
@@ -42,6 +43,8 @@ jobs:
           mkdir -p android/app/src/main/assets/assets
           cp assets/city-hatch-side.png assets/city-hatch-topdown.png assets/executive-sedan-side.webp assets/executive-sedan-topdown.webp assets/adventure-bakkie-side.png assets/adventure-bakkie-topdown.png assets/coastal-coupe-side.webp assets/coastal-coupe-topdown.webp assets/delivery-truck-side.webp assets/delivery-truck-topdown.webp assets/performance-sport-side.webp assets/performance-sport-topdown.webp assets/supercar-gt-side.webp assets/supercar-gt-topdown.webp assets/hypercar-side.webp assets/hypercar-topdown.webp android/app/src/main/assets/assets/
           cp manifest.webmanifest android/app/src/main/assets/manifest.webmanifest
+          mkdir -p android/app/src/main/assets/icons
+          cp icons/icon-192.webp icons/icon-512.webp android/app/src/main/assets/icons/
       - name: Build test APK
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug
