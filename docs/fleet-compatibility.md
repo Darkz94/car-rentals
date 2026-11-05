@@ -32,6 +32,18 @@ The Commercial dealership filter includes Jeep, and the generic garage,
 auctions, servicing, refuelling, tuning, resale, transfers and return-payment
 paths apply unchanged. Existing prices and save key/version 3 are unchanged.
 
+## Approved Donk integration (14th vehicle)
+
+`donk` sits after Delivery Truck and before Muscle in `TYPES`. Its price is
+R365,000; base rental R2,300; reputation unlock 4; horsepower 320; tank 68 L.
+Its customers are `show-promoter-zane` and `music-video-crew`, unlocked
+at reputation 4 with no extra matching rules. `canServeCategory` already serves
+exact category matches across ordinary and offline rentals. All existing classes
+retain their balance and identity. The Donk appears in the All, Muscle and Luxury
+dealership views. Side and roof images preserve supplied artwork with transparent
+backgrounds. The roof sprite points right, so map rotation matches Coupe/Classic.
+Version-3 saves, return-time payment, customer matching and auctions are unchanged.
+
 ## Adding a new vehicle
 
 1. Add its `TYPES` definition in the intended progression position.
