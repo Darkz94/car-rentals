@@ -1422,13 +1422,13 @@ const TYPES=[
 ];
 const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521}};
 const BRANCHES=[{id:'hq',name:'Cape Town HQ',price:0,upkeep:1500,desc:'Your flagship city location.'},{id:'stellenbosch',name:'Stellenbosch',price:350000,upkeep:1900,desc:'Access wine-estate and weekend bookings.'},{id:'franschhoek',name:'Franschhoek',price:600000,upkeep:2500,desc:'Unlock luxury wine and scenic-tour demand.'}];
-const CUSTOMER_TYPES=[{name:'Backpacker Leo',icon:'🎒',need:'Hatch',budget:1800,dest:'camps'},{name:'Family Jacobs',icon:'👨‍👩‍👧',need:'Sedan',budget:2600,dest:'waterfront'},{name:'Contractor Dave',icon:'🦺',need:'Bakkie',budget:3000,dest:'airport'},
-{name:'Courier Amina',icon:'📬',need:'Van',budget:3900,dest:'airport'},
-{name:'Small Business Movers',icon:'📦',need:'Van',budget:4600,dest:'stellenbosch'},{name:'Executive Priya',icon:'💼',need:'Sedan',budget:4000,dest:'airport'},{name:'Influencer Kim',icon:'📸',need:'Sport',budget:13500,dest:'chapman'},{name:'Logistics Co.',icon:'📦',need:'Truck',budget:6200,dest:'stellenbosch'},{name:'Vineyard Group',icon:'🍇',need:'Bus',budget:7500,dest:'franschhoek'},{name:'Film Producer',icon:'🎬',need:'Super',budget:25000,dest:'camps'}, {name:'Tourist Maya',icon:'🌴',need:'Hatch',budget:2800,dest:'table'}, {name:'Wedding Party',icon:'💍',need:'Coupe',budget:4500,dest:'franschhoek'},
+const CUSTOMER_TYPES=[{name:'Backpacker Leo',icon:'🎒',need:'Hatch',budget:1800,dest:'camps'},{name:'Family Jacobs',icon:'👨‍👩‍👧',need:'Sedan',budget:2600,dest:'waterfront'},{name:'Contractor Dave',icon:'🦺',need:'Bakkie',budget:3000,dest:'airport'},{name:'Executive Priya',icon:'💼',need:'Sedan',budget:4000,dest:'airport'},{name:'Influencer Kim',icon:'📸',need:'Sport',budget:13500,dest:'chapman'},{name:'Logistics Co.',icon:'📦',need:'Truck',budget:6200,dest:'stellenbosch'},{name:'Vineyard Group',icon:'🍇',need:'Bus',budget:7500,dest:'franschhoek'},{name:'Film Producer',icon:'🎬',need:'Super',budget:25000,dest:'camps'}, {name:'Tourist Maya',icon:'🌴',need:'Hatch',budget:2800,dest:'table'}, {name:'Wedding Party',icon:'💍',need:'Coupe',budget:4500,dest:'franschhoek'},
 {name:'Muscle Enthusiast',icon:'🔥',need:'Muscle',budget:9000,dest:'chapman'},
 {name:'Weekend Collector',icon:'🏎️',need:'Muscle',budget:11500,dest:'camps'},
 {name:'Vintage Wedding',icon:'💐',need:'Classic',budget:6400,dest:'franschhoek'},
-{name:'Heritage Explorer',icon:'📷',need:'Classic',budget:5500,dest:'waterfront'}];
+{name:'Heritage Explorer',icon:'📷',need:'Classic',budget:5500,dest:'waterfront'},
+{name:'Courier Amina',icon:'📬',need:'Van',budget:3900,dest:'airport'},
+{name:'Small Business Movers',icon:'📦',need:'Van',budget:4600,dest:'stellenbosch'}];
 // Keep class-specific demand locked until its vehicle category is available.
 // Add new category unlock requirements here when expanding the vehicle roster.
 const SPECIAL_CUSTOMER_UNLOCKS={Muscle:4,Classic:3,Van:2};
