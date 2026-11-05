@@ -4,6 +4,7 @@ on:
     branches: [main, pre-release]
     paths:
       - 'index.html'
+      - 'assets/**'
       - 'android/**'
       - '.github/workflows/android-release.yml'
   workflow_dispatch:
@@ -39,7 +40,7 @@ jobs:
           mkdir -p android/app/src/main/assets
           cp index.html android/app/src/main/assets/index.html
           mkdir -p android/app/src/main/assets/assets
-          cp assets/city-hatch-side.png assets/city-hatch-topdown.png android/app/src/main/assets/assets/
+          cp assets/city-hatch-side.png assets/city-hatch-topdown.png assets/executive-sedan-side.webp assets/executive-sedan-topdown.webp assets/adventure-bakkie-side.png assets/adventure-bakkie-topdown.png android/app/src/main/assets/assets/
           cp manifest.webmanifest android/app/src/main/assets/manifest.webmanifest
       - name: Build test APK
         working-directory: android
