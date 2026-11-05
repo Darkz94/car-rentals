@@ -1,0 +1,62 @@
+name: Fleet integrity checks (no release)
+on:
+  push:
+    branches:
+      - 'feature/fleet-audit-cleanup-auctions'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fleet-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Verify Javascript syntax, classes, customer rules and 50 auction scenarios
+        run: node tests/fleet-audit.test.mjs
+      - name: Rebuild the latest playable game, including all artwork
+        run: python3 rebuild.py
+      - name: Verify standalone game matches current source
+        run: python3 tests/standalone-build.test.py
+  android-debug:
+    needs: fleet-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        run: |
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Bundle current source into Android test assets
+        run: |
+          mkdir -p android/app/src/main/assets/assets android/app/src/main/assets/icons
+          cp index.html android/app/src/main/assets/index.html
+          cp -r assets/. android/app/src/main/assets/assets/
+          cp -r icons/. android/app/src/main/assets/icons/
+          cp manifest.webmanifest android/app/src/main/assets/manifest.webmanifest
+      - name: Ensure every image exists
+        run: |
+          missing=0
+          for f in $(grep -oE "(assets|icons)/[A-Za-z0-9_./-]+\.(png|webp|jpg|jpeg|svg|gif)" index.html | sort -u); do
+            if [ ! -f "android/app/src/main/assets/$f" ]; then
+              echo "::error::Missing asset: $f"; missing=1
+            fi
+          done
+          exit $missing
+      - name: Compile debug APK without publishing
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug
