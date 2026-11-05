@@ -1,0 +1,34 @@
+plugins { id 'com.android.application' }
+def releaseRun = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+def keyPath = System.getenv('ANDROID_KEYSTORE_PATH')
+android {
+  namespace 'za.co.capetownrentals.arcade'
+  compileSdk 35
+  defaultConfig {
+    applicationId 'za.co.capetownrentals.arcade'
+    minSdk 26
+    targetSdk 35
+    versionCode 1000 + releaseRun
+    versionName "1.0.${releaseRun}"
+  }
+  signingConfigs {
+    release {
+      if (keyPath) {
+        storeFile file(keyPath)
+        storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+        keyAlias System.getenv('ANDROID_KEY_ALIAS')
+        keyPassword System.getenv('ANDROID_KEY_PASSWORD')
+      }
+    }
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      if (keyPath) signingConfig signingConfigs.release
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
