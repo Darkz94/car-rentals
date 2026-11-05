@@ -62,6 +62,19 @@ jobs:
             echo 'ready=false' >> "$GITHUB_OUTPUT"
             echo '::warning::Production release skipped: configure four APK signing secrets in repository Settings.'
           fi
+      - name: Publish public test build (pre-release, only while unsigned)
+        if: steps.signing.outputs.ready != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Cape-Town-Rentals-Test.apk
+          printf 'TEST BUILD ONLY. Debug-signed, not the production app.\nBuild %s, commit %s\nIt cannot be updated by the signed release: uninstall it (export your save first) before installing the signed APK.\n' "$GITHUB_RUN_NUMBER" "$GITHUB_SHA" > test-notes.txt
+          if gh release view test-latest >/dev/null 2>&1; then
+            gh release upload test-latest Cape-Town-Rentals-Test.apk --clobber
+            gh release edit test-latest --notes-file test-notes.txt --prerelease --latest=false
+          else
+            gh release create test-latest Cape-Town-Rentals-Test.apk --target "$GITHUB_SHA" --title "Test build (unsigned, temporary)" --notes-file test-notes.txt --prerelease --latest=false
+          fi
       - name: Restore signing keystore
         if: steps.signing.outputs.ready == 'true'
         env:
