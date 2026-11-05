@@ -69,13 +69,13 @@ public final class MainActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
                 if (!url.startsWith(ORIGIN)) return null;
-                String name = url.substring(ORIGIN.length());
-                if (name.isEmpty()) name = "index.html";
-                if (name.contains("..") || name.contains("/") || name.contains("\\")) return null;
+                String name = assetName(url);
+                if (name == null) return null;
                 try {
                     InputStream input = getAssets().open(name);
-                    String mime = name.endsWith(".html") ? "text/html" : "application/octet-stream";
-                    return new WebResourceResponse(mime, "UTF-8", input);
+                    String mime = mimeFor(name);
+                    boolean text = mime.startsWith("text/") || mime.endsWith("json") || mime.endsWith("javascript") || mime.endsWith("xml");
+                    return new WebResourceResponse(mime, text ? "UTF-8" : null, input);
                 } catch (Exception ignored) { return null; }
             }
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -95,6 +95,31 @@ public final class MainActivity extends Activity {
         });
         web.loadUrl(ORIGIN + "index.html");
         checkForUpdates(false);
+    }
+
+    /** Maps a request URL to a safe bundled asset path (subfolders like assets/ and icons/ allowed), or null. */
+    static String assetName(String url) {
+        if (url == null || !url.startsWith(ORIGIN)) return null;
+        String name = url.substring(ORIGIN.length());
+        int cut = name.indexOf('?'); if (cut >= 0) name = name.substring(0, cut);
+        cut = name.indexOf('#'); if (cut >= 0) name = name.substring(0, cut);
+        if (name.isEmpty()) name = "index.html";
+        if (name.startsWith("/") || name.contains("..") || name.contains("\\") || name.contains("//")) return null;
+        return name;
+    }
+
+    static String mimeFor(String name) {
+        String n = name.toLowerCase(java.util.Locale.ROOT);
+        if (n.endsWith(".html")) return "text/html";
+        if (n.endsWith(".png")) return "image/png";
+        if (n.endsWith(".webp")) return "image/webp";
+        if (n.endsWith(".jpg") || n.endsWith(".jpeg")) return "image/jpeg";
+        if (n.endsWith(".gif")) return "image/gif";
+        if (n.endsWith(".svg")) return "image/svg+xml";
+        if (n.endsWith(".css")) return "text/css";
+        if (n.endsWith(".js")) return "application/javascript";
+        if (n.endsWith(".json") || n.endsWith(".webmanifest")) return "application/json";
+        return "application/octet-stream";
     }
 
     public final class FileBridge {
