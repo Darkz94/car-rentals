@@ -40,7 +40,7 @@ jobs:
           mkdir -p android/app/src/main/assets
           cp index.html android/app/src/main/assets/index.html
           mkdir -p android/app/src/main/assets/assets
-          cp assets/city-hatch-side.png assets/city-hatch-topdown.png assets/executive-sedan-side.webp assets/executive-sedan-topdown.webp assets/adventure-bakkie-side.png assets/adventure-bakkie-topdown.png assets/coastal-coupe-side.webp assets/coastal-coupe-topdown.webp assets/delivery-truck-side.webp assets/delivery-truck-topdown.webp android/app/src/main/assets/assets/
+          cp assets/city-hatch-side.png assets/city-hatch-topdown.png assets/executive-sedan-side.webp assets/executive-sedan-topdown.webp assets/adventure-bakkie-side.png assets/adventure-bakkie-topdown.png assets/coastal-coupe-side.webp assets/coastal-coupe-topdown.webp assets/delivery-truck-side.webp assets/delivery-truck-topdown.webp assets/performance-sport-side.webp assets/performance-sport-topdown.webp android/app/src/main/assets/assets/
           cp manifest.webmanifest android/app/src/main/assets/manifest.webmanifest
       - name: Build test APK
         working-directory: android
