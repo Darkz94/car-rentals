@@ -24,10 +24,10 @@ const customerList = vm.runInNewContext(customerSource + "\nCUSTOMER_TYPES");
 const contractIds = vm.runInNewContext(decl("CONTRACT_CUSTOMER_IDS", "};") + "\nCONTRACT_CUSTOMER_IDS");
 const equivalence = vm.runInNewContext(decl("CATEGORY_EQUIVALENTS", "};") + "\nCATEGORY_EQUIVALENTS");
 const byId = new Map(typeList.map(t => [t.id, t]));
-assert.equal(typeList.length, 14);
-assert.equal(byId.size, 14);
-assert.equal(customerList.length, 20);
-assert.equal(new Set(customerList.map(x => x.id)).size, 20);
+assert.equal(typeList.length, 15);
+assert.equal(byId.size, 15);
+assert.equal(customerList.length, 22);
+assert.equal(new Set(customerList.map(x => x.id)).size, 22);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
@@ -57,6 +57,22 @@ assert.equal(customerList.filter(c => c.need === "Jeep").map(c => c.id).sort().j
   "adventure-couple,trail-explorer");
 assert.ok(!("Jeep" in equivalence), "Jeep uses the existing exact-category fallback");
 assert.ok(js.includes("type==='jeep'||type==='truck'"), "Jeep map direction must match top-down sprite");
+const tow = byId.get("tow");
+assert.ok(tow, "Missing Tow Truck");
+assert.equal(typeList.findIndex(t => t.id === "tow"), typeList.findIndex(t => t.id === "classic")+1, "Tow Truck follows Classic");
+assert.equal(typeList.findIndex(t => t.id === "tow"), typeList.findIndex(t => t.id === "truck")-1, "Tow Truck precedes Delivery Truck");
+assert.equal(tow.category, "Tow");
+assert.equal(tow.price, 275000);
+assert.equal(tow.rate, 1650);
+assert.equal(tow.tank, 90);
+assert.equal(tow.unlock, 3);
+assert.equal(horsepower.tow, 300);
+assert.equal(customerList.filter(c => c.need === "Tow").map(c => c.id).sort().join(","), "insurance-recovery-team,roadside-rescue-nina");
+assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 5200);
+assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
+assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
+assert.ok(js.includes("type==='truck'||type==='tow'"), "Tow Truck roof sprite must face correctly on the map");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Bus']"), "Tow Truck must appear in the Commercial dealership view");
 const donk = byId.get("donk");
 assert.ok(donk, "Missing Donk");
 assert.equal(typeList.findIndex(t => t.id === "donk"), typeList.findIndex(t => t.id === "muscle")-1, "Donk belongs immediately before Muscle");
@@ -94,6 +110,8 @@ const canServe = (requested, provided) => (equivalence[requested] || [requested]
 for (const customer of customerList) assert.ok(canServe(customer.need, customer.need));
 assert.ok(canServe("Jeep", "Jeep"), "Jeep-specific rental matching");
 assert.ok(!canServe("Jeep", "Van"), "No unapproved cross-class substitutions");
+assert.ok(canServe("Tow", "Tow"), "Tow customer matching works");
+assert.ok(!canServe("Tow", "Truck"), "No unapproved Tow cross-class substitutions");
 assert.ok(canServe("Donk", "Donk"), "Donk customer matching works");
 assert.ok(!canServe("Donk", "Muscle"), "No unapproved Donk substitutions");
 
@@ -135,5 +153,5 @@ const testScript = [
 const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
-assert.equal(successful, 58, "Failed auction bidding, owned-sale or protection scenarios");
-console.log("PASS: JavaScript syntax, 14 vehicle classes, 20 customers, all assets and 58 auction scenarios.");
+assert.equal(successful, 62, "Failed auction bidding, owned-sale or protection scenarios");
+console.log("PASS: JavaScript syntax, 15 vehicle classes, 22 customers, all assets and 62 auction scenarios.");

@@ -54,3 +54,19 @@ Version-3 saves, return-time payment, customer matching and auctions are unchang
 6. Check dealer filter visibility, price/unlock progression, Garage details, Live Map sprite orientation and auction presentation.
 7. Run the fleet and standalone tests, then build a debug Android APK on a feature branch.
 8. Request explicit approval before merging into main.
+
+## Approved Tow Truck integration (15th vehicle)
+
+`tow` sits between Classic and Delivery Truck in `TYPES`. It costs R275,000,
+has a base rental of R1,650, unlocks at reputation 3, has 300 HP and a 90 L tank.
+The customer IDs `roadside-rescue-nina` (Tow, R5,200, airport) and
+`insurance-recovery-team` (Tow, R5,800, stellenbosch) are stable and unlock
+at reputation 3. Exact-category `canServeCategory` matching applies to both
+normal and offline rentals; no new towing or recovery mechanic has been added.
+
+Transparent tow-truck WebP side and overhead sprites are referenced in
+`CAR_IMAGES` and `MAP_CAR_IMAGES`; the overhead sprite points upward, like
+Delivery Truck, and uses its 90° map rotation offset. The Tow Truck appears in
+All and Commercial dealership views; existing roster-driven logic handles
+rentals, offline returns, garage servicing, transfers, auctions and resale.
+Keep save version 3 and `cape-town-rentals-coastline-v3` unchanged.

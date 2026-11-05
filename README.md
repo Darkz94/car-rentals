@@ -31,6 +31,6 @@ python3 rebuild.py
 python3 tests/standalone-build.test.py
 ```
 
-The fleet tests check the complete roster, horsepower, artwork paths, customer IDs and unlocks, category matching, public auctions and the owned-vehicle sale mechanism. The standalone test checks the packaged output, including its new vehicle images. A separate pull-request/feature-branch workflow runs these checks and compiles a debug Android APK; it does not publish a release or deploy to `main`.
+The fleet tests check the complete 15-class, 22-customer roster, horsepower, artwork paths, customer IDs and unlocks, category matching, public auctions and the owned-vehicle sale mechanism. The standalone test checks the packaged output, including its new vehicle images. A separate pull-request/feature-branch workflow runs these checks and compiles a debug Android APK; it does not publish a release or deploy to `main`.
 
 See `docs/fleet-compatibility.md` before adding new vehicle classes.
