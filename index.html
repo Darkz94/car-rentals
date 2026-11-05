@@ -1575,7 +1575,7 @@ function newOffer(contract=null,forcedId=null){
  let offer={id:uid('offer'),customer:contract?contract.name:c.name,icon:contract?contract.icon:c.icon,need:contract?contract.need:c.need,budget:round(c.budget*(contract?contract.premium:1)*rand(91,120)/100*difficulty().revenue),dest,created:now(),expires:now()+OFFER_LIFETIME_MS,mult:contract?1.55*contract.premium:rand(112,175)/100,contract:contract?.id||null};
  state.offers.push(offer);if(state.offers.length>6)state.offers.shift();return offer;
 }
-function initialize(){dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
+function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
 function routePosition(r,t=now()){let src=DEST[r.from]||DEST.hq,to=DEST[r.dest]||DEST.airport;let prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2;let x=src.x+(to.x-src.x)*u,y=src.y+(to.y-src.y)*u-38*Math.sin(Math.PI*u);return {x,y,progress:prog};}
 function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
@@ -1732,6 +1732,76 @@ function closeAuction(){let a=state.auction;if(!a)return;
  }else note('Auction ended. A new lot is available.');
  makeAuction();
 }
+
+/* Owner auctions are separate from the dealer's random lot.
+   A listing locks the vehicle until the reserve is met and the sale settles. */
+function canListPlayerAuctionCar(car){
+ return !!car&&car.status==='available'&&state.fleet.filter(c=>c.status!=='auction').length>1
+   &&!(state.playerAuctions||[]).some(a=>a.status==='active'&&a.carId===car.id);
+}
+function listCarForAuction(carId){
+ const car=state.fleet.find(c=>c.id===carId);
+ if(!canListPlayerAuctionCar(car)){notify('Choose a parked car and keep at least one other car out of auction.','bad');return false;}
+ const reserve=round(getResale(car)*.85),start=now();
+ state.playerAuctions=state.playerAuctions||[];
+ state.playerAuctions.unshift({id:uid('playerauction'),carId:car.id,type:car.type,plate:car.plate,
+   status:'active',start,ends:start+75000,nextBidAt:start+5000,reserve,
+   maxBid:round(getResale(car)*rand(112,132)/100),highest:0,bidCount:0,bidder:''});
+ car.status='auction';
+ note(`${car.plate} listed in the Auction House at ${money(reserve)} reserve.`);
+ notify(`${typeOf(car.type).name} listed for auction!`);
+ return true;
+}
+function finishPlayerAuction(a){
+ if(a.status!=='active')return false;
+ const car=state.fleet.find(c=>c.id===a.carId);
+ a.closedAt=now();
+ if(car&&car.status==='auction'&&a.highest>=a.reserve&&a.highest>0){
+   const amount=round(a.highest);
+   state.fleet=state.fleet.filter(c=>c.id!==car.id);
+   state.cash+=amount;
+   state.stats.sales=(state.stats.sales||0)+amount;
+   state.ledger.unshift({t:now(),amount,label:`Auction sold · ${car.plate}`});
+   state.ledger=state.ledger.slice(0,80);
+   a.status='sold';a.salePrice=amount;
+   if(selectedCar===car.id)selectedCar=state.fleet[0]?.id||null;
+   note(`${a.plate} auction settled for ${money(amount)}.`);
+   notify(`🏷️ Auction sale: +${money(amount)}`);
+ }else{
+   if(car&&car.status==='auction')car.status='available';
+   a.status='unsold';a.salePrice=0;
+   note(`${a.plate} auction ended with no winning bid. Vehicle returned to Garage.`);
+   notify(`${a.plate} is available again after an unsold auction.`);
+ }
+ return true;
+}
+function advancePlayerAuctions(t=now()){
+ if(!Array.isArray(state.playerAuctions))state.playerAuctions=[];
+ let changed=false;
+ for(const a of state.playerAuctions){
+   if(a.status!=='active')continue;
+   const car=state.fleet.find(c=>c.id===a.carId);
+   if(!car||car.status!=='auction'){a.status='unsold';a.closedAt=t;changed=true;continue;}
+   let steps=0;
+   // 15 five-second rounds per listing; persisted cursor covers time while the app was closed.
+   while(a.nextBidAt<=Math.min(t,a.ends)&&steps++<20){
+     const next=a.highest?a.highest+Math.max(1000,round(a.reserve*.035)):a.reserve;
+     if(next<=a.maxBid&&Math.random()<.65){
+       a.highest=next;
+       a.bidCount=(a.bidCount||0)+1;
+       a.bidder=pick(['Local dealer','Coastal collector','Commercial buyer','Private bidder']);
+       changed=true;
+     }
+     a.nextBidAt+=5000;
+   }
+   if(t>=a.ends){finishPlayerAuction(a);changed=true;}
+ }
+ if(state.playerAuctions.length>25){
+   state.playerAuctions=state.playerAuctions.filter(a=>a.status==='active').concat(state.playerAuctions.filter(a=>a.status!=='active').slice(0,20));
+ }
+ return changed;
+}
+
 function buyPerk(id){if(!['tips','prices','safety'].includes(id))return;if(state.prestigePoints<1)return notify('Earn prestige points to unlock permanent perks.','bad');if(state.perks[id]>=5)return notify('Perk at maximum rank.');state.prestigePoints--;state.perks[id]++;note(`${id} prestige perk upgraded.`);notify('Permanent perk upgraded.');}
 function prestigeRun(){let allowed=state.stats.earned>=2000000&&state.stats.returned>=30&&state.rep>=10;if(!allowed){notify('Requires R2m lifetime revenue, 30 returned rentals and reputation level 10.','bad');return;}
  let pts=state.prestigePoints+2,perks={...state.perks},prestige=state.prestige+1;let s=fresh();s.prestige=prestige;s.prestigePoints=pts;s.perks=perks;state=s;selectedCar=state.fleet[0].id;note(`Prestige ${prestige} achieved. Earned 2 permanent upgrade points!`);notify('Prestige completed! +2 upgrade points.');modal=null;activePage='progress';}
@@ -1845,6 +1915,7 @@ function tick(){if(document.visibilityState==='hidden')return;let t=now();let of
  if(up('auto')&&state.settings.autoDispatch!==false){for(let offer of [...state.offers]){let car=bestCar(offer);if(car)startRental(offer.id,car.id,true);}}
  if(!state.auction||t>=state.auction.ends){if(state.auction)closeAuction();else makeAuction();}
  if(state.auction?.playerBid&&state.auction.bidder==='You'&&Math.random()<.025){state.auction.highest+=Math.max(1000,round(state.auction.base*.025));state.auction.bidder='Other bidder';state.auction.playerBid=0;notify('You were outbid — reserved funds are released.');}
+ advancePlayerAuctions(t);
  let totalDays=Math.max(0,Math.floor((t-state.lastDayAt)/GAME_DAY_MS));
  if(totalDays>0){let daySpans=Math.min(totalDays,4);for(let i=0;i<daySpans;i++)gameDay();state.lastDayAt+=daySpans*GAME_DAY_MS;
  // Long absences cap at four paid game days instead of causing hundreds of invisible bills.
@@ -2157,6 +2228,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='bulkcare'){bulkCare(id);afterAction();return;}
  if(action==='asksell'){modalCar=id;modal='sell';render();return;}
  if(action==='confirmsell'){sellCar(id);afterAction();return;}
+ if(action==='listauction'){const carId=id||document.querySelector('[data-role="auction-owned-car"]')?.value;if(listCarForAuction(carId)){activePage='events';activeSub.events='auctions';}afterAction();return;}
  if(action==='comparecar'){dealerCompare=dealerCompare.includes(id)?dealerCompare.filter(x=>x!==id):[...dealerCompare.slice(-1),id];render();return;}
  if(action==='clearcompare'){dealerCompare=[];render();return;}
  if(action==='openupgrade'){activePage='business';activeSub.business='upgrades';render();return;}
