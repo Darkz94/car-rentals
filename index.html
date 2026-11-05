@@ -1443,7 +1443,7 @@ const compact=n=>Math.abs(n)>=1e6?`R${(n/1e6).toFixed(2)}m`:Math.abs(n)>=1e4?`R$
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const RENTAL_MIN_SECONDS=20,RENTAL_MAX_SECONDS=300;
-const GAME_DAY_MS=10*60*1000,OFFER_LIFETIME_MS=6*60*1000;
+const GAME_DAY_MS=10*60*1000,OFFER_LIFETIME_MS=60*1000;
 const AVERAGE_DURATION_MULTIPLIER=1+(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/200;
 const rentalSeconds=()=>rand(RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS);
 function formatTripTime(seconds){const n=Math.max(0,Math.round(Number(seconds)||0));return n>=60?`${Math.floor(n/60)}m${n%60?' '+n%60+'s':''}`:`${n}s`;}
