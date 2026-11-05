@@ -1481,7 +1481,7 @@ function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empt
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
-let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastQueue=[],lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
+let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
 function note(msg,kind='good'){if(offlineSimulation)return;state.log.unshift({id:uid('log'),at:now(),text:msg,kind});state.log=state.log.slice(0,35);}
 function arcadeFx(label,value='',unlock=false){
@@ -1495,8 +1495,25 @@ function arcadeFx(label,value='',unlock=false){
  setTimeout(()=>item.remove(),2200);
  }catch(_error){}
 }
-function notify(msg,kind='good'){if(offlineSimulation)return;toastQueue.push({id:uid('toast'),msg,kind,at:now()});toastQueue=toastQueue.slice(-3);paintToasts();if(kind!=='bad'&&/^Unlocked:/i.test(msg))arcadeFx('UPGRADE UNLOCKED',msg.slice(9).trim(),true);}
-function paintToasts(){let el=document.getElementById('toasts');if(!el)return;el.innerHTML=toastQueue.filter(t=>now()-t.at<3600).map(t=>`<div class="toast ${t.kind==='bad'?'bad':''}">${esc(t.msg)}</div>`).join('');}
+// Show one notification per event. The toast node stays mounted until it expires,
+// so the game tick cannot replay its entrance animation or stack old messages.
+function notify(msg,kind='good'){
+ if(offlineSimulation)return;
+ const t=now(),signature=kind+'\u0000'+msg;
+ if(signature===lastToastMessage&&t-lastToastAt<5000)return;
+ lastToastMessage=signature;lastToastAt=t;
+ const holder=document.getElementById('toasts');
+ if(holder){
+   if(toastTimer!==null){clearTimeout(toastTimer);toastTimer=null;}
+   holder.textContent='';
+   const item=document.createElement('div');
+   item.className='toast'+(kind==='bad'?' bad':'');
+   item.textContent=String(msg);
+   holder.appendChild(item);
+   toastTimer=setTimeout(()=>{item.remove();toastTimer=null;},2800);
+ }
+ if(kind!=='bad'&&/^Unlocked:/i.test(msg))arcadeFx('UPGRADE UNLOCKED',msg.slice(9).trim(),true);
+}
 
 function bidReserve(){const a=state.auction;return a&&a.bidder==='You'&&a.playerBid>0?Math.max(0,Math.min(state.cash,a.playerBid)):0;}
 function freeCash(){return Math.max(0,state.cash-bidReserve());}
@@ -1533,9 +1550,9 @@ function newOffer(contract=null,forcedIndex=null){let base=contract?({hotels:1,b
 }
 function initialize(){dailyRecord();if(!state.offers.length){newOffer(null,0);newOffer(null,1);newOffer(null,2);note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
 function routePosition(r,t=now()){let src=DEST[r.from]||DEST.hq,to=DEST[r.dest]||DEST.airport;let prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2;let x=src.x+(to.x-src.x)*u,y=src.y+(to.y-src.y)*u-38*Math.sin(Math.PI*u);return {x,y,progress:prog};}
-function startRental(offerId,explicitCarId=null){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
+function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
- let seconds=rand(5,30),start=now(),payout=projectedPayout(car,offer);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);notify(`Rental started • ${seconds}s • ${money(payout)} on return`);return true;
+ let seconds=rand(5,30),start=now(),payout=projectedPayout(car,offer);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${seconds}s • ${money(payout)} on return`);return true;
 }
 function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)return;
  let base=clamp((1+(state.rep/20)*.3)*((staffed('concierge')?1.15:1))*(1+state.perks.tips*.08),1,2.4);
@@ -1795,7 +1812,7 @@ function tick(){if(document.visibilityState==='hidden')return;let t=now();let of
  if(t-state.lastOfferAt>(up('marketing')?4800:staffed('sales')?6800:8200)*difficulty().demand*weatherEffect().demand*(isNight()?1.08:1)){state.lastOfferAt=t;if(state.offers.length<5)newOffer();}
  state.offers=state.offers.filter(x=>x.expires>t);
  for(let c of CONTRACTS){if(!state.contracts.includes(c.id))continue;if(t-(state.contractLast[c.id]||0)>=c.period*1000&&state.offers.length<6){state.contractLast[c.id]=t;newOffer(c);}}
- if(up('auto')&&state.settings.autoDispatch!==false){for(let offer of [...state.offers]){let car=bestCar(offer);if(car)startRental(offer.id,car.id);}}
+ if(up('auto')&&state.settings.autoDispatch!==false){for(let offer of [...state.offers]){let car=bestCar(offer);if(car)startRental(offer.id,car.id,true);}}
  if(!state.auction||t>=state.auction.ends){if(state.auction)closeAuction();else makeAuction();}
  if(state.auction?.playerBid&&state.auction.bidder==='You'&&Math.random()<.025){state.auction.highest+=Math.max(1000,round(state.auction.base*.025));state.auction.bidder='Other bidder';state.auction.playerBid=0;notify('You were outbid — reserved funds are released.');}
  let totalDays=Math.max(0,Math.floor((t-state.lastDayAt)/180000));
@@ -1803,7 +1820,7 @@ function tick(){if(document.visibilityState==='hidden')return;let t=now();let of
  // Long absences cap at four paid game days instead of causing hundreds of invisible bills.
  if(totalDays>4){state.lastDayAt=t;note('Welcome back! Overnight costs were capped at four game days.');notify('Welcome back · running costs capped during your absence.');}}
 
- completeOfflineCatchup(offlineSession);save();paintToasts();
+ completeOfflineCatchup(offlineSession);save();
 }
 function exportSave(){save(true);let blob=new Blob([JSON.stringify({fileType:'cape-town-rentals-save',gameVersion:3,exportedAt:new Date().toISOString(),data:state},null,2)],{type:'application/json'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cape-town-rentals-save-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Save backup exported.');}
 function importSaveFile(file){if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let v=JSON.parse(String(reader.result)),s=v.data||v;if(s.version!==3||!Array.isArray(s.fleet)||typeof s.cash!=='number'||!Number.isFinite(s.cash)){throw new Error('This is not a compatible Coastline Tycoon save.');}localStorage.setItem(KEY,JSON.stringify(s));state=readSave();selectedCar=state.fleet[0]?.id;modal=null;restoreFinished();save(true);note('Save imported successfully.');notify('Saved game restored.');render();}catch(e){notify(e.message||'Could not import save.','bad');}};reader.readAsText(file);}
