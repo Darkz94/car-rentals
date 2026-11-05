@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" role="img" aria-label="White modern panel van top-down view">
+<g stroke="#141620" stroke-linejoin="round" stroke-linecap="round">
+<path d="M80 141Q85 115 117 111L957 109Q1032 110 1087 147Q1143 187 1150 260Q1148 336 1089 379Q1027 420 957 420H118Q87 418 81 387Q68 289 80 141Z" fill="#f1f2f4" stroke-width="9"/>
+<path d="M125 113Q112 126 113 160V370Q113 399 127 416M140 117L145 411" fill="none" stroke-width="5"/>
+<path d="M175 151L732 152M177 375L729 374" fill="none" stroke-width="12"/>
+<path d="M206 121V146M206 376V406M725 122V147M725 376V410" fill="none" stroke-width="5"/>
+<path d="M400 111V153M400 375V417M612 112V151M612 375V417" fill="none" stroke-width="5"/>
+<path d="M741 113L751 414" fill="none" stroke-width="6"/>
+<path d="M804 130Q861 121 917 133L938 145 936 379 913 396Q858 411 802 393Z" fill="#202127" stroke-width="9"/>
+<path d="M942 144Q1039 150 1114 214L1135 260Q1121 325 1042 379L941 385Q968 272 942 144Z" fill="#f5f6f6" stroke-width="7"/>
+<path d="M952 148Q1032 165 1090 205L1126 245M953 379Q1030 365 1089 318L1126 275" fill="none" stroke-width="4"/>
+<path d="M755 122L910 124 921 139 758 141Z" fill="#33383d" stroke-width="5"/>
+<path d="M756 388L911 388 923 404 755 406Z" fill="#33383d" stroke-width="5"/>
+<path d="M795 98L807 54Q814 46 824 57L840 113 829 127 810 123Z" fill="#252930" stroke-width="7"/>
+<path d="M794 429L808 475Q815 486 825 474L841 412 827 398 809 405Z" fill="#252930" stroke-width="7"/>
+<path d="M1028 116Q1048 106 1080 122L1100 145 1080 155 1038 141Z" fill="#252930" stroke-width="5"/>
+<path d="M1029 413Q1050 426 1083 409L1101 387 1082 376 1041 391Z" fill="#252930" stroke-width="5"/>
+<path d="M1101 195Q1135 210 1150 250L1150 267 1124 251 1104 220Z" fill="#7de4f3" stroke="#305360" stroke-width="7"/>
+<path d="M1102 332Q1137 316 1150 279L1150 268 1123 287 1102 312Z" fill="#7de4f3" stroke="#305360" stroke-width="7"/>
+<path d="M1098 206L1131 241M1099 321L1131 287" fill="none" stroke="#e4fcff" stroke-width="7"/>
+<path d="M126 137L120 382M161 137L164 388" fill="none" stroke-width="4"/>
+<path d="M281 160H717M282 370H717" fill="none" stroke="#9aa2aa" stroke-width="3"/>
+</g></svg>
