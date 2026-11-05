@@ -1,20 +1,36 @@
-# Cape Town Rentals — Definitive Game
+# Cape Town Rentals — Modern Arcade
 
-Complete browser-based rental-company simulation set in Cape Town, Stellenbosch and Franschhoek.
+The playable game and Android package use the **current `index.html`** as the source of truth. All vehicle sprites are loaded from `assets/`, with application icons in `icons/`.
 
-## Play
-Open **`index.html` using GitHub Pages** or run `python -m http.server 8000` from this repository, then visit `http://localhost:8000`. The website loads the complete original game from 18 versioned text chunks, applies the visual enhancements, and runs the browser game.
+## Playing and saving
 
-## Build a single offline file
-Run `python rebuild.py`. The script combines all 18 game-source parts with `visuals/showroom-art.js` and `visuals/showroom.css`, producing `dist/Cape-Town-Rentals-Definitive-Game.html`. Open the resulting HTML locally; no server or build tools are needed.
+- **Browser:** Serve this repository (for example, `python -m http.server 8000`) and open `http://localhost:8000/`, or use GitHub Pages.
+- **Android:** A main-branch push triggers `.github/workflows/android-release.yml`, which packages the current `index.html`, assets and icons. Release publishing depends on repository signing configuration.
+- **Player progress:** Version-3 saves use browser/Android WebView local storage and manual save slots; export JSON backups regularly, especially before uninstalling or clearing application data.
+- **Auctions:** The public dealer lot sells used cars. Owned-vehicle auction listings use simulated bidders, lock the listed vehicle, and settle after 75 seconds. Auction sale proceeds are not rental earnings.
 
-## What's included
-- The complete original self-contained React game (including every embedded original game image) in `source_parts/`.
-- Nine SVG vehicle illustrations in a reusable local vector scene generator (`visuals/showroom-art.js`).
-- Cape Town sunset, Table Mountain-style skyline, polished vehicle panels and refined backgrounds (`visuals/showroom.css`).
-- A corrected **Export as HTML** action that exports the actual playable page.
-- The original **Export JSON** function for your player-progress snapshots.
+## Building a single offline HTML
 
-**Important:** The game presently keeps progress in the browser session (memory), not in GitHub. Use **Export JSON** to keep your progress. GitHub stores the source and art, not player saves. No database or deployment credentials are required.
+Run:
 
-The source chunks are intentional: the original approximately 7 MB HTML file exceeded the connection-size limit for one GitHub upload. The chunks rebuild byte-for-byte to the original before the visual patches are applied.
+```bash
+python3 rebuild.py
+```
+
+This creates `dist/Cape-Town-Rentals-Standalone.html` from the **current** `index.html` and embeds the referenced image assets as data URIs. No server or repository sibling files are required to open the generated game locally. The default browser and Android builds remain untouched.
+
+**Do not reconstruct a production build from `source_parts/`.** Those 18 original game fragments are archived historical material that predates the modern car rental implementation, including the Classic, Muscle and Van classes.
+
+## Verification
+
+Run:
+
+```bash
+node tests/fleet-audit.test.mjs
+python3 rebuild.py
+python3 tests/standalone-build.test.py
+```
+
+The fleet tests check the complete roster, horsepower, artwork paths, customer IDs and unlocks, category matching, public auctions and the owned-vehicle sale mechanism. The standalone test checks the packaged output, including its new vehicle images. A separate pull-request/feature-branch workflow runs these checks and compiles a debug Android APK; it does not publish a release or deploy to `main`.
+
+See `docs/fleet-compatibility.md` before adding new vehicle classes.

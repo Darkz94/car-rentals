@@ -1,0 +1,4 @@
+# Generated standalone export; preserve the current game source.
+dist/
+__pycache__/
+*.pyc

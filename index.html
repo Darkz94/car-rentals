@@ -1422,17 +1422,18 @@ const TYPES=[
 ];
 const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521}};
 const BRANCHES=[{id:'hq',name:'Cape Town HQ',price:0,upkeep:1500,desc:'Your flagship city location.'},{id:'stellenbosch',name:'Stellenbosch',price:350000,upkeep:1900,desc:'Access wine-estate and weekend bookings.'},{id:'franschhoek',name:'Franschhoek',price:600000,upkeep:2500,desc:'Unlock luxury wine and scenic-tour demand.'}];
-const CUSTOMER_TYPES=[{name:'Backpacker Leo',icon:'🎒',need:'Hatch',budget:1800,dest:'camps'},{name:'Family Jacobs',icon:'👨‍👩‍👧',need:'Sedan',budget:2600,dest:'waterfront'},{name:'Contractor Dave',icon:'🦺',need:'Bakkie',budget:3000,dest:'airport'},{name:'Executive Priya',icon:'💼',need:'Sedan',budget:4000,dest:'airport'},{name:'Influencer Kim',icon:'📸',need:'Sport',budget:13500,dest:'chapman'},{name:'Logistics Co.',icon:'📦',need:'Truck',budget:6200,dest:'stellenbosch'},{name:'Vineyard Group',icon:'🍇',need:'Bus',budget:7500,dest:'franschhoek'},{name:'Film Producer',icon:'🎬',need:'Super',budget:25000,dest:'camps'}, {name:'Tourist Maya',icon:'🌴',need:'Hatch',budget:2800,dest:'table'}, {name:'Wedding Party',icon:'💍',need:'Coupe',budget:4500,dest:'franschhoek'},
-{name:'Muscle Enthusiast',icon:'🔥',need:'Muscle',budget:9000,dest:'chapman'},
-{name:'Weekend Collector',icon:'🏎️',need:'Muscle',budget:11500,dest:'camps'},
-{name:'Vintage Wedding',icon:'💐',need:'Classic',budget:6400,dest:'franschhoek'},
-{name:'Heritage Explorer',icon:'📷',need:'Classic',budget:5500,dest:'waterfront'},
-{name:'Courier Amina',icon:'📬',need:'Van',budget:3900,dest:'airport'},
-{name:'Small Business Movers',icon:'📦',need:'Van',budget:4600,dest:'stellenbosch'}];
+const CUSTOMER_TYPES=[{id:'backpacker-leo',name:'Backpacker Leo',icon:'🎒',need:'Hatch',budget:1800,dest:'camps'},{id:'family-jacobs',name:'Family Jacobs',icon:'👨‍👩‍👧',need:'Sedan',budget:2600,dest:'waterfront'},{id:'contractor-dave',name:'Contractor Dave',icon:'🦺',need:'Bakkie',budget:3000,dest:'airport'},{id:'executive-priya',name:'Executive Priya',icon:'💼',need:'Sedan',budget:4000,dest:'airport'},{id:'influencer-kim',name:'Influencer Kim',icon:'📸',need:'Sport',budget:13500,dest:'chapman'},{id:'logistics-co',name:'Logistics Co.',icon:'📦',need:'Truck',budget:6200,dest:'stellenbosch'},{id:'vineyard-group',name:'Vineyard Group',icon:'🍇',need:'Bus',budget:7500,dest:'franschhoek'},{id:'film-producer',name:'Film Producer',icon:'🎬',need:'Super',budget:25000,dest:'camps'}, {id:'tourist-maya',name:'Tourist Maya',icon:'🌴',need:'Hatch',budget:2800,dest:'table'}, {id:'wedding-party',name:'Wedding Party',icon:'💍',need:'Coupe',budget:4500,dest:'franschhoek'},
+{id:'muscle-enthusiast',name:'Muscle Enthusiast',icon:'🔥',need:'Muscle',budget:9000,dest:'chapman'},
+{id:'weekend-collector',name:'Weekend Collector',icon:'🏎️',need:'Muscle',budget:11500,dest:'camps'},
+{id:'vintage-wedding',name:'Vintage Wedding',icon:'💐',need:'Classic',budget:6400,dest:'franschhoek'},
+{id:'heritage-explorer',name:'Heritage Explorer',icon:'📷',need:'Classic',budget:5500,dest:'waterfront'},
+{id:'courier-amina',name:'Courier Amina',icon:'📬',need:'Van',budget:3900,dest:'airport'},
+{id:'small-business-movers',name:'Small Business Movers',icon:'📦',need:'Van',budget:4600,dest:'stellenbosch'}];
 // Keep class-specific demand locked until its vehicle category is available.
 // Add new category unlock requirements here when expanding the vehicle roster.
-const SPECIAL_CUSTOMER_UNLOCKS={Muscle:4,Classic:3,Van:2};
-function customerUnlocked(c){return state.rep>=(SPECIAL_CUSTOMER_UNLOCKS[c.need]??1);}
+// Customer demand unlocks with its vehicle class; this also covers future additions.
+function customerUnlocked(c){return state.rep>=(TYPES.find(t=>t.category===c.need)?.unlock??1);}
+const CONTRACT_CUSTOMER_IDS={hotels:'family-jacobs',build:'contractor-dave',vine:'vineyard-group',film:'influencer-kim',lux:'film-producer'};
 const STAFF=[{id:'sales',name:'Sales Agent',icon:'🤝',cost:24000,salary:300,desc:'20% more customer requests.'},{id:'mechanic',name:'Mechanic',icon:'🔧',cost:28000,salary:350,desc:'30% less vehicle wear on every return.'},{id:'driver',name:'Fleet Driver',icon:'🧑‍✈️',cost:22000,salary:300,desc:'Reduces fuel use during rentals.'},{id:'concierge',name:'Guest Concierge',icon:'🛎️',cost:35000,salary:400,desc:'Higher tips and reputation gains.'},{id:'accountant',name:'Accountant',icon:'📊',cost:38000,salary:450,desc:'Reduces loan repayment costs by 10%.'}];
 const UPGRADES=[{id:'workshop',name:'Company Workshop',icon:'🔧',price:175000,subtitle:'FREE SERVICING + REPAIRS',desc:'All vehicle servicing, wear-and-tear maintenance and repairs are free forever. Towing and refuelling still cost money.'},{id:'carwash',name:'Company Car Wash',icon:'🫧',price:75000,subtitle:'FREE VEHICLE WASHES',desc:'Clean any car for R0, as often as you like. No ongoing washing fees.'},{id:'marketing',name:'Tourism Marketing',icon:'📣',price:65000,subtitle:'MORE CUSTOMERS',desc:'Bring customers to your rental desk faster.'},{id:'auto',name:'Auto-Dispatch Desk',icon:'✨',price:130000,subtitle:'HANDS-FREE BOOKINGS',desc:'Automatically accept suitable customer requests when a rentable vehicle is available.'},{id:'gps',name:'GPS Fleet Tracking',icon:'🛰️',price:35000,subtitle:'SAFER TRIPS',desc:'Cut the risk of driving incidents and improve your live map operation.'},{id:'booking',name:'Luxury Booking App',icon:'📱',price:95000,subtitle:'+15% RENTAL REVENUE',desc:'Earn an extra 15% on every booking when the vehicle returns.'},{id:'fuelcard',name:'Bulk Fuel Partnership',icon:'⛽',price:75000,subtitle:'25% OFF FUEL',desc:'Reduce refuelling costs while keeping fuel meaningful.'},{id:'insurance',name:'Comprehensive Insurance',icon:'🛡️',price:55000,subtitle:'REDUCED TOWING',desc:'Halves incident towing charges. Repairs remain subject to Workshop ownership.'},{id:'garage',name:'Garage Expansion',icon:'🏗️',price:90000,subtitle:'MORE FLEET CAPACITY',desc:'Expand from 8 to 22 cars. Further prestige unlocks unlimited capacity.'},{id:'paintshop',name:'Custom Paint Studio',icon:'🎨',price:110000,subtitle:'FREE COSMETIC REPAINTS',desc:'Create your fleet identity and repaint parked vehicles at no charge. Body repairs and normal maintenance remain free with the Workshop.'},
 {id:'autofuel',name:'Automatic Refuelling',icon:'⛽',price:68000,subtitle:'REFUEL PARKED CARS',desc:'Automatically fills tanks below 75%. Fuel is still paid for at the normal or discounted rate.'},
@@ -1467,7 +1468,7 @@ const staffed=id=>state.staff.includes(id);
 const owned=id=>state.branches.includes(id);
 const now=()=>Date.now();
 const uid=prefix=>prefix+'_'+Math.random().toString(36).slice(2,9);
-const statusMsg=(kind)=>kind==='rented'?'ON RENT':kind==='transfer'?'TRANSFERRING':kind==='incident'?'NEEDS HELP':'PARKED';
+const statusMsg=(kind)=>kind==='rented'?'ON RENT':kind==='transfer'?'TRANSFERRING':kind==='incident'?'NEEDS HELP':kind==='auction'?'AT AUCTION':'PARKED';
 
 function difficulty(){return DIFFICULTIES[state.difficulty]||DIFFICULTIES.normal;}
 function weatherEffect(){return WEATHER_EFFECTS[state.weather]||WEATHER_EFFECTS.Sunny;}
@@ -1481,7 +1482,7 @@ function bodyRepairCost(c){return c.body>=99.9?0:up('workshop')?0:round((900+(10
 function paintCost(c,key){return c.paint===key?0:up('paintshop')?0:1200;}
 function repairBody(id){let c=state.fleet.find(x=>x.id===id);if(!c||c.status!=='available')return notify('This car must be parked for bodywork.','bad');if(c.body>=99.9)return notify('Bodywork is already pristine.');let cost=bodyRepairCost(c);if(!spend(cost,`Bodywork repair • ${c.plate}`))return false;c.body=100;note(`Bodywork fixed on ${c.plate} for ${cost?money(cost):'FREE (company workshop)'}.`);notify(`Bodywork repaired · ${cost?money(cost):'FREE'}`);return true;}
 function repaint(id,color){let c=state.fleet.find(x=>x.id===id);if(!c||c.status!=='available')return notify('Park the vehicle before repainting.','bad');if(!PAINTS[color])return false;if(c.paint===color)return notify('That colour is already applied.');let cost=paintCost(c,color);if(!spend(cost,`Custom paint • ${c.plate} · ${PAINTS[color].name}`))return false;c.paint=color;note(`${c.plate} repainted ${PAINTS[color].name} for ${cost?money(cost):'FREE'}.`);notify(`Custom colour applied! ${PAINTS[color].name}`);return true;}
-function carHorsepower(c){const base={hatch:98,sedan:155,coupe:215,bakkie:165,van:145,truck:210,bus:255,sport:380,super:620,hyper:1600};return round((base[c.type]||110)*(1+(c.tune||0)*.13));}
+function carHorsepower(c){const base={hatch:98,sedan:155,coupe:215,bakkie:165,van:145,classic:200,muscle:470,truck:210,bus:255,sport:380,super:620,hyper:1600};return round((base[c.type]||110)*(1+(c.tune||0)*.13));}
 function dailyRecord(){let d=state.daily;if(!d||d.day!==state.day){d={day:state.day,base:{returned:state.stats.returned,earned:state.stats.earned,washes:state.stats.washes,services:state.stats.services},claimed:[]};state.daily=d;}return d;}
 function section4Missions(){let d=dailyRecord(),b=d.base;return [
  {id:'rent',icon:'🚘',title:'Return 2 rentals',value:Math.min(2,Math.max(0,state.stats.returned-b.returned)),target:2,reward:2400},
@@ -1497,8 +1498,8 @@ function readSlot(n){try{const v=JSON.parse(localStorage.getItem(SLOT_PREFIX+n)|
 function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empty or incompatible.`, 'bad');try{localStorage.setItem(KEY,JSON.stringify(v.data));state=readSave();selectedCar=state.fleet[0]?.id;modal=null;activePage='overview';restoreFinished();save(true);note(`Restored manual save Slot ${n}.`);notify(`Loaded Slot ${n}!`);return true;}catch(e){notify('Unable to restore this slot.','bad');return false;}}
 
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
-function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
-function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
+function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
+function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
 let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
 function note(msg,kind='good'){if(offlineSimulation)return;state.log.unshift({id:uid('log'),at:now(),text:msg,kind});state.log=state.log.slice(0,35);}
@@ -1551,11 +1552,13 @@ function spend(amount,label){amount=round(amount);if(amount<0||!Number.isFinite(
 function earn(amount,label){amount=round(amount);if(!Number.isFinite(amount)||amount<0)return;state.cash+=amount;state.stats.earned+=amount;state.stats.best=Math.max(state.stats.best,amount);state.ledger.unshift({t:now(),amount,label});state.ledger=state.ledger.slice(0,80);state.history.push(amount);state.history=state.history.slice(-18);if(amount>0)arcadeFx('CASH IN',money(amount));}
 function carReady(car){return car&&car.status==='available'&&car.condition>=35&&car.fuel>=15;}
 function available(){return state.fleet.filter(carReady);}
+// Single class-substitution policy for live bookings and offline simulation.
+const CATEGORY_EQUIVALENTS={Hatch:['Hatch','Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Sedan:['Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Coupe:['Coupe','Classic','Muscle','Sport','Super','Hyper'],Classic:['Classic','Sedan','Coupe'],Bakkie:['Bakkie','Van','Truck'],Van:['Van','Truck'],Truck:['Truck','Van','Bakkie'],Bus:['Bus'],Sport:['Sport','Super','Hyper','Coupe','Muscle'],Muscle:['Muscle','Sport','Super','Hyper'],Super:['Super','Hyper']};
+function canServeCategory(requested,availableCategory){return (CATEGORY_EQUIVALENTS[requested]||[requested]).includes(availableCategory);}
 function carMatch(car,offer){let typ=typeOf(car.type);let needed=offer.need;
   if(!carReady(car))return -1;
   if(offer.contract){const contract=CONTRACTS.find(c=>c.id===offer.contract);if(contract&&contract.branch!==car.branch)return -1;}
-  let equivalents={Hatch:['Hatch','Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Sedan:['Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Coupe:['Coupe','Classic','Muscle','Sport','Super','Hyper'],Classic:['Classic','Sedan','Coupe'],Bakkie:['Bakkie','Van','Truck'],Van:['Van','Truck'],Truck:['Truck','Van','Bakkie'],Bus:['Bus'],Sport:['Sport','Super','Hyper','Coupe','Muscle'],Muscle:['Muscle','Sport','Super','Hyper'],Super:['Super','Hyper']};
-  if(!(equivalents[needed]||[needed]).includes(typ.category))return -1;
+  if(!canServeCategory(needed,typ.category))return -1;
   let price=projectedPayout(car,offer);if(price>offer.budget*1.25)return -1;
   return (needed===typ.category?1000:120)+Math.min(price,offer.budget)*.1-car.rides*.03;
 }
@@ -1564,12 +1567,15 @@ function projectedPayout(car,offer){let t=typeOf(car.type);let p=t.rate*(offer.m
 // Match against the base quote; hire duration scales the customer's booking budget.
 function rentalPayout(car,offer,seconds){return round(projectedPayout(car,offer)*(1+clamp(seconds,RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS)/100));}
 function estimatedRentalPayout(car,offer){return rentalPayout(car,offer,(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/2);}
-function newOffer(contract=null,forcedIndex=null){let base=contract?({hotels:1,build:2,vine:6,film:4,lux:7}[contract.id]??0):forcedIndex===null?CUSTOMER_TYPES.indexOf(pick(CUSTOMER_TYPES.filter(customerUnlocked))):forcedIndex;
- let c=CUSTOMER_TYPES[base],dest=c.dest;if(contract?.id==='hotels')dest='airport';if(contract?.id==='build')dest='stellenbosch';if(contract?.id==='vine')dest='franschhoek';if(contract?.id==='film')dest='camps';
+function newOffer(contract=null,forcedId=null){
+ const customerId=contract?CONTRACT_CUSTOMER_IDS[contract.id]:forcedId;
+ const c=customerId==null?pick(CUSTOMER_TYPES.filter(customerUnlocked)):CUSTOMER_TYPES.find(x=>x.id===customerId);
+ if(!c||!customerUnlocked(c))return null;
+ let dest=c.dest;if(contract?.id==='hotels')dest='airport';if(contract?.id==='build')dest='stellenbosch';if(contract?.id==='vine')dest='franschhoek';if(contract?.id==='film')dest='camps';
  let offer={id:uid('offer'),customer:contract?contract.name:c.name,icon:contract?contract.icon:c.icon,need:contract?contract.need:c.need,budget:round(c.budget*(contract?contract.premium:1)*rand(91,120)/100*difficulty().revenue),dest,created:now(),expires:now()+OFFER_LIFETIME_MS,mult:contract?1.55*contract.premium:rand(112,175)/100,contract:contract?.id||null};
  state.offers.push(offer);if(state.offers.length>6)state.offers.shift();return offer;
 }
-function initialize(){dailyRecord();if(!state.offers.length){newOffer(null,0);newOffer(null,1);newOffer(null,2);note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
+function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
 function routePosition(r,t=now()){let src=DEST[r.from]||DEST.hq,to=DEST[r.dest]||DEST.airport;let prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2;let x=src.x+(to.x-src.x)*u,y=src.y+(to.y-src.y)*u-38*Math.sin(Math.PI*u);return {x,y,progress:prog};}
 function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
@@ -1609,7 +1615,7 @@ function carePrices(c){let t=typeOf(c.type);return {service:c.condition<99.9?(up
 function careNeeded(c){return c.condition<99.9||c.clean<99.9||c.fuel<99.9;}
 function getResale(c){let t=typeOf(c.type);return round(t.price*(.38+.24*clamp(c.condition)/100)+Math.min(5,c.tune||0)*2500);}
 function vehicleNeedsAttention(c){return c.status==='incident'||(c.status==='available'&&(c.fuel<25||c.condition<50||c.clean<40));}
-function garageCars(){let cars=state.fleet.filter(c=>garageStatus==='all'||(garageStatus==='ready'&&carReady(c))||(garageStatus==='care'&&vehicleNeedsAttention(c))||(garageStatus==='out'&&['rented','transfer'].includes(c.status))||(garageStatus==='parked'&&c.status==='available')||(garageStatus==='incident'&&c.status==='incident'));if(garageBranch!=='all')cars=cars.filter(c=>c.branch===garageBranch);return cars.sort((a,b)=>{let x=typeOf(a.type),y=typeOf(b.type);if(garageSort==='condition')return a.condition-b.condition;if(garageSort==='earnings')return y.rate*(1+(b.tune||0)*.13)-x.rate*(1+(a.tune||0)*.13);if(garageSort==='name')return x.name.localeCompare(y.name);return TYPES.indexOf(x)-TYPES.indexOf(y);});}
+function garageCars(){let cars=state.fleet.filter(c=>garageStatus==='all'||(garageStatus==='ready'&&carReady(c))||(garageStatus==='care'&&vehicleNeedsAttention(c))||(garageStatus==='out'&&['rented','transfer'].includes(c.status))||(garageStatus==='parked'&&c.status==='available')||(garageStatus==='incident'&&c.status==='incident')||(garageStatus==='auction'&&c.status==='auction'));if(garageBranch!=='all')cars=cars.filter(c=>c.branch===garageBranch);return cars.sort((a,b)=>{let x=typeOf(a.type),y=typeOf(b.type);if(garageSort==='condition')return a.condition-b.condition;if(garageSort==='earnings')return y.rate*(1+(b.tune||0)*.13)-x.rate*(1+(a.tune||0)*.13);if(garageSort==='name')return x.name.localeCompare(y.name);return TYPES.indexOf(x)-TYPES.indexOf(y);});}
 function visibleDealerCars(){return TYPES.filter(t=>dealerClass==='all'||(dealerClass==='city'&&['Hatch','Sedan','Coupe','Classic'].includes(t.category))||(dealerClass==='commercial'&&['Bakkie','Van','Truck','Bus'].includes(t.category))||(dealerClass==='classic'&&t.category==='Classic')||(dealerClass==='muscle'&&t.category==='Muscle')||(dealerClass==='luxury'&&['Muscle','Sport','Super','Hyper'].includes(t.category))||(dealerClass==='unlocked'&&t.unlock<=state.rep)).sort((a,b)=>dealerSort==='price'?a.price-b.price:dealerSort==='income'?b.rate-a.rate:dealerSort==='name'?a.name.localeCompare(b.name):a.unlock-b.unlock);}
 function bulkCare(mode){let candidates=state.fleet.filter(c=>c.status==='available'&&(mode==='prepare'?careNeeded(c)||c.body<99.9:mode==='service'?c.condition<99.9||c.body<99.9:mode==='wash'?c.clean<99.9:c.fuel<99.9));if(!candidates.length){notify('No parked vehicles need that service.');return false;}
  let total=candidates.reduce((sum,c)=>{let p=carePrices(c);return sum+(mode==='prepare'?p.service+p.wash+p.fuel+bodyRepairCost(c):mode==='service'?p.service+bodyRepairCost(c):p[mode]);},0);
@@ -1702,7 +1708,7 @@ function repayLoan(id){let l=state.loans.find(v=>v.id===id);if(!l)return false;
  let amount=loanSettlement(l);if(!spend(amount,`Loan settled early${staffed('accountant')?' · accountant discount':''}`))return false;
  state.loans=state.loans.filter(x=>x.id!==id);state.credit=clamp((state.credit??680)+5,300,850);note(`Loan fully settled for ${money(amount)}.`);notify('Loan repaid!');return true;
 }
-function makeAuction(){let t=pick(TYPES.filter(x=>x.unlock<=state.rep && x.price<=Math.max(900000,state.cash*4)));let base=round(t.price*rand(48,68)/100);state.auction={id:uid('auction'),type:t.id,base,highest:0,bidder:'',ends:now()+75000,playerBid:0};state.lastAuctionAt=now();}
+function makeAuction(){let t=pick(TYPES.filter(x=>x.unlock<=state.rep));let base=round(t.price*rand(48,68)/100);state.auction={id:uid('auction'),type:t.id,base,highest:0,bidder:'',ends:now()+75000,playerBid:0};state.lastAuctionAt=now();}
 function bidAuction(){let a=state.auction;if(!a)return false;
  if(state.fleet.length>=garageCapacity()){notify('Make room in your garage before bidding.','bad');return false;}
  let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.035));
@@ -1710,7 +1716,8 @@ function bidAuction(){let a=state.auction;if(!a)return false;
  if(allowed<bid){notify(`You need ${money(bid)} available to bid.`,'bad');return false;}
  a.highest=bid;a.playerBid=bid;a.bidder='You';note(`Placed bid of ${money(bid)}. This amount is now reserved.`);notify(`Bid placed: ${money(bid)} reserved until outbid or auction close.`);return true;
 }
-function buyAuctionNow(){let a=state.auction;if(!a)return false;let cost=round(a.base*1.5);
+function auctionBuyNowPrice(a){return Math.min(typeOf(a.type).price,round(a.base*1.5));}
+function buyAuctionNow(){let a=state.auction;if(!a)return false;let cost=auctionBuyNowPrice(a);
  // Release our own bid commitment for this one checkout; no duplicate reservation deduction.
  if(state.cash<cost){notify('Not enough cash to buy this auction car.','bad');return false;}
  let previousBidder=a.bidder;a.bidder='Checking out';
@@ -1725,6 +1732,76 @@ function closeAuction(){let a=state.auction;if(!a)return;
  }else note('Auction ended. A new lot is available.');
  makeAuction();
 }
+
+/* Owner auctions are separate from the dealer's random lot.
+   A listing locks the vehicle until the reserve is met and the sale settles. */
+function canListPlayerAuctionCar(car){
+ return !!car&&car.status==='available'&&state.fleet.filter(c=>c.status!=='auction').length>1
+   &&!(state.playerAuctions||[]).some(a=>a.status==='active'&&a.carId===car.id);
+}
+function listCarForAuction(carId){
+ const car=state.fleet.find(c=>c.id===carId);
+ if(!canListPlayerAuctionCar(car)){notify('Choose a parked car and keep at least one other car out of auction.','bad');return false;}
+ const reserve=round(getResale(car)*.85),start=now();
+ state.playerAuctions=state.playerAuctions||[];
+ state.playerAuctions.unshift({id:uid('playerauction'),carId:car.id,type:car.type,plate:car.plate,
+   status:'active',start,ends:start+75000,nextBidAt:start+5000,reserve,
+   maxBid:round(getResale(car)*rand(112,132)/100),highest:0,bidCount:0,bidder:''});
+ car.status='auction';
+ note(`${car.plate} listed in the Auction House at ${money(reserve)} reserve.`);
+ notify(`${typeOf(car.type).name} listed for auction!`);
+ return true;
+}
+function finishPlayerAuction(a){
+ if(a.status!=='active')return false;
+ const car=state.fleet.find(c=>c.id===a.carId);
+ a.closedAt=now();
+ if(car&&car.status==='auction'&&a.highest>=a.reserve&&a.highest>0){
+   const amount=round(a.highest);
+   state.fleet=state.fleet.filter(c=>c.id!==car.id);
+   state.cash+=amount;
+   state.stats.sales=(state.stats.sales||0)+amount;
+   state.ledger.unshift({t:now(),amount,label:`Auction sold · ${car.plate}`});
+   state.ledger=state.ledger.slice(0,80);
+   a.status='sold';a.salePrice=amount;
+   if(selectedCar===car.id)selectedCar=state.fleet[0]?.id||null;
+   note(`${a.plate} auction settled for ${money(amount)}.`);
+   notify(`🏷️ Auction sale: +${money(amount)}`);
+ }else{
+   if(car&&car.status==='auction')car.status='available';
+   a.status='unsold';a.salePrice=0;
+   note(`${a.plate} auction ended with no winning bid. Vehicle returned to Garage.`);
+   notify(`${a.plate} is available again after an unsold auction.`);
+ }
+ return true;
+}
+function advancePlayerAuctions(t=now()){
+ if(!Array.isArray(state.playerAuctions))state.playerAuctions=[];
+ let changed=false;
+ for(const a of state.playerAuctions){
+   if(a.status!=='active')continue;
+   const car=state.fleet.find(c=>c.id===a.carId);
+   if(!car||car.status!=='auction'){a.status='unsold';a.closedAt=t;changed=true;continue;}
+   let steps=0;
+   // 15 five-second rounds per listing; persisted cursor covers time while the app was closed.
+   while(a.nextBidAt<=Math.min(t,a.ends)&&steps++<20){
+     const next=a.highest?a.highest+Math.max(1000,round(a.reserve*.035)):a.reserve;
+     if(next<=a.maxBid&&Math.random()<.65){
+       a.highest=next;
+       a.bidCount=(a.bidCount||0)+1;
+       a.bidder=pick(['Local dealer','Coastal collector','Commercial buyer','Private bidder']);
+       changed=true;
+     }
+     a.nextBidAt+=5000;
+   }
+   if(t>=a.ends){finishPlayerAuction(a);changed=true;}
+ }
+ if(state.playerAuctions.length>25){
+   state.playerAuctions=state.playerAuctions.filter(a=>a.status==='active').concat(state.playerAuctions.filter(a=>a.status!=='active').slice(0,20));
+ }
+ return changed;
+}
+
 function buyPerk(id){if(!['tips','prices','safety'].includes(id))return;if(state.prestigePoints<1)return notify('Earn prestige points to unlock permanent perks.','bad');if(state.perks[id]>=5)return notify('Perk at maximum rank.');state.prestigePoints--;state.perks[id]++;note(`${id} prestige perk upgraded.`);notify('Permanent perk upgraded.');}
 function prestigeRun(){let allowed=state.stats.earned>=2000000&&state.stats.returned>=30&&state.rep>=10;if(!allowed){notify('Requires R2m lifetime revenue, 30 returned rentals and reputation level 10.','bad');return;}
  let pts=state.prestigePoints+2,perks={...state.perks},prestige=state.prestige+1;let s=fresh();s.prestige=prestige;s.prestigePoints=pts;s.perks=perks;state=s;selectedCar=state.fleet[0].id;note(`Prestige ${prestige} achieved. Earned 2 permanent upgrade points!`);notify('Prestige completed! +2 upgrade points.');modal=null;activePage='progress';}
@@ -1767,26 +1844,16 @@ function simulateOfflineBookings(start,end){
   while(simAt+RENTAL_MIN_SECONDS*1000<=end && trips<OFFLINE_MAX_TRIPS){
    // Existing auto-care unlocks are honoured. Fuel, repairs and towing still cost money.
    for(const car of state.fleet){autoCareVehicle(car);}
-   const possible=state.fleet.filter(carReady);
+   const possible=state.fleet.filter(carReady).filter(c=>CUSTOMER_TYPES.some(x=>customerUnlocked(x)&&canServeCategory(x.need,typeOf(c.type).category)));
    if(!possible.length)break;
    const car=pick(possible),type=typeOf(car.type);
-   const customers=CUSTOMER_TYPES.filter(c=>customerUnlocked(c)&&(c.need===type.category||
-      (type.category==='Sedan'&&c.need==='Hatch')||
-      (['Coupe','Sport','Super','Hyper'].includes(type.category)&&['Sedan','Hatch','Coupe','Sport','Super'].includes(c.need))||
-      (type.category==='Van'&&c.need==='Bakkie')||
-      (type.category==='Truck'&&c.need==='Van')||
-      (type.category==='Bakkie'&&c.need==='Truck')||
-      (type.category==='Truck'&&c.need==='Bakkie')||
-      (type.category==='Muscle'&&['Hatch','Sedan','Coupe','Sport'].includes(c.need))||
-      (['Sport','Super','Hyper'].includes(type.category)&&c.need==='Muscle')||
-      (type.category==='Classic'&&['Hatch','Sedan','Coupe'].includes(c.need))||
-      (['Sedan','Coupe'].includes(type.category)&&c.need==='Classic')));
-   const customer=customers.length?pick(customers):pick(CUSTOMER_TYPES.filter(customerUnlocked));
-   const matchingContracts=CONTRACTS.filter(contract=>state.contracts.includes(contract.id)&&contract.branch===car.branch&&contract.need===type.category);
+   const customers=CUSTOMER_TYPES.filter(c=>customerUnlocked(c)&&canServeCategory(c.need,type.category));
+   const customer=pick(customers);
+   const matchingContracts=CONTRACTS.filter(contract=>state.contracts.includes(contract.id)&&contract.branch===car.branch&&canServeCategory(contract.need,type.category));
    const contract=matchingContracts.length&&Math.random()<.26?pick(matchingContracts):null;
    const seconds=rentalSeconds(),due=simAt+seconds*1000;
    if(due>end)break; // no payment before a simulated car return
-   const offer={need:customer.need,customer:contract?contract.name:customer.name,
+   const offer={need:contract?contract.need:customer.need,customer:contract?contract.name:customer.name,
        icon:contract?contract.icon:customer.icon,dest:customer.dest,
        budget:Math.max(customer.budget,round(type.rate*1.55)),
        mult:contract?1.55*contract.premium:rand(112,175)/100,
@@ -1848,6 +1915,7 @@ function tick(){if(document.visibilityState==='hidden')return;let t=now();let of
  if(up('auto')&&state.settings.autoDispatch!==false){for(let offer of [...state.offers]){let car=bestCar(offer);if(car)startRental(offer.id,car.id,true);}}
  if(!state.auction||t>=state.auction.ends){if(state.auction)closeAuction();else makeAuction();}
  if(state.auction?.playerBid&&state.auction.bidder==='You'&&Math.random()<.025){state.auction.highest+=Math.max(1000,round(state.auction.base*.025));state.auction.bidder='Other bidder';state.auction.playerBid=0;notify('You were outbid — reserved funds are released.');}
+ advancePlayerAuctions(t);
  let totalDays=Math.max(0,Math.floor((t-state.lastDayAt)/GAME_DAY_MS));
  if(totalDays>0){let daySpans=Math.min(totalDays,4);for(let i=0;i<daySpans;i++)gameDay();state.lastDayAt+=daySpans*GAME_DAY_MS;
  // Long absences cap at four paid game days instead of causing hundreds of invisible bills.
@@ -1916,9 +1984,9 @@ function renderMap(compact=false){let w=1000,h=620,land='#d8d0af',tripPaths=[],c
 function renderFleet(){let tabs=[['garage','🚙 My Garage'],['dealership','🏷️ Dealership'],['care','🔧 Workshop & Wash'],['tuning','🏁 Performance']];return `<div class="fadein">${featureHeading('🚗','The collection','Manage every vehicle in one place, discover your next dream car and build a fleet that earns while you explore Cape Town.')}<div class="mt-16">${renderTabs('fleet',tabs)}${activeSub.fleet==='garage'?renderGarage():activeSub.fleet==='dealership'?renderDealership():activeSub.fleet==='care'?renderCare():renderTuning()}</div></div>`;}
 function featureHeading(icon,title,desc){return `<div class="feature-hero"><div class="eyebrow">${icon} CAPE TOWN RENTALS</div><h2>${title}</h2><p>${desc}</p></div>`;}
 function garageBayCard(c,index){
- let t=typeOf(c.type),chosen=c.id===selectedCar,ready=carReady(c),onRoad=['rented','transfer'].includes(c.status),broken=c.status==='incident';
- let status=onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
- let statusClass=broken?'red':onRoad?'blue':ready?'green':'orange';
+ let t=typeOf(c.type),chosen=c.id===selectedCar,ready=carReady(c),onRoad=['rented','transfer'].includes(c.status),broken=c.status==='incident',listed=c.status==='auction';
+ let status=listed?'AT AUCTION':onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
+ let statusClass=broken?'red':onRoad||listed?'blue':ready?'green':'orange';
  return `<article class="parking-slot ${chosen?'selected':''} ${onRoad?'bay-empty':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}">
  <div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light ${onRoad?'off':broken?'warning':'on'}"></span><span class="slot-branch">${esc(DEST[c.branch]?.name||c.branch)}</span></div>
  <div class="parking-scene"><div class="parking-backwall"><span>COASTLINE FLEET</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-number">${String(index+1).padStart(2,'0')}</div><img class="parking-car" style="filter:${paintFilter(c)} drop-shadow(0 19px 18px #0009)" src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}" />${onRoad?'<div class="bay-out-tag">↗ VEHICLE OUT ON THE ROAD</div>':''}</div>
@@ -1929,7 +1997,7 @@ function garageBayCard(c,index){
 function garageEmptyBay(index){return `<article class="parking-slot empty-slot"><div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light off"></span><span class="slot-branch">EMPTY</span></div><div class="parking-scene"><div class="parking-backwall"><span>YOUR NEXT CAR</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-empty-icon">＋</div></div><div class="parking-info"><h3>Available parking space</h3><p class="small muted">Grow your collection one vehicle at a time.</p>${btn('sub','Browse dealership →','btn sm primary mt-12','data-group="fleet" data-id="dealership"')}</div></article>`;}
 function renderGarage(){
  let c=state.fleet.find(x=>x.id===selectedCar)||state.fleet[0],parked=state.fleet.filter(x=>x.status==='available'),attention=state.fleet.filter(vehicleNeedsAttention).length,capacity=garageCapacity(),estValue=state.fleet.reduce((a,x)=>a+getResale(x),0),cars=garageCars(),search=garageSearch.trim().toLowerCase(),matches=cars.filter(x=>(typeOf(x.type).name+' '+typeOf(x.type).category+' '+x.plate+' '+(DEST[x.branch]?.name||x.branch)).toLowerCase().includes(search));
- let filterBar=`<div class="fleet-toolbar"><input data-role="garage-search" aria-label="Find a vehicle" type="search" placeholder="🔎 Search name, plate, branch…" value="${esc(garageSearch)}"><select data-role="garage-status" aria-label="Filter garage status">${[['all','All vehicles'],['ready','Ready for hire'],['parked','Parked'],['care','Needs attention'],['out','Out on the road'],['incident','Incidents']].map(([k,v])=>`<option value="${k}" ${garageStatus===k?'selected':''}>${v}</option>`).join('')}</select><select data-role="garage-branch" aria-label="Filter by branch">${[['all','Every branch'],...BRANCHES.filter(x=>owned(x.id)).map(x=>[x.id,x.name])].map(([k,v])=>`<option value="${k}" ${garageBranch===k?'selected':''}>${esc(v)}</option>`).join('')}</select><select data-role="garage-sort" aria-label="Sort garage cars">${[['type','By vehicle class'],['name','Name A–Z'],['condition','Lowest condition'],['earnings','Highest earnings']].map(([k,v])=>`<option value="${k}" ${garageSort===k?'selected':''}>${v}</option>`).join('')}</select></div>`;
+ let filterBar=`<div class="fleet-toolbar"><input data-role="garage-search" aria-label="Find a vehicle" type="search" placeholder="🔎 Search name, plate, branch…" value="${esc(garageSearch)}"><select data-role="garage-status" aria-label="Filter garage status">${[['all','All vehicles'],['ready','Ready for hire'],['parked','Parked'],['care','Needs attention'],['out','Out on the road'],['incident','Incidents'],['auction','At auction']].map(([k,v])=>`<option value="${k}" ${garageStatus===k?'selected':''}>${v}</option>`).join('')}</select><select data-role="garage-branch" aria-label="Filter by branch">${[['all','Every branch'],...BRANCHES.filter(x=>owned(x.id)).map(x=>[x.id,x.name])].map(([k,v])=>`<option value="${k}" ${garageBranch===k?'selected':''}>${esc(v)}</option>`).join('')}</select><select data-role="garage-sort" aria-label="Sort garage cars">${[['type','By vehicle class'],['name','Name A–Z'],['condition','Lowest condition'],['earnings','Highest earnings']].map(([k,v])=>`<option value="${k}" ${garageSort===k?'selected':''}>${v}</option>`).join('')}</select></div>`;
  let bulkOptions=[['prepare','✨ Prepare all'],['service','🔧 Service all'],['wash','🫧 Wash all'],['fuel','⛽ Refuel all']];
  let costs=bulkOptions.map(([k,label])=>{let n=parked.filter(x=>k==='prepare'?careNeeded(x)||x.body<99.9:k==='service'?x.condition<99.9||x.body<99.9:k==='wash'?x.clean<99.9:x.fuel<99.9);let cost=n.reduce((a,x)=>{let p=carePrices(x);return a+(k==='prepare'?p.fuel+p.service+p.wash+bodyRepairCost(x):k==='service'?p.service+bodyRepairCost(x):p[k]);},0);return listBtn('bulkcare',k,`${label} ${n.length?'· '+(cost?money(cost):'FREE'):''}`,'btn sm',n.length?'':'disabled');}).join('');
  let extra=(garageStatus==='all'&&garageBranch==='all'&&!search&&capacity>state.fleet.length)?garageEmptyBay(state.fleet.length):'';
@@ -1943,7 +2011,7 @@ function renderGarage(){
 }
 function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
 
-function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
+function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='auction'?'Listed at auction — cannot rent or service until sale closes.':c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
  return `<div class="card pad"><div class="flex between center gap-8"><h3 class="section-title">Vehicle inspection</h3><span class="pill ${!parked?'orange':readiness?'green':'red'}">${!parked?statusMsg(c.status):readiness?'RENTAL READY':'NEEDS CARE'}</span></div><div class="fleet-detail-hero"><div class="car-thumb big"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="section-title" style="font-size:20px">${esc(t.name)}</div><div class="car-plate">${esc(c.plate)}</div><div class="small muted mt-12">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="small muted mt-12">${c.rides||0} rentals completed · ${esc(t.category)} · ${t.tank}L tank</div><div class="dealer-price" style="font-size:17px">${money(round(t.rate*(1+(c.tune||0)*.13)))}/base hire</div></div></div><div class="fleet-tip mt-16">${reason}</div>
  ${[['Fuel',c.fuel,'⛽'],['Mechanical condition',c.condition,'🔧'],['Cleanliness',c.clean,'🫧']].map(([name,val,icon])=>`<div class="mt-16"><div class="flex between small"><span>${icon} ${name}</span><b>${Math.round(val)}%</b></div><div class="meter mt-12 ${val<30?'bad':val<60?'warn':''}"><span style="width:${clamp(val)}%"></span></div></div>`).join('')}
  <div class="divider"></div><div class="flex between center"><div class="small muted">Prepare vehicle</div><div class="bold ${total?'':'positive'}">${total?money(total):'FREE / ALREADY READY'}</div></div><div class="grid grid-2 mt-16" style="gap:8px">${listBtn('fuel',c.id,`⛽ Refuel · ${p.fuel?money(p.fuel):'FULL'}`,'btn sm',!parked||c.fuel>=99.9?'disabled':'')}${listBtn('wash',c.id,`🫧 Wash · ${c.clean>=99.9?'CLEAN':p.wash?money(p.wash):'FREE'}`,'btn sm',!parked||c.clean>=99.9?'disabled':'')}${listBtn('service',c.id,`🔧 Service · ${c.condition>=99.9?'SERVICED':p.service?money(p.service):'FREE'}`,'btn sm',!parked||c.condition>=99.9?'disabled':'')}${listBtn('care',c.id,`✨ Prepare all · ${total?money(total):'FREE'}`,'btn sm primary',!parked||!careNeeded(c)?'disabled':'')}</div>
@@ -1958,7 +2026,7 @@ ${listBtn('bodyrepair',c.id,`🔨 Repair panels · ${c.body>=99.9?'COMPLETE':bod
 ${listBtn('paintcar',c.id,`🎨 Apply colour · ${up('paintshop')?'FREE WITH PAINT STUDIO':'R1,200'}`,'btn block',!parked?'disabled':'')}
 <p class="tiny muted mt-12">Cosmetic repainting is separate from mechanical maintenance; buy a Paint Studio for free repaints. The Workshop covers body repairs and servicing.</p>
  <div class="divider"></div><label class="small muted" for="branch-car-${esc(c.id)}">🚚 Transfer to another branch · 12 seconds</label><select id="branch-car-${esc(c.id)}" class="branch-chooser" data-role="branch-select" data-id="${esc(c.id)}" style="width:100%;margin-top:9px"><option value="">Choose an open branch...</option>${BRANCHES.filter(x=>owned(x.id)&&x.id!==c.branch).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>${listBtn('transfer',c.id,'Transfer this vehicle','btn block mt-12',!parked||BRANCHES.filter(x=>owned(x.id)&&x.id!==c.branch).length===0?'disabled':'')}
- <div class="divider"></div><div class="flex between center gap-8"><div><b>Sell this car</b><div class="small muted mt-12">Est. resale price · ${money(getResale(c))}</div></div>${listBtn('asksell',c.id,'Sell car','btn sm danger',!parked||!same?'disabled':'')}</div><p class="tiny muted mt-12">Cars can only be sold when parked. Keep at least one vehicle to operate your business.</p></div>`;}
+ <div class="divider"></div><div class="flex between center gap-8"><div><b>Sell this car</b><div class="small muted mt-12">Est. resale price · ${money(getResale(c))}</div></div>${listBtn('asksell',c.id,'Sell car','btn sm danger',!parked||!same?'disabled':'')}</div><div class="mt-12">${listBtn('listauction',c.id,'🏷️ Auction this car','btn block',canListPlayerAuctionCar(c)?'':'disabled')}</div><p class="tiny muted mt-12">Only parked cars can be sold or auctioned. An auction lasts 75 seconds and locks the car. Keep at least one other car unlisted.</p></div>`;}
 
 function renderDealership(){
  const cars=visibleDealerCars(),cap=garageCapacity(),full=state.fleet.length>=cap,counts={};
@@ -2080,11 +2148,18 @@ function renderWeather(){let w=weatherEffect(),clock=clockInfo();return `<div cl
 
 function renderEvents(){let tabs=[['auctions','🏷️ Auctions'],['incidents','🚨 Roadside help'],['challenges','🎯 Challenges'],['weather','🌤️ Weather & time']];return `<div class="fadein">${featureHeading('🎟️','Every day brings a new story','Discover bargain cars, solve roadside incidents and earn bonuses from business challenges.')}<div class="mt-16">${renderTabs('events',tabs)}${activeSub.events==='auctions'?renderAuctions():activeSub.events==='incidents'?renderIncidents():activeSub.events==='weather'?renderWeather():renderChallenges()}</div></div>`;}
 function renderAuctions(){
- let a=state.auction;if(!a)return '';let t=typeOf(a.type),bid=(a.highest||a.base)+Math.max(1000,round(a.base*.035)),buyNow=round(a.base*1.5),leading=a.bidder==='You',reserved=bidReserve(),discount=Math.max(0,Math.round(100*(1-a.base/t.price)));
+ let a=state.auction;if(!a)return '';let t=typeOf(a.type),bid=(a.highest||a.base)+Math.max(1000,round(a.base*.035)),buyNow=auctionBuyNowPrice(a),leading=a.bidder==='You',reserved=bidReserve(),discount=Math.max(0,Math.round(100*(1-a.base/t.price)));
  return `<div class="biz-lead"><div><span class="biz-eyebrow">THE COASTLINE AUCTION HOUSE</span><h3>Find a bargain. Watch the clock.</h3><p>Place an offer or buy immediately. Auction cars are cheaper but arrive used and may need cleaning, fuel and service before their first rental.</p></div><div class="biz-hero-icon">🏷️</div></div>
  <div class="biz-grid2 auction-layout"><section class="card pad"><div class="section-head"><div><div class="eyebrow">TODAY'S AUCTION LOT</div><h2 class="section-title" style="font-size:23px">${esc(t.name)} · Pre-owned</h2></div><span class="pill orange">⏱ <span data-countdown-auction="1">${relativeTime(a.ends)}</span> LEFT</span></div><div class="auction-car-showcase"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="biz-finance-kpis auction-kpis"><div class="biz-fin-kpi"><small>Top bid</small><b>${money(a.highest||a.base)}</b></div><div class="biz-fin-kpi"><small>Dealer value</small><b>${money(t.price)}</b></div></div><div class="biz-data-line"><span>Starting price discount</span><b class="positive">${discount}% below dealership</b></div><div class="biz-data-line"><span>Leading bidder</span><b class="${leading?'positive':''}">${esc(a.bidder||'No bids yet')}</b></div>${leading?`<div class="notice success mt-16">🔒 You are leading. <b>${money(reserved)}</b> is held as a spending commitment, not yet deducted. If you win, the car is purchased for this amount; if outbid, the reserve is released.</div>`:''}
  <div class="biz-action-row mt-16">${btn('bid',`Bid ${money(bid)}`,'btn primary',freeCash()+(leading?reserved:0)<bid||state.fleet.length>=garageCapacity()?'disabled':'')}${btn('buynow',`Buy now ${money(buyNow)}`,'btn',state.cash<buyNow||state.fleet.length>=garageCapacity()?'disabled':'')}</div></section>
- <section class="card pad">${paneHeading('A smarter auction strategy','No hidden fees and no surprise charges at the start.')}<div class="step"><span class="step-num">1</span><p>Make a bid. That amount remains in the bank, but you cannot spend it elsewhere while you lead.</p></div><div class="step"><span class="step-num">2</span><p>Other bidders can outbid you before the auction ends; your reserved funds are released automatically.</p></div><div class="step"><span class="step-num">3</span><p>If you are the highest bidder when the timer ends, you pay once and receive the vehicle.</p></div><div class="biz-divider"></div><div class="notice">🔧 Workshop owners service auction cars for <b>R0</b>. 🫧 Car Wash owners clean auction cars for <b>R0</b>. Refuelling still costs money.</div><div class="biz-divider"></div><div class="biz-data-line"><span>Fleet spaces left</span><b>${Math.max(0,garageCapacity()-state.fleet.length)}</b></div><div class="biz-data-line"><span>Cash available for purchases</span><b class="money">${money(freeCash())}</b></div>${btn('page','Browse the dealership →','btn ghost block mt-16','data-id="fleet"')}</section></div>`;
+ <section class="card pad">${paneHeading('A smarter auction strategy','No hidden fees and no surprise charges at the start.')}<div class="step"><span class="step-num">1</span><p>Make a bid. That amount remains in the bank, but you cannot spend it elsewhere while you lead.</p></div><div class="step"><span class="step-num">2</span><p>Other bidders can outbid you before the auction ends; your reserved funds are released automatically.</p></div><div class="step"><span class="step-num">3</span><p>If you are the highest bidder when the timer ends, you pay once and receive the vehicle.</p></div><div class="biz-divider"></div><div class="notice">🔧 Workshop owners service auction cars for <b>R0</b>. 🫧 Car Wash owners clean auction cars for <b>R0</b>. Refuelling still costs money.</div><div class="biz-divider"></div><div class="biz-data-line"><span>Fleet spaces left</span><b>${Math.max(0,garageCapacity()-state.fleet.length)}</b></div><div class="biz-data-line"><span>Cash available for purchases</span><b class="money">${money(freeCash())}</b></div>${btn('page','Browse the dealership →','btn ghost block mt-16','data-id="fleet"')}</section></div>`+renderPlayerAuctions();
+}
+
+function renderPlayerAuctions(){
+ const cars=state.fleet.filter(canListPlayerAuctionCar),active=(state.playerAuctions||[]).filter(a=>a.status==='active'),history=(state.playerAuctions||[]).filter(a=>a.status!=='active').slice(0,6);
+ return `<section class="card pad mt-16"><div class="eyebrow">SELL YOUR OWN VEHICLES</div><h2 class="section-title">Your Auction Listings</h2><p class="small muted mt-12">List a parked car for 75 seconds. Simulated bidders compete, and you receive the winning payment only when the sale closes. No winning bid returns the car to your Garage.</p><div class="grid grid-2 mt-16"><label>Parked car<select data-role="auction-owned-car" class="branch-chooser">${cars.length?cars.map(c=>`<option value="${esc(c.id)}">${esc(typeOf(c.type).name)} · ${esc(c.plate)} · reserve ${money(round(getResale(c)*.85))}</option>`).join(''):'<option value="">No eligible cars</option>'}</select></label><div style="align-self:end">${btn('listauction','🏷️ List for auction','btn primary block',cars.length?'':'disabled')}</div></div><p class="tiny muted mt-12">Cars at auction cannot be rented, serviced, transferred or sold directly. At least one unlisted vehicle must remain in your fleet.</p>
+ <div class="grid grid-2 mt-16">${active.map(a=>`<div class="listing"><b>${esc(typeOf(a.type).name)} · ${esc(a.plate)}</b><span class="pill orange" data-countdown-owned-auction="${esc(a.id)}">${relativeTime(a.ends)}</span><div class="small muted mt-12">Reserve ${money(a.reserve)} · ${a.bidCount||0} bids</div><div class="dealer-price">${a.highest?money(a.highest):'Awaiting bids'}</div><div class="small muted">${esc(a.bidder||'No bidder yet')}</div></div>`).join('')||'<p class="small muted">No active listings.</p>'}</div>
+ ${history.length?`<div class="divider"></div><h3>Recent sales</h3>${history.map(a=>`<div class="item-row"><div class="grow"><b>${esc(typeOf(a.type).name)} · ${esc(a.plate)}</b><div class="small muted">${a.status==='sold'?'Sold to '+esc(a.bidder):'No sale — returned to Garage'}</div></div><span class="pill ${a.status==='sold'?'green':'orange'}">${a.status==='sold'?money(a.salePrice):'UNSOLD'}</span></div>`).join('')}` :''}</section>`;
 }
 function renderIncidents(){return `<div class="card pad">${paneHeading('Roadside assistance',`${state.incidents.length} unresolved incidents`,`<span class="pill ${state.incidents.length?'red':'green'}">${state.incidents.length?'NEEDS ACTION':'ALL CLEAR'}</span>`)}${state.incidents.length?state.incidents.map(x=>{let c=state.fleet.find(c=>c.id===x.carId);return `<div class="item-row"><div class="icon-avatar">🚨</div><div class="grow"><b>${esc(x.name)}</b><div class="small muted mt-12">${esc(c?.plate||'Vehicle')} · Recover vehicle to get it renting again</div><div class="small muted mt-12">Tow: ${money(up('insurance')?450:900)} · Repairs: ${up('workshop')?'FREE with Workshop':'paid in Garage'}</div></div>${listBtn('resolve',x.id,'Send roadside','btn primary sm')}</div>`;}).join(''):emptyState('🟢','Your fleet is running smoothly','No breakdowns right now. Well-maintained cars and GPS tracking reduce incident risk.')}<div class="notice mt-16">Workshop ownership makes maintenance and mechanical repairs free, but roadside towing is still a separate fee. Comprehensive Insurance halves towing costs.</div></div>`;}
 function dailyMissions(){let d=state.day;return [{id:'rent',title:'Complete 3 customer rentals',value:Math.min(state.stats.returned%8,3),target:3,reward:'Repeat for regular cash flow'},{id:'fleet',title:'Own 5 vehicles',value:Math.min(state.fleet.length,5),target:5,reward:'More availability and variety'},{id:'branch',title:'Open a second branch',value:Math.min(state.branches.length,2),target:2,reward:'Expand your regional reach'},{id:'clean',title:'Wash 5 vehicles',value:Math.min(state.stats.washes,5),target:5,reward:'Keep your fleet presentable'}];}
@@ -2160,6 +2235,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='bulkcare'){bulkCare(id);afterAction();return;}
  if(action==='asksell'){modalCar=id;modal='sell';render();return;}
  if(action==='confirmsell'){sellCar(id);afterAction();return;}
+ if(action==='listauction'){const carId=id||document.querySelector('[data-role="auction-owned-car"]')?.value;if(listCarForAuction(carId)){activePage='events';activeSub.events='auctions';}afterAction();return;}
  if(action==='comparecar'){dealerCompare=dealerCompare.includes(id)?dealerCompare.filter(x=>x!==id):[...dealerCompare.slice(-1),id];render();return;}
  if(action==='clearcompare'){dealerCompare=[];render();return;}
  if(action==='openupgrade'){activePage='business';activeSub.business='upgrades';render();return;}
@@ -2200,8 +2276,8 @@ document.getElementById('app').addEventListener('click',e=>{const s=e.target.clo
 document.getElementById('app').addEventListener('input',e=>{if(e.target.dataset.role!=='garage-search')return;garageSearch=e.target.value;let q=garageSearch.trim().toLowerCase(),count=0;document.querySelectorAll('#fleet-results [data-fleet-search]').forEach(el=>{let visible=el.dataset.fleetSearch.includes(q);el.style.display=visible?'':'none';if(visible)count++;});document.querySelectorAll('#fleet-results .empty-slot').forEach(el=>{el.style.display=q?'none':'';});let msg=document.querySelector('[data-search-empty]');if(msg)msg.style.display=count?'none':'block';let c=document.querySelector('[data-fleet-count]');if(c)c.textContent=count+' matching vehicles · Bulk services include parked vehicles only.';});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){state.offlineLastActiveAt=now();save(true);}else{tick();render();}});window.addEventListener('beforeunload',()=>{state.offlineLastActiveAt=now();save(true);});
-function uiSignature(){return [state.cash,state.day,state.weather,state.rentals.map(x=>x.id).join(','),state.offers.map(x=>x.id).join(','),state.auction?.id,state.auction?.highest,state.auction?.bidder,state.fleet.map(c=>[c.status,c.branch,round(c.fuel),round(c.condition),round(c.clean),round(c.body)].join(':')).join(','),state.incidents.length,state.log[0]?.id].join('|');}
-function refreshLive(){let t=now();document.querySelectorAll('[data-countdown-rental]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.countdownRental);if(r)el.textContent=relativeTime(r.due);});document.querySelectorAll('[data-rental-progress]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.rentalProgress);if(r)el.style.width=clamp((t-r.start)/(r.due-r.start)*100)+'%';});document.querySelectorAll('[data-countdown-offer]').forEach(el=>{let o=state.offers.find(x=>x.id===el.dataset.countdownOffer);if(o)el.textContent=relativeTime(o.expires);});document.querySelectorAll('[data-contract-countdown]').forEach(el=>{let c=CONTRACTS.find(x=>x.id===el.dataset.contractCountdown);if(c)el.textContent=Math.max(0,Math.ceil((c.period*1000-(t-(state.contractLast[c.id]||0)))/1000))+'s';});document.querySelectorAll('[data-countdown-auction]').forEach(el=>{if(state.auction)el.textContent=relativeTime(state.auction.ends);});document.querySelectorAll('[data-mapcar]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.mapcar);if(r){let p=routePosition(r,t);el.setAttribute('transform',mapCarPose(r,t,state.fleet.find(c=>c.id===r.carId)?.type));}});}
+function uiSignature(){return [state.cash,state.day,state.weather,state.rentals.map(x=>x.id).join(','),state.offers.map(x=>x.id).join(','),state.auction?.id,state.auction?.highest,state.auction?.bidder,(state.playerAuctions||[]).map(a=>[a.id,a.status,a.highest,a.bidCount].join(':')).join(','),state.fleet.map(c=>[c.status,c.branch,round(c.fuel),round(c.condition),round(c.clean),round(c.body)].join(':')).join(','),state.incidents.length,state.log[0]?.id].join('|');}
+function refreshLive(){let t=now();document.querySelectorAll('[data-countdown-rental]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.countdownRental);if(r)el.textContent=relativeTime(r.due);});document.querySelectorAll('[data-rental-progress]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.rentalProgress);if(r)el.style.width=clamp((t-r.start)/(r.due-r.start)*100)+'%';});document.querySelectorAll('[data-countdown-offer]').forEach(el=>{let o=state.offers.find(x=>x.id===el.dataset.countdownOffer);if(o)el.textContent=relativeTime(o.expires);});document.querySelectorAll('[data-contract-countdown]').forEach(el=>{let c=CONTRACTS.find(x=>x.id===el.dataset.contractCountdown);if(c)el.textContent=Math.max(0,Math.ceil((c.period*1000-(t-(state.contractLast[c.id]||0)))/1000))+'s';});document.querySelectorAll('[data-countdown-auction]').forEach(el=>{if(state.auction)el.textContent=relativeTime(state.auction.ends);});document.querySelectorAll('[data-countdown-owned-auction]').forEach(el=>{const a=(state.playerAuctions||[]).find(x=>x.id===el.dataset.countdownOwnedAuction);if(a)el.textContent=relativeTime(a.ends);});document.querySelectorAll('[data-mapcar]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.mapcar);if(r){let p=routePosition(r,t);el.setAttribute('transform',mapCarPose(r,t,state.fleet.find(c=>c.id===r.carId)?.type));}});}
 let needsRender=false;
  document.getElementById('app').addEventListener('focusout',e=>{
   if(e.target.matches('input,select,textarea')&&needsRender){queueMicrotask(()=>{if(!document.activeElement?.matches('input,select,textarea')&&needsRender){needsRender=false;render();}});}
