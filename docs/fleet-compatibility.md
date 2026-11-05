@@ -16,6 +16,22 @@ Owner listings use a separate `playerAuctions` save field, leaving dealer auctio
 
 Save `version:3` and the `cape-town-rentals-coastline-v3` key are intentionally unchanged. Loading older saves without `playerAuctions` supplies an empty list.
 
+## Jeep 4x4 added
+
+New category `Jeep` is listed immediately after Bakkie and before Van:
+R149,000 purchase, R1,000 base rental income, Reputation 2, 210 HP and a 72 L tank.
+It uses transparent side-view and top-down WebP art with the same
+`CAR_IMAGES`/`MAP_CAR_IMAGES` rendering as the existing fleet. The top-down
+sprite uses the correct 90° orientation offset when following rental routes.
+
+The stable customer IDs `adventure-couple` and `trail-explorer` unlock at
+the Jeep's reputation level. They match via the existing exact-category fallback
+in `canServeCategory` for both normal and offline rentals. There is no
+additional matching implementation or cross-category substitution.
+The Commercial dealership filter includes Jeep, and the generic garage,
+auctions, servicing, refuelling, tuning, resale, transfers and return-payment
+paths apply unchanged. Existing prices and save key/version 3 are unchanged.
+
 ## Adding a new vehicle
 
 1. Add its `TYPES` definition in the intended progression position.
