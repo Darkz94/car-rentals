@@ -2,6 +2,8 @@
 """Reconstruct the original game, apply visual upgrades, and produce an offline HTML."""
 from pathlib import Path
 import re
+import base64
+import json
 
 ROOT=Path(__file__).resolve().parent
 original="".join((ROOT/"source_parts"/f"part-{i:03d}.txt").read_text(encoding="utf-8") for i in range(18))
@@ -11,8 +13,10 @@ art=(ROOT/"visuals/showroom-art.js").read_text(encoding="utf-8")
 html=original.replace("<title>React Artifact</title>","<title>Cape Town Rentals | Definitive Game</title>",1)
 html=html.replace("</style>",css+"\n</style>",1)
 html=html.replace("var xA=[",art+"\nvar xA=[",1)
+bus_image='data:image/webp;base64,'+base64.b64encode((ROOT/'assets/tourbus-side.webp').read_bytes()).decode('ascii')
 for model,source,use in [('sedan','il','Business'),('coupe','Rn','Coastal'),('truck','Rt','Logistics'),('bus','Rt','Wine Tram')]:
-    html=html.replace('img:'+source+',use:"'+use+'"','img:createCapeCarArt("'+model+'"),use:"'+use+'"',1)
+    replacement=('img:'+json.dumps(bus_image) if model=='bus' else 'img:createCapeCarArt("'+model+'")')
+    html=html.replace('img:'+source+',use:"'+use+'"',replacement+',use:"'+use+'"',1)
 for a,b in [
  ('className:"relative h-28 bg-black/50"','className:"relative h-28 bg-black/50 fleet-scene"'),
  ('className:"w-full h-full object-contain p-2"','className:"w-full h-full object-cover fleet-car-art"'),
