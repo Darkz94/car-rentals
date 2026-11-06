@@ -649,4 +649,77 @@ assert.equal(JSON.stringify(v7state.fleet),oldFleet,"Performance rendering mutat
 assert.ok(js.includes("function tune(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status!=='available')")&&js.includes("let cost=round(14000*Math.pow(c.tune+1,1.65));"),"Tuning gameplay changed");
 console.log("PASS: Section 7 Performance preview, tuning, eligibility, original art, order, economy and save safety.");
 
+
+
+// Section 8: premium Rental Desk and Customer Offers must preserve all existing
+// 28 customers, matching, offer expiry, manual car selection and return-only payouts.
+assert.ok(html.includes('id="ctr-rental-desk-section-08"'),"Section 8 visual CSS missing from offline HTML");
+const v8offerStart=js.indexOf("function offerCard(o){"),v8offerEnd=js.indexOf("\nfunction emptyState(",v8offerStart);
+const v8autoStart=js.indexOf("function autoDeskControl(){"),v8autoEnd=js.indexOf("\nfunction renderOverview(){",v8autoStart);
+assert.ok(v8offerStart>=0&&v8offerEnd>v8offerStart&&v8autoStart>=0&&v8autoEnd>v8autoStart,"Section 8 renderers missing");
+const v8offerSrc=js.slice(v8offerStart,v8offerEnd),v8autoSrc=js.slice(v8autoStart,v8autoEnd);
+const v8deskSrc=js.slice(js.indexOf("function renderOverview(){"),js.indexOf("\nfunction stat(",js.indexOf("function renderOverview(){")));
+for(const need of ["bestCar(o)","carMatch(c,o)>=0","fleetInGarageOrder(state.fleet.filter", "estimatedRentalPayout(c,o)",
+ "data-countdown-offer","data-offer-progress","rental-offer-car-","listBtn('rent'","CAR_IMAGES[typeOf(candidate.type).id]","canServeCategory(o.need,t.category)"]){
+ assert.ok(v8offerSrc.includes(need),"Section 8 offer missing "+need);
+}
+for(const need of ["rental-desk-v8-banner","renderHeroArt()","dashboard-rental-help","dashboard-rental-actions",
+ "rental-desk-v8-summary","autoDeskControl()","state.offers.map(offerCard)","rental-requests-v8-empty","map(rentalCard)"]){
+ assert.ok(v8deskSrc.includes(need),"Section 8 desk missing "+need);
+}
+assert.ok(!v8deskSrc.includes("state.offers.slice(0,5)"),"All existing customer offers must remain visible");
+assert.ok(v8autoSrc.includes("up('auto')")&&v8autoSrc.includes("state.settings.autoDispatch!==false")&&
+ v8autoSrc.includes("toggleautodespatch")&&v8autoSrc.includes("openupgrade"),"Auto-Dispatch state controls missing");
+assert.ok(js.includes("document.getElementById('rental-offer-car-'+id)?.value||null")&&
+ js.includes("startRental(id,chosen)"),"Manual car selector must connect to the existing startRental action");
+assert.ok(js.includes("data-offer-progress")&&js.includes("duration=Math.max(1,o.expires-"),"Live offer progress must update without a game balance change");
+assert.equal(customerList.length,28,"All 28 customer types must be kept");
+const v8mockCar={id:"sedan-8",plate:"CA 808",type:"sedan",branch:"hq",status:"available",tune:1};
+const v8second={...v8mockCar,id:"sedan-9",plate:"CA 909"};
+const v8offer={id:"offer-8",customer:"Executive Priya",icon:"💼",need:"Sedan",budget:4000,dest:"airport",
+ expires:200000,created:140000,contract:null,mult:1.35};
+const v8game={fleet:[v8mockCar,v8second],offers:[v8offer],settings:{autoDispatch:true}};
+const v8ctx={
+ state:v8game,now:()=>160000,OFFER_LIFETIME_MS:60000,carMatch:()=>100,
+ bestCar:()=>v8mockCar,fleetInGarageOrder:cars=>[...cars].reverse(),
+ estimatedRentalPayout:car=>car.id==="sedan-8"?5250:5400,
+ typeOf:()=>({id:"sedan",name:"Sedan",category:"Sedan",rate:1250}),
+ TYPES:[{id:"sedan",name:"Sedan",category:"Sedan"}],canServeCategory:()=>true,
+ CAR_IMAGES:{sedan:"assets/city-sedan-side.png",hatch:"assets/city-hatch-side.png"},DEST:{airport:{name:"Cape Town International"},hq:{name:"Headquarters"}},
+ paintFilter:()=>"none",round:Math.round,clamp:(v,a=0,b=100)=>Math.max(a,Math.min(b,v)),
+ money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),relativeTime:t=>Math.ceil((t-160000)/1000)+"s",
+ esc:s=>String(s).replaceAll('"',"&quot;"),arcadeIcon:()=>"<svg></svg>",
+ listBtn:(action,id,title,cls,extra="")=>'<button data-action="'+action+'" data-id="'+id+'" '+extra+'>'+title+'</button>'
+};
+const v8offerFn=vm.runInNewContext(v8offerSrc+"\nofferCard",v8ctx);
+const v8before=JSON.stringify(v8game);
+const v8markup=v8offerFn(v8offer);
+assert.ok(v8markup.includes('data-rental-offer="offer-8"')&&v8markup.includes("Executive Priya")&&v8markup.includes("Cape Town International"),
+ "Offer must show correct customer and destination");
+assert.ok(v8markup.includes("R4 000")&&v8markup.includes("R5 250")&&v8markup.includes("2")&&
+ v8markup.includes("RETURN PAYOUT"),"Offer must display real budget, mid-trip payout and eligible count");
+assert.ok(v8markup.includes('data-countdown-offer="offer-8"')&&v8markup.includes('data-offer-progress="offer-8"'),
+ "Offer needs a live expiry clock and progress bar");
+assert.ok(v8markup.includes('id="rental-offer-car-offer-8"')&&v8markup.includes('value="sedan-8"')&&
+ v8markup.includes('value="sedan-9"')&&v8markup.includes('data-action="rent"'),"Offer must let players choose among eligible vehicles");
+v8ctx.carMatch=c=>c.id==="sedan-8"?100:-1;
+const v8single=v8offerFn(v8offer);
+assert.ok(v8single.includes('value="sedan-8"')&&!v8single.includes('value="sedan-9"'),"Only compatible eligible vehicles can be chosen");
+v8ctx.carMatch=()=>-1;v8ctx.bestCar=()=>null;
+const v8none=v8offerFn(v8offer);
+assert.ok(v8none.includes("NO READY MATCH")&&v8none.includes("disabled")&&
+ v8none.includes("NEEDS MATCH"),"Unmatchable offer must disable dispatch");
+assert.equal(JSON.stringify(v8game),v8before,"Offer rendering must not mutate customer or fleet saves");
+const v8autoCtx={state:{settings:{autoDispatch:true}},up:()=>false,arcadeIcon:()=>"<svg></svg>",btn:(a,l)=>'<button data-action="'+a+'">'+l+'</button>'};
+const v8autoFn=vm.runInNewContext(v8autoSrc+"\nautoDeskControl",v8autoCtx);
+assert.ok(v8autoFn().includes('data-action="openupgrade"'),"Locked Auto-Dispatch must lead to upgrades");
+v8autoCtx.up=()=>true;
+assert.ok(v8autoFn().includes("ACTIVE")&&v8autoFn().includes('data-action="toggleautodespatch"'),"Owned Auto-Dispatch must be controllable");
+v8autoCtx.state.settings.autoDispatch=false;
+assert.ok(v8autoFn().includes("PAUSED"),"Paused Auto-Dispatch must be distinguished");
+assert.ok(js.includes("if(!car||carMatch(car,offer)<0)"),"Existing category/eligibility protection must remain");
+assert.ok(js.includes("let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds)")&&
+ js.includes("state.rentals.push({id:uid('rent')"),"Real rentals must use existing duration and payout handlers");
+console.log("PASS: Section 8 rental offer art, 28 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
