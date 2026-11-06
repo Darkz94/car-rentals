@@ -193,4 +193,13 @@ awardRepXP(10);
 assert.equal(progressState.rep,10, "300 rentals should reach Reputation 10");
 assert.equal(progressState.xp,0, "XP should reset on the exact Reputation 10 threshold");
 console.log("PASS: Reputation 2 to 10 needs exactly 300 base-XP rentals.");
+
+const compactRentalCard=js.slice(js.indexOf("function rentalCard("),js.indexOf("function offerCard("));
+assert.ok(compactRentalCard.includes('item-row rental-compact'),"Rental cards must use the compact mobile layout");
+assert.ok(compactRentalCard.includes('rental-compact-bottom'),"Rental progress and trip duration must share one row");
+assert.ok(compactRentalCard.includes('data-countdown-rental='),"Rental return countdown must remain live");
+assert.ok(compactRentalCard.includes('data-rental-progress='),"Rental progress bar must remain live");
+assert.ok(compactRentalCard.includes('formatTripTime('),"Rental total duration must remain visible");
+assert.ok(!compactRentalCard.includes('Money arrives automatically'),"Redundant rental payment notice must stay removed");
+console.log("PASS: Compact rental cards preserve countdown, progress, and duration.");
 console.log("PASS: JavaScript syntax, 15 vehicle classes, 22 customers, all assets and 62 auction scenarios.");
