@@ -497,7 +497,7 @@ const baseline=JSON.stringify(v5State.fleet);
 const v5Markup=v5Render(v5Car);
 assert.ok(v5Markup.includes('src="assets/limo-side.webp"')&&v5Markup.includes('src="assets/limo-topdown.webp"'),
  "Vehicle inspection must render both the matching side and top-down artwork");
-assert.ok(v5Markup.includes("R2,769")&&v5Markup.includes("HIRES COMPLETE")&&v5Markup.includes(">8</strong>"),
+assert.ok(v5Markup.includes(v5Ctx.money(2769))&&v5Markup.includes("HIRES COMPLETE")&&v5Markup.includes(">8</strong>"),
  "Vehicle stats must show actual tuned base rate and completed hires");
 assert.ok(v5Markup.includes("441 HP")&&v5Markup.includes("CPT 666")&&v5Markup.includes("Cape Town HQ"),
  "Vehicle detail must use true car data, power and location");
