@@ -1050,3 +1050,30 @@ assert.ok(js.includes("function buyUpgrade(id){let x=UPGRADES.find")&&
  js.includes("state.perks[id]=level+qty;")&&js.includes("s.version!==3"),
  "Section 16 must preserve upgrade prices, batch formulas, credits and saves");
 console.log("PASS: Section 16 both upgrade screens, 1/5/10 controls, 100-level caps, existing automation and safe economy.");
+
+
+// Section 17: Event & Contract presentation must retain original mechanisms.
+assert.ok(html.includes('id="ctr-events-section-17"'),"Section 17 stylesheet missing");
+const e17sections=[["renderContracts","renderStaff",["contract17-grid","data-contract-countdown","listBtn('contract'","contractReport(c.id)","Math.round((c.premium-1)*100)"]],
+["renderIncidents","dailyMissions",["event17-inc-vehicle","CAR_IMAGES[c?.type]","listBtn('resolve'","up('insurance')?450:900"]],
+["renderChallenges","renderRoadmap",["event17-track","data-countdown-event-day","listBtn('claimmission'","section4Missions()"]],
+["renderWeather","renderEvents",["event17-weather-values","renderMap(true)","WEATHER_EFFECTS","btn('maptheme'"]]];
+for(const [name,next,tokens] of e17sections){
+ const s=js.indexOf("function "+name+"(){"),e=js.indexOf("\nfunction "+next+"(){",s);
+ assert.ok(s>=0&&e>s,"Section 17 missing "+name);
+ for(const token of tokens)assert.ok(js.slice(s,e).includes(token),name+" missing "+token);
+}
+const e17contracts=vm.runInNewContext(decl("CONTRACTS", "];")+"\nCONTRACTS");
+assert.equal(e17contracts.length,5,"Exactly five contracts must remain");
+assert.deepEqual(Array.from(e17contracts,c=>c.period),[34,36,40,42,42],"Contract timers changed");
+assert.deepEqual(Array.from(e17contracts,c=>c.rep),[2,3,5,8,10],"Contract unlock requirements changed");
+assert.ok(js.includes("function signContract(id){let c=CONTRACTS.find")&&js.includes("state.contractLast[id]=now()")&&
+ js.includes("function resolveIncident(id){let inc=state.incidents.find")&&
+ js.includes("let cost=up('insurance')?450:900")&&
+ js.includes("function claimMission(id){let m=section4Missions()")&&
+ js.includes("state.daily.claimed.push(m.id);earn(m.reward,")&&
+ js.includes("document.querySelectorAll('[data-countdown-event-day]')")&&
+ js.includes("arcadeFx('DAILY REWARD'")&&
+ js.includes("arcadeFx('ACHIEVEMENT UNLOCKED'")&&
+ js.includes("s.version!==3"),"Existing event logic, notifications or save rules changed");
+console.log("PASS: Section 17 original five corporate clients, mission rewards, roadside fees, weather map, timers and visual notification safety.");
