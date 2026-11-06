@@ -2702,7 +2702,7 @@ function smartOverview(){
  </section>`;
 }
 function dashboardShortcut(icon,label,page,section,kind=''){
- return `<button type="button" class="dashboard-shortcut ${kind?'dashboard-shortcut--'+kind:''}" data-action="dashshortcut" data-id="${page}" data-sub="${section}" aria-label="${label}"><span class="dashboard-shortcut-icon" aria-hidden="true">${icon}</span><span class="dashboard-shortcut-label">${label}</span></button>`;
+ return `<button type="button" class="dashboard-shortcut ${kind?'dashboard-shortcut--'+kind:''}" data-action="${page==='rental'?'autorent':'dashshortcut'}" data-id="${page}" data-sub="${section}" aria-label="${label}"><span class="dashboard-shortcut-icon" aria-hidden="true">${icon}</span><span class="dashboard-shortcut-label">${label}</span></button>`;
 }
 function autoDeskControl(){return up('auto')?`<div class="auto-desk"><div><b>✨ Auto-Dispatch Desk</b><span>${state.settings.autoDispatch===false?'Paused — accept rentals yourself.':'Running — matches ready cars to new requests.'}</span></div>${btn('toggleautodespatch',state.settings.autoDispatch===false?'▶ Turn ON':'⏸ Pause',`btn sm ${state.settings.autoDispatch===false?'primary':'ghost'}`)}</div>`:'';}
 
@@ -2714,7 +2714,7 @@ function renderOverview(){
   ${smartOverview()}
   <section class="dashboard-shortcuts" aria-label="Business quick actions">
    <div class="dashboard-shortcuts-main">
-    ${dashboardShortcut('🔑','Dispatch Rental','fleet','garage','gold')}
+    ${dashboardShortcut('🔑','Dispatch Rental','rental','','gold')}
     ${dashboardShortcut('🚘','Garage','fleet','garage','garage')}
     ${dashboardShortcut('🛠️','Workshop & Wash','fleet','care','teal')}
     ${dashboardShortcut('🏁','Performance','fleet','tuning','blue')}
