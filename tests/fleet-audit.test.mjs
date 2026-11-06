@@ -989,3 +989,45 @@ assert.ok(!b14Markup.includes('data-role="branch-transfer-select" data-id="frans
  "Locked branches must not expose transfer controls");
 assert.equal(JSON.stringify(b14state),b14saved,"Rendering branch network must not modify saved game data");
 console.log("PASS: Section 14 Branch Network, map reuse, vehicle assignments, accurate money, 12s transfers and save safety.");
+
+
+// Section 15 Staff: exact roles, payment formulas, UI state and saved-game preservation.
+assert.ok(html.includes('id="ctr-staff-section-15"'),"Staff stylesheet missing");
+const s15s=js.indexOf("function renderStaff(){"),s15e=js.indexOf("\nfunction renderFinance(){",s15s);
+assert.ok(s15s>=0&&s15e>s15s,"Staff view missing");
+const s15src=js.slice(s15s,s15e);
+for(const word of ["staff-v15-hero","staff-v15-kpis","staff-v15-grid","staff-v15-card","staff-v15-costs",
+ "staff-v15-benefit","staff-v15-progress-bar","staff-v15-active-list","staff-v15-payrow","staff-v15-filter",
+ "data-action=\"stafffilter\"","money(x.cost)","money(x.salary)","esc(x.desc)","staffOverhead()",
+ "branchOverhead()","freeCash()","renderHeroArt()","listBtn('hire'"]){
+ assert.ok(s15src.includes(word),"Section 15 employee panel missing "+word);
+}
+const s15team=vm.runInNewContext(decl("STAFF", "];")+"\nSTAFF");
+assert.equal(s15team.length,5);
+assert.deepEqual(Array.from(s15team,x=>x.id),["sales","mechanic","driver","concierge","accountant"]);
+assert.deepEqual(Array.from(s15team,x=>x.cost),[24000,28000,22000,35000,38000]);
+assert.deepEqual(Array.from(s15team,x=>x.salary),[300,350,300,400,450]);
+const s15state={day:7,staff:["sales","mechanic"],cash:100000},s15before=JSON.stringify(s15state);
+const s15ctx={state:s15state,STAFF:s15team,staffFilter:"all",staffed:id=>s15state.staff.includes(id),
+ staffOverhead:()=>585,branchOverhead:()=>1500,freeCash:()=>85000,
+ money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),esc:v=>String(v),renderHeroArt:()=>'<svg class="hero-art"></svg>',
+ listBtn:(action,id,label,cls,attrs="")=>'<button data-action="'+action+'" data-id="'+id+'" '+attrs+'>'+label+'</button>'};
+const s15fn=vm.runInNewContext(s15src+"\nrenderStaff",s15ctx);
+const s15view=s15fn();
+for(const name of ["Sales Agent","Mechanic","Fleet Driver","Guest Concierge","Accountant"])assert.ok(s15view.includes(name),"Missing employee "+name);
+for(const n of [650,585,1500,2085,85000,24000,28000,22000,35000,38000])assert.ok(s15view.includes(s15ctx.money(n)),"Staff value missing "+n);
+assert.ok(s15view.includes('data-action="hire" data-id="sales" disabled')&&
+ s15view.includes('data-action="hire" data-id="driver"')&&
+ s15view.includes('aria-valuenow="2"')&&s15view.includes('style="width:40%"'),"Hiring controls or progress incorrect");
+s15ctx.staffFilter="available";
+const s15filtered=s15fn();
+assert.ok(!s15filtered.includes('aria-label="Sales Agent"')&&s15filtered.includes('aria-label="Fleet Driver"'),"Hiring status filter incorrect");
+assert.equal(JSON.stringify(s15state),s15before,"Rendering must not mutate employee saves");
+assert.ok(js.includes("function hire(id){let x=STAFF.find(v=>v.id===id);if(!x||staffed(id))return;if(!spend(x.cost,")&&
+ js.includes("state.staff.push(id)")&&
+ js.includes("function staffOverhead(){return round(STAFF.filter")&&
+ js.includes("const total=staffOverhead()+branchOverhead();")&&
+ js.includes("if(modal==='staffhire')")&&
+ js.includes("if(action==='confirmhire'){modal=null;hire(id);afterAction();return;}")&&
+ js.includes("s.version!==3"),"Staff transaction, payroll or save rules changed");
+console.log("PASS: Section 15 employee roster, hiring confirmation, real wages/effects and save-safe display.");

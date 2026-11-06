@@ -3056,6 +3056,81 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 @media(max-width:370px){.branch-v14-card-top{gap:5px}.branch-v14-card-icon{width:44px;height:46px;flex-basis:44px;font-size:26px}.branch-v14-card-top h4{font-size:16px}.branch-v14-card-top .pill{font-size:8px}.branch-v14-stat{gap:4px}.branch-v14-stat>span{font-size:18px}.branch-v14-stat strong{font-size:14px}}
 </style>
+
+<style id="ctr-staff-section-15">
+/* Section 15: premium Staff team, scoped to staff view. */
+.staff-v15{display:grid;gap:13px;min-width:0}
+.staff-v15-hero{position:relative;min-height:170px;display:grid;grid-template-columns:minmax(0,1fr) 110px;align-items:center;gap:12px;overflow:hidden;padding:20px;border-radius:21px;border:1px solid #59caff;background:linear-gradient(120deg,#07407a,#0c5591 60%,#142a64);box-shadow:0 13px 29px #0009,inset 0 1px #d3f5ff6c}
+.staff-v15-sky{position:absolute;inset:0;opacity:.3;pointer-events:none}.staff-v15-sky .hero-art{width:100%;height:100%;object-fit:cover}
+.staff-v15-hero-copy{position:relative;z-index:2;min-width:0}
+.staff-v15-kicker{color:#ffe183;font-size:10px;font-weight:950;letter-spacing:1.6px;text-transform:uppercase}
+.staff-v15-hero h2{font:950 clamp(25px,3vw,38px)/1.1 'Trebuchet MS','Segoe UI',sans-serif;color:white;margin:6px 0;text-shadow:0 3px 7px #00152d}
+.staff-v15-hero p{font-size:12px;color:#d2edfa;max-width:650px;line-height:1.5;margin:0}
+.staff-v15-hero-emoji{z-index:1;position:relative;display:grid;place-items:center;width:110px;height:110px;border-radius:24px;border:2px solid #ffe17f;background:radial-gradient(circle,#5bcef8a8,#173e76);box-shadow:0 9px 22px #0008,inset 0 1px #fff8d8a8;font-size:60px}
+.staff-v15-progress{display:flex;align-items:center;gap:8px;color:#effbff;font-weight:900;font-size:10px;margin-top:12px;max-width:500px}
+.staff-v15-progress-bar{height:10px;min-width:20px;flex:1;border-radius:99px;border:1px solid #67bdeb;background:#081f3e;overflow:hidden}
+.staff-v15-progress-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#eda918,#ffec95);box-shadow:0 0 12px #ffe483a8}
+.staff-v15-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.staff-v15-kpi{display:flex;gap:9px;align-items:center;min-width:0;border:1px solid #3b97cb;border-radius:15px;background:linear-gradient(140deg,#124d7c,#0b2447);box-shadow:inset 0 1px #d7faff3d,0 7px 16px #0006;padding:12px}
+.staff-v15-kpi:nth-child(2){border-color:#e7c362;background:linear-gradient(140deg,#5b4921,#123057)}
+.staff-v15-kpi:nth-child(3){border-color:#45cda9;background:linear-gradient(140deg,#0b625b,#102f51)}
+.staff-v15-kpi:nth-child(4){border-color:#ae7ddd;background:linear-gradient(140deg,#453470,#0a264d)}
+.staff-v15-kpi>span{font-size:24px;line-height:1}
+.staff-v15-kpi small{display:block;color:#c2ddf0;font-size:9px;font-weight:900;text-transform:uppercase}
+.staff-v15-kpi strong{display:block;color:#ffdf7c;font-weight:950;font-size:clamp(15px,1.8vw,24px);margin:5px 0;overflow-wrap:anywhere}
+.staff-v15-kpi em{display:block;color:#c4e1ef;font-size:9px;font-style:normal}
+.staff-v15-roster,.staff-v15-payroll,.staff-v15-active{min-width:0;border:1px solid #3d8fc6;border-radius:20px;background:linear-gradient(155deg,#10365f,#081e40 80%);box-shadow:0 12px 25px #0008;padding:16px}
+.staff-v15-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:13px}
+.staff-v15-head h3,.staff-v15-payroll h3,.staff-v15-active h3{font:950 clamp(21px,2.6vw,29px)/1.1 'Trebuchet MS','Segoe UI',sans-serif;color:white;margin:5px 0}
+.staff-v15-head p{font-size:11px;color:#c0deed;margin:4px 0;line-height:1.45}
+.staff-v15-filters{display:flex;gap:8px;overflow-x:auto;padding:0 0 13px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.staff-v15-filter{flex:0 0 auto;min-height:40px;border:1px solid #428aca;border-radius:12px;background:linear-gradient(#155687,#0b2f56);color:#def2ff;padding:8px 13px;font-size:12px;font-weight:950;cursor:pointer}
+.staff-v15-filter.active{border-color:#ffe38a;background:linear-gradient(#fff29c,#eab327);color:#261c00;box-shadow:0 4px 10px #b2833555}
+.staff-v15-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.staff-v15-card{min-width:0;display:flex;flex-direction:column;border:1px solid #3b8cba;border-radius:18px;background:linear-gradient(145deg,#123f6b,#082044);box-shadow:0 9px 21px #0009;overflow:hidden}
+.staff-v15-card.hired{border-color:#45dfb2;box-shadow:0 8px 22px #0008,inset 0 0 0 1px #45dfb133}
+.staff-v15-portrait{position:relative;display:grid;place-items:center;height:154px;background:radial-gradient(circle at 50% 50%,#399ad08f,#164878 61%,#0a2c53);border-bottom:2px solid #347eb0;overflow:hidden}
+.staff-v15-portrait:after{content:'';position:absolute;bottom:-35px;left:-15%;right:-15%;height:76px;transform:perspective(140px) rotateX(25deg);background:repeating-linear-gradient(90deg,#d2f2ff1e 0 2px,transparent 2px 40px),linear-gradient(#2c6592,#0a2d55);border-top:1px solid #cdefff55}
+.staff-v15-avatar{z-index:2;display:grid;place-items:center;font-size:57px;width:105px;height:105px;border:2px solid #89dcff;border-radius:28px;background:linear-gradient(#307aab,#102d5a);box-shadow:0 12px 23px #000a,inset 0 2px #e2f9ff7a}
+.staff-v15-card.hired .staff-v15-avatar{border-color:#ffe28a;background:linear-gradient(#236e75,#0f3758)}
+.staff-v15-pill{position:absolute;right:10px;top:11px;z-index:3;font-size:9px;color:white;font-weight:950;background:#07416dcc;border-radius:9px;padding:6px 8px;border:1px solid #69beec}
+.staff-v15-card.hired .staff-v15-pill{background:#086b52e0;border-color:#48ffc1}
+.staff-v15-body{display:flex;flex-direction:column;flex:1;gap:10px;padding:13px}
+.staff-v15-role{color:#ffdd80;font-size:9px;font-weight:950;letter-spacing:1px}
+.staff-v15-body h4{font:950 clamp(17px,1.8vw,23px)/1.15 'Trebuchet MS','Segoe UI',sans-serif;color:white;margin:4px 0}
+.staff-v15-sub{font-size:10px;color:#c0dbeb}
+.staff-v15-benefit{border:1px solid #347da5;background:#0b3051;border-radius:12px;padding:10px;min-height:83px;display:grid;align-content:start;gap:6px}
+.staff-v15-benefit small{color:#9ee6fb;font-weight:950;font-size:9px;letter-spacing:.8px}
+.staff-v15-benefit b{font-size:12px;color:white;line-height:1.4}
+.staff-v15-card.hired .staff-v15-benefit{background:#0b4749;border-color:#4abd9a}
+.staff-v15-costs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.staff-v15-cost{border:1px solid #33698e;border-radius:10px;background:#091f3c;padding:9px;min-width:0}
+.staff-v15-cost small{display:block;color:#b8d7e8;font-size:9px}
+.staff-v15-cost strong{display:block;margin-top:6px;color:#ffe17f;font-weight:950;font-size:clamp(13px,1.5vw,19px);overflow-wrap:anywhere}
+.staff-v15-cost.salary strong{color:#e5f6ff}
+.staff-v15-action{display:grid;gap:7px;margin-top:auto}
+.staff-v15-action .btn{width:100%;min-height:45px;font-weight:950;white-space:normal;font-size:12px}
+.staff-v15 .staff-v15-action .btn.primary:not(:disabled){background:linear-gradient(#fff3a5,#ffcc3d 53%,#eaa30c);border:1px solid #ffdf78;box-shadow:inset 0 2px #fffcca,0 4px 0 #8a5300,0 7px 15px #0008;text-shadow:none;color:#281a03}
+.staff-v15-action .btn:disabled{opacity:.63}
+.staff-v15-hint{font-size:10px;text-align:center;color:#bbd8e9;line-height:1.3}
+.staff-v15-lower{display:grid;grid-template-columns:minmax(0,1.17fr) minmax(0,.83fr);gap:12px}
+.staff-v15-payrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #4986b155;font-size:12px;color:#c9e2f1}
+.staff-v15-payrow:last-of-type{border-bottom:0}
+.staff-v15-payrow b{font-size:14px;color:white;text-align:right}
+.staff-v15-payrow.emphasis b{font-size:20px;color:#ffde81}
+.staff-v15-note{font-size:10px;color:#bfd9ea;line-height:1.55;margin:12px 0 0}
+.staff-v15-active-list{display:grid;gap:8px;margin-top:11px}
+.staff-v15-active-item{display:flex;gap:9px;align-items:start;border:1px solid #3b77a4;border-radius:12px;background:#0c2f4f;padding:9px}
+.staff-v15-active-item>span{font-size:23px}.staff-v15-active-item b{display:block;color:white;font-size:12px}.staff-v15-active-item small{display:block;color:#b6d5e7;font-size:10px;line-height:1.4;margin-top:4px}
+.staff-v15-empty{padding:17px;border:1px dashed #529bd0;border-radius:11px;color:#c7deed;font-size:11px;background:#0a2b4f}
+.staff-v15-modal-employee{display:flex;gap:12px;align-items:center;padding:13px;border:1px solid #4d93c3;border-radius:13px;background:linear-gradient(120deg,#124b75,#08284a)}
+.staff-v15-modal-employee>span{font-size:42px}.staff-v15-modal-employee b{display:block;color:white;font-size:16px}.staff-v15-modal-employee small{display:block;color:#c4dfed;font-size:11px;margin-top:5px}
+.staff-v15-modal-values{display:grid;gap:9px;margin-top:13px}.staff-v15-modal-values>div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #52789b88;color:#cbe3ee;font-size:12px}.staff-v15-modal-values b{color:#ffdd82}
+@media(max-width:1130px){.staff-v15-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-v15-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:770px){.staff-v15-grid,.staff-v15-lower{grid-template-columns:1fr}}
+@media(max-width:640px){.staff-v15{gap:10px}.staff-v15-hero{grid-template-columns:minmax(0,1fr) 64px;padding:12px;min-height:135px;border-radius:16px}.staff-v15-hero h2{font-size:23px}.staff-v15-hero-emoji{width:62px;height:65px;font-size:34px;border-radius:17px}.staff-v15-hero p{font-size:10px}.staff-v15-progress{font-size:9px}.staff-v15-kpi{gap:6px;padding:9px;min-height:76px}.staff-v15-kpi>span{font-size:20px}.staff-v15-kpi strong{font-size:16px}.staff-v15-kpi small{font-size:8px}.staff-v15-roster,.staff-v15-payroll,.staff-v15-active{padding:12px}.staff-v15-grid{grid-template-columns:1fr}.staff-v15-portrait{height:142px}.staff-v15-avatar{width:91px;height:93px;font-size:50px}.staff-v15-body{padding:11px}}
+@media(max-width:360px){.staff-v15-kpi{gap:4px;padding:8px}.staff-v15-kpi>span{font-size:16px}.staff-v15-kpi strong{font-size:13px}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -3259,7 +3334,7 @@ function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empt
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
-let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',workshopFilter='all',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSearch='',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
+let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',workshopFilter='all',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,staffFilter='all',dealerClass='all',dealerSearch='',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
 function note(msg,kind='good'){if(offlineSimulation)return;state.log.unshift({id:uid('log'),at:now(),text:msg,kind});state.log=state.log.slice(0,35);}
 function arcadeFx(label,value='',unlock=false){
@@ -4344,11 +4419,31 @@ function renderContracts(){
   </article>`;}).join('')}</div>`;
 }
 function renderStaff(){
- const wage=STAFF.filter(x=>staffed(x.id)).reduce((a,x)=>a+x.salary,0);
- return `${compactInfoPanel("lead-operations-team","👥 A great team makes every trip better.","Hire specialists once to improve bookings, fuel use, vehicle wear and finances. Staff salaries are charged once every ten real minutes when a game day ends.")}
- <div class="biz-strip"><span><b>${state.staff.length}/${STAFF.length}</b> team members</span><span><b>${money(wage)}</b> salaries per game day</span><span><b>${state.day}</b> current company day</span></div>
- <div class="biz-grid3">${STAFF.map(x=>`<article class="biz-card staff-card"><div class="biz-card-head"><span class="biz-round">${x.icon}</span><span class="pill ${staffed(x.id)?'green':'blue'}">${staffed(x.id)?'HIRED':'AVAILABLE'}</span></div><h3>${esc(x.name)}</h3><p class="biz-desc">${esc(x.desc)}</p><div class="biz-data-line"><span>One-time hiring cost</span><b>${money(x.cost)}</b></div><div class="biz-data-line"><span>Daily salary</span><b>${money(x.salary)}</b></div><div class="biz-divider"></div>${listBtn('hire',x.id,staffed(x.id)?'✓ On your team':'Hire '+x.name,'btn block '+(staffed(x.id)?'ghost':'primary'),staffed(x.id)||freeCash()<x.cost?'disabled':'')}</article>`).join('')}</div>
- <div class="biz-foot-note"><span>💡</span><div><b>Saving vs. spending</b><p>The Mechanic reduces wear from returns, the Driver reduces fuel consumed, and the Accountant reduces loan instalment costs by 10%. The Workshop and Car Wash are different: they eliminate their respective service costs entirely.</p></div></div>`;
+ const hired=STAFF.filter(x=>staffed(x.id)),available=STAFF.filter(x=>!staffed(x.id));
+ const gross=hired.reduce((sum,x)=>sum+x.salary,0),effective=staffOverhead(),companyDaily=effective+branchOverhead(),cash=freeCash();
+ const roleLabels={sales:'CUSTOMER BOOKINGS',mechanic:'VEHICLE MAINTENANCE',driver:'FUEL EFFICIENCY',concierge:'GUEST EXPERIENCE',accountant:'BUSINESS FINANCE'};
+ const shown=STAFF.filter(x=>staffFilter==='all'||(staffFilter==='hired'&&staffed(x.id))||(staffFilter==='available'&&!staffed(x.id)));
+ return `<div class="staff-v15">
+ <section class="staff-v15-hero"><div class="staff-v15-sky" aria-hidden="true">${renderHeroArt()}</div><div class="staff-v15-hero-copy"><span class="staff-v15-kicker">✦ CAPE TOWN RENTALS · THE PEOPLE BEHIND YOUR FLEET</span><h2>Build your dream team</h2><p>Recruit specialists who keep your rental empire moving. The original skills, hiring prices and daily salaries are unchanged.</p><div class="staff-v15-progress"><span>TEAM PROGRESS</span><div class="staff-v15-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${STAFF.length}" aria-valuenow="${hired.length}"><i style="width:${Math.round(100*hired.length/STAFF.length)}%"></i></div><b>${hired.length} / ${STAFF.length}</b></div></div><div class="staff-v15-hero-emoji" aria-hidden="true">👥</div></section>
+ <div class="staff-v15-kpis">
+  <div class="staff-v15-kpi"><span>🤝</span><div><small>Team members</small><strong>${hired.length} / ${STAFF.length}</strong><em>${available.length} roles to fill</em></div></div>
+  <div class="staff-v15-kpi"><span>💰</span><div><small>Base daily salaries</small><strong>${money(gross)}</strong><em>Before operations perks</em></div></div>
+  <div class="staff-v15-kpi"><span>📋</span><div><small>Actual staff payroll</small><strong>${money(effective)}</strong><em>After existing discounts</em></div></div>
+  <div class="staff-v15-kpi"><span>💳</span><div><small>Available to hire</small><strong>${money(cash)}</strong><em>Auction bids excluded</em></div></div>
+ </div>
+ <section class="staff-v15-roster"><div class="staff-v15-head"><div><span class="staff-v15-kicker">MANAGE YOUR TEAM</span><h3>Meet the specialists</h3><p>Inspect each role's benefit, one-time hiring cost, salary and employment status.</p></div><span class="pill ${available.length?'blue':'green'}">${available.length?'HIRING OPEN':'FULL TEAM'}</span></div>
+ <div class="staff-v15-filters" role="group" aria-label="Staff roster filters">${[['all','👥 All',STAFF.length],['hired','✓ Hired',hired.length],['available','＋ Available',available.length]].map(([id,label,n])=>`<button type="button" class="staff-v15-filter ${staffFilter===id?'active':''}" data-action="stafffilter" data-id="${id}" aria-pressed="${staffFilter===id}">${label} · ${n}</button>`).join('')}</div>
+ ${shown.length?`<div class="staff-v15-grid">${shown.map(x=>{const on=staffed(x.id),affordable=cash>=x.cost;return `<article class="staff-v15-card ${on?'hired':'available'}" aria-label="${esc(x.name)}"><div class="staff-v15-portrait"><span class="staff-v15-pill">${on?'✓ HIRED':'AVAILABLE'}</span><div class="staff-v15-avatar" aria-hidden="true">${x.icon}</div></div>
+ <div class="staff-v15-body"><div><span class="staff-v15-role">${esc(roleLabels[x.id]||'OPERATIONS')}</span><h4>${esc(x.name)}</h4><div class="staff-v15-sub">${on?'Active in your company':'Ready to join the company'}</div></div>
+ <div class="staff-v15-benefit"><small>✦ ROLE BENEFIT</small><b>${esc(x.desc)}</b></div>
+ <div class="staff-v15-costs"><div class="staff-v15-cost"><small>One-time hiring</small><strong>${money(x.cost)}</strong></div><div class="staff-v15-cost salary"><small>Salary per game day</small><strong>${money(x.salary)}</strong></div></div>
+ <div class="staff-v15-action">${listBtn('hire',x.id,on?'✓ Already on your team':affordable?'＋ Hire '+x.name:'Insufficient cash','btn '+(on?'ghost':'primary'),on||!affordable?'disabled':'')}<span class="staff-v15-hint">${on?'Employee effect is active':affordable?'Confirm hiring details before purchase':'Earn more unreserved funds to hire'}</span></div></div></article>`;}).join('')}</div>`:'<div class="staff-v15-empty">No team members match this status. Select another filter.</div>'}
+ </section>
+ <div class="staff-v15-lower">
+ <section class="staff-v15-payroll"><span class="staff-v15-kicker">EMPLOYEE COSTS</span><h3>Daily payroll</h3><div class="staff-v15-payrow"><span>Base staff salaries</span><b>${money(gross)}</b></div><div class="staff-v15-payrow emphasis"><span>Actual staff payroll / day</span><b>${money(effective)}</b></div><div class="staff-v15-payrow"><span>Branch overhead / day (effective)</span><b>${money(branchOverhead())}</b></div><div class="staff-v15-payrow emphasis"><span>Company fixed overhead / day</span><b>${money(companyDaily)}</b></div><div class="staff-v15-payrow"><span>Next game-day charge</span><b>Day ${state.day+1}</b></div><p class="staff-v15-note">Salaries and branch upkeep are charged together at the end of each game day, roughly every ten real minutes. Premium Operations perks are already included in the effective totals. No money is moved by opening this page.</p></section>
+ <section class="staff-v15-active"><span class="staff-v15-kicker">YOUR ACTIVE EMPLOYEES</span><h3>Team benefits</h3><div class="staff-v15-active-list">${hired.length?hired.map(x=>`<div class="staff-v15-active-item"><span>${x.icon}</span><div><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></div></div>`).join(''):'<div class="staff-v15-empty">Once you hire an employee, their existing specialist effect will appear here.</div>'}</div></section>
+ </div>
+ </div>`;
 }
 function renderFinance(){
  const overhead=staffOverhead()+branchOverhead(),reserve=bidReserve(),debt=state.loans.reduce((a,l)=>a+Number(l.remaining||0),0),revenue=state.stats.earned,expenses=state.stats.spent,entries=state.ledger.filter(x=>financeFilter==='all'||(financeFilter==='income'?x.amount>=0:x.amount<0));
@@ -4453,6 +4548,14 @@ function renderModal(){if(!modal)return '';let title='',body='',actions='';
   body=t?'<div class="fleet-detail-hero"><div class="car-thumb"><img src="'+CAR_IMAGES[t.id]+'" alt="Vehicle"></div><div><strong>'+esc(t.name)+'</strong><div class="small muted">'+esc(t.category)+' · Reputation level '+t.unlock+'</div><div class="dealer-price">'+money(t.price)+'</div></div></div><p class="small muted mt-16">Delivery: <b>'+esc(DEST[branch]?.name||branch)+'</b><br>Available cash: <b>'+money(freeCash())+'</b><br>Fleet spaces: '+state.fleet.length+'/'+capacity+'</p><p class="small muted mt-12">Confirm to purchase using existing business funds. Auction reservations and saved-game records remain unchanged.</p>':'Vehicle no longer available.';
   actions=(allowed&&t?listBtn('confirmbuycar',t.id,'Confirm purchase · '+money(t.price),'btn primary'):'<span class="small muted">Purchase unavailable at this time.</span>')+btn('closemodal','Cancel','btn ghost');
  }
+if(modal==='staffhire'){
+ const x=STAFF.find(c=>c.id===modalCar),allowed=!!x&&!staffed(x.id)&&freeCash()>=x.cost;
+ title='Confirm employee hire';
+ body=x?`<div class="staff-v15-modal-employee"><span aria-hidden="true">${x.icon}</span><div><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></div></div>
+ <div class="staff-v15-modal-values"><div><span>One-time hiring cost</span><b>${money(x.cost)}</b></div><div><span>Base salary / game day</span><b>${money(x.salary)}</b></div><div><span>Available unreserved cash</span><b>${money(freeCash())}</b></div><div><span>Team size after hiring</span><b>${state.staff.length+1} / ${STAFF.length}</b></div></div>
+ <p class="small muted mt-12">Confirming charges the original hiring cost once and activates the employee's original benefit. Payroll still follows game-day and premium Operations rules.</p>`:'Employee unavailable.';
+ actions=(allowed?listBtn('confirmhire',x.id,'Confirm hire · '+money(x.cost),'btn primary'):'<span class="small muted">Hiring unavailable. Check cash and existing staff.</span>')+btn('closemodal','Cancel','btn ghost');
+}
 if(modal==='sell'){let c=state.fleet.find(x=>x.id===modalCar);title='Sell this vehicle?';body=c?`<div class="fleet-detail-hero"><div class="car-thumb"><img src="${CAR_IMAGES[c.type]}" alt="Car"></div><div><strong>${esc(typeOf(c.type).name)}</strong><div class="car-plate">${esc(c.plate)}</div><div class="dealer-price">Receive ${money(getResale(c))}</div></div></div><p class="small muted mt-16">Selling permanently removes the car from your fleet. Its resale price depends on its condition and tuning. Your other cars and progress remain unchanged.</p>`:'Vehicle no longer available.';actions=c?listBtn('confirmsell',c.id,'Confirm sale','btn danger')+btn('closemodal','Keep my car','btn ghost'):btn('closemodal','Close','btn');}
  if(modal==='reset'){title='Start a new company?';body='<p>This will delete your local saved game. Export a JSON backup first if you want to return to your progress later.</p>';actions=btn('confirmreset','Yes, reset my company','btn danger')+btn('closemodal','Cancel','btn ghost');}
  
@@ -4527,7 +4630,9 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='upgrade'){buyUpgrade(id);afterAction();return;}
  if(action==='branch'){buildBranch(id);afterAction();return;}
  if(action==='branchtransfer'){const el=document.querySelector('[data-role="branch-transfer-select"][data-id="'+id+'"]');if(!el?.value)return notify('Choose a parked vehicle to transfer.','bad');transferCar(el.value,id);afterAction();return;}
- if(action==='hire'){hire(id);afterAction();return;}
+ if(action==='stafffilter'){if(!['all','hired','available'].includes(id))return;staffFilter=id;render();return;}
+ if(action==='hire'){const x=STAFF.find(c=>c.id===id);if(!x||staffed(id))return;modalCar=id;modal='staffhire';render();return;}
+ if(action==='confirmhire'){modal=null;hire(id);afterAction();return;}
  if(action==='contract'){signContract(id);afterAction();return;}
  if(action==='loan'){takeLoan(id);afterAction();return;}
  if(action==='repayloan'){repayLoan(id);afterAction();return;}
