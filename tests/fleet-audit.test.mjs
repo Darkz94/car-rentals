@@ -115,7 +115,7 @@ assert.ok(!canServe("Tow", "Truck"), "No unapproved Tow cross-class substitution
 assert.ok(canServe("Donk", "Donk"), "Donk customer matching works");
 assert.ok(!canServe("Donk", "Muscle"), "No unapproved Donk substitutions");
 
-const engine = js.slice(js.indexOf("function makeAuction(){"), js.indexOf("const PREMIUM_MAX_LEVEL=100;"));
+const engine = js.slice(js.indexOf("function makeAuction(){"), js.indexOf("function achievementsProgress(a)"));
 assert.ok(engine.includes("function advancePlayerAuctions("));
 const testScript = [
   typeSource,
