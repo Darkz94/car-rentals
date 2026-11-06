@@ -799,4 +799,64 @@ assert.ok(!funcs10.renderMap(true).includes('data-action="zoomplus"'),"Dashboard
 assert.equal(JSON.stringify(state10),snapshot10,"Map mutated save data");
 console.log("PASS: Section 10 map, geometry, original car sprites, zoom/focus, transfers and save safety.");
 
+
+
+// Section 11: Business HQ premium presentation, verified financial values and safe navigation.
+assert.ok(html.includes('id="ctr-business-command-section-11"'),"Section 11 stylesheet missing");
+const v11s=js.indexOf("function renderCommand(){"),v11e=js.indexOf("\nfunction renderBusiness(){",v11s);
+const v11biz=js.slice(js.indexOf("function renderBusiness(){"),js.indexOf("\nfunction renderUpgrades(){"));
+assert.ok(v11s>=0&&v11e>v11s,"Section 11 Command Centre missing");
+const v11code=js.slice(v11s,v11e);
+for(const token of ["staffOverhead()","branchOverhead()","bidReserve()","freeCash()","state.rentals.reduce",
+ "state.loans.reduce","contractReports||{}","BRANCHES.filter","STAFF.filter","branchReport(b.id)",
+ "carReady","garageCapacity()","state.history.slice(-12)","state.ledger||[]","CAR_IMAGES[typeOf(heroVehicle.type).id]",
+ "renderHeroArt()","business-v11-hero","business-v11-kpi-grid","business-v11-link-grid","business-v11-branch-grid",
+ "business-v11-chart","business-v11-transactions","business-v11-task","business-v11-footer",
+ "data-group=\"business\"","data-id=\"finance\""]){
+ assert.ok(v11code.includes(token),"Section 11 business view missing "+token);
+}
+assert.ok(v11biz.includes("business-shell-v11")&&v11biz.includes("renderTabs('business',tabs)"),
+ "Business navigation and existing sub-tabs must remain");
+const mock11={
+ cash:120000,day:4,rep:5,branches:["hq"],fleet:[
+  {id:"car1",type:"limo",status:"available",branch:"hq"},
+  {id:"car2",type:"sedan",status:"rented",branch:"hq"}
+ ],rentals:[{id:"r1",payout:4200}],contracts:[],staff:["sales"],
+ loans:[{remaining:19000}],auction:{bidder:"You",playerBid:15000},
+ history:[1200,2400,900],ledger:[
+ {t:170000,amount:4200,label:"Rental returned · Family Jacobs"},
+ {t:160000,amount:-700,label:"Refuel"}
+ ],stats:{earned:70000,spent:25000},contractReports:{},branchReports:{hq:{count:8,revenue:26500}}
+};
+const mock11Before=JSON.stringify(mock11);
+const c11={
+ state:mock11,BRANCHES:[{id:"hq",name:"Cape Town HQ",upkeep:1500,price:0},{id:"stellenbosch",name:"Stellenbosch",upkeep:1900,price:350000}],
+ STAFF:[{id:"sales",name:"Sales Agent",salary:300},{id:"mechanic",name:"Mechanic",salary:350}],
+ CONTRACTS:[{id:"corporate",name:"Corporate"}],up:()=>false,
+ owned:id=>id==="hq",staffed:id=>id==="sales",carReady:c=>c.status==="available",
+ bidReserve:()=>15000,freeCash:()=>105000,staffOverhead:()=>300,branchOverhead:()=>1500,garageCapacity:()=>10,
+ branchReport:id=>mock11.branchReports[id]||{count:0,revenue:0},typeOf:c=>({id:c,name:c}),CAR_IMAGES:{limo:"assets/limo-side.webp"},
+ arcadeIcon:()=>"<svg></svg>",renderHeroArt:()=>"<svg class=\"hero-art\"></svg>",
+ money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),esc:s=>String(s).replaceAll('"',"&quot;"),
+ btn:(action,label,cls,extra="")=>'<button data-action="'+action+'" '+extra+'>'+label+'</button>'
+};
+const render11=vm.runInNewContext(v11code+"\nrenderCommand",c11);
+const markup11=render11();
+for(const k of ["BUSINESS","TOTAL COMPANY CASH","AVAILABLE MONEY","RENTALS TO COLLECT","OPERATING COST / DAY",
+ "COMPANY PERFORMANCE","Company Performance","Branch Performance","Recent Income","Recent Transactions"]){
+ assert.ok(markup11.toLowerCase().includes(k.toLowerCase()),"Section 11 text missing "+k);
+}
+for(const n of [120000,105000,4200,1800,15000,19000,26500]){
+ assert.ok(markup11.includes(c11.money(n)),"Section 11 financial number not shown: "+n);
+}
+assert.ok(markup11.includes('src="assets/limo-side.webp"'),"Existing vehicle art missing from Business HQ");
+assert.ok(markup11.includes("Rental returned · Family Jacobs")&&markup11.includes("Refuel"),"Saved ledger transactions must be shown");
+assert.ok(markup11.includes('data-id="upgrades"')&&markup11.includes('data-id="branches"')&&markup11.includes('data-id="finance"')&&markup11.includes('data-id="staff"')&&
+ markup11.includes('data-id="contracts"')&&markup11.includes('data-id="overview"')&&markup11.includes('data-id="map"'),"Business shortcuts must link to existing screens");
+assert.equal(JSON.stringify(mock11),mock11Before,"Business Command Centre must not mutate saves");
+assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReserve());}")&&
+ js.includes("function staffOverhead(){return round(STAFF.filter")&&
+ js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
+console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
