@@ -388,4 +388,71 @@ assert.equal(JSON.stringify(fleetTestState.fleet),fleetSnapshot,
  "Fleet shell must never mutate or sort the saved fleet");
 console.log("PASS: Section 3 Fleet shell, tab navigation, shared filters, active stats and save-safe rendering.");
 
+
+// Section 4: garage modes, status pills, parking artwork and safe inspection routing.
+assert.ok(html.includes('id="ctr-garage-section-04"'),"Section 4 Garage design CSS must ship offline");
+const garageV4Start=js.indexOf("function renderGarage(){");
+const garageV4End=js.indexOf("\nfunction fleetCard(",garageV4Start);
+const garageV4Body=js.slice(garageV4Start,garageV4End);
+for(const token of ["garage-v4","garage-capacity-line","garage-quick-filters","garage-compact-list-v4","garage-bay-grid-v4","garageDisplay==='list'?fleetCard(x):garageBayCard(x,state.fleet.indexOf(x))","garage-inspection-anchor","data-fleet-count","autoCareControl()","garage-ops-details"]){
+ assert.ok(garageV4Body.includes(token),"Garage Section 4 missing existing feature or view: "+token);
+}
+assert.ok(js.includes("garageDisplay='bays'")&&js.includes("if(action==='garageview')")&&js.includes("if(action==='garagefilter')"),
+ "Both new Garage view and quick status actions need live handlers");
+assert.ok(js.includes("document.getElementById('garage-inspection-anchor')?.scrollIntoView"),
+ "Inspect buttons should bring the selected vehicle into view");
+assert.ok(js.includes('data-role="garage-search"')&&js.includes('data-role="garage-sort"'),
+ "Section 3 search and sort must be preserved");
+
+const bayV4Start=js.indexOf("function garageBayCard("),bayV4End=js.indexOf("\nfunction garageEmptyBay(",bayV4Start);
+const quickV4Start=js.indexOf("function renderGarageQuickFilters("),quickV4End=js.indexOf("\nfunction renderGarage(){",quickV4Start);
+assert.ok(bayV4Start>=0&&bayV4End>bayV4Start&&quickV4Start>=0&&quickV4End>quickV4Start,
+ "Garage card and status filter renderers missing");
+const garageMockState={fleet:[
+ {id:"h",type:"hatch",status:"available",plate:"CPT 001",branch:"hq",fuel:82,condition:92,clean:100,tune:0},
+ {id:"l",type:"limo",status:"rented",plate:"CPT 002",branch:"hq",fuel:35,condition:70,clean:64,tune:0},
+ {id:"p",type:"partybus",status:"incident",plate:"CPT 003",branch:"hq",fuel:12,condition:18,clean:20,tune:0}
+]};
+const garageMock={
+ state:garageMockState,selectedCar:"h",garageStatus:"all",
+ CAR_IMAGES:{hatch:"assets/city-hatch-side.png",limo:"assets/limo-side.webp",partybus:"assets/partybus-side.webp"},
+ DEST:{hq:{name:"Cape Town HQ"}},typeOf:id=>({id,name:id==="limo"?"Limo":id==="partybus"?"Party Bus":"Hatchback",category:id}),
+ carReady:c=>c.status==="available"&&c.condition>=35&&c.fuel>=15,
+ vehicleNeedsAttention:c=>c.status==="incident"||(c.status==="available"&&c.fuel<25),
+ esc:value=>String(value).replace(/"/g,"&quot;"),round:Math.round,money:value=>"R"+value,
+ paintFilter:()=>"none",listBtn:(action,id,label,style)=>'<button data-action="'+action+'" data-id="'+id+'">'+label+"</button>"
+};
+const bayRenderer=vm.runInNewContext(js.slice(bayV4Start,bayV4End)+"\ngarageBayCard",garageMock);
+const readyBay=bayRenderer(garageMockState.fleet[0],0);
+const hiredBay=bayRenderer(garageMockState.fleet[1],1);
+const incidentBay=bayRenderer(garageMockState.fleet[2],2);
+assert.match(readyBay,/garage-bay-status--ready/,"Rental-ready bays should have teal status");
+assert.ok(readyBay.includes('src="assets/city-hatch-side.png"')&&readyBay.includes("CPT 001"),
+ "Selected bay must use the correct original vehicle artwork and plate");
+assert.ok(readyBay.includes('data-action="selectcar"')&&readyBay.includes('garage-bay-health-grid'),
+ "Selected bay must preserve inspect controls and condition bars");
+assert.ok(hiredBay.includes('src="assets/limo-side.webp"')&&hiredBay.includes("VEHICLE CURRENTLY AWAY"),
+ "An on-hire Limo remains in its garage bay with correct image and status");
+assert.ok(incidentBay.includes('src="assets/partybus-side.webp"')&&incidentBay.includes("RECOVERY NEEDED"),
+ "An incident Party Bus must keep its class artwork and recovery status");
+const quickRenderer=vm.runInNewContext(js.slice(quickV4Start,quickV4End)+"\nrenderGarageQuickFilters",garageMock);
+const chips=quickRenderer();
+assert.equal((chips.match(/data-action="garagefilter"/g)||[]).length,6,
+ "Six quick-filter chips must remain functional");
+for(const value of ["all","ready","care","out","incident","auction"])
+ assert.ok(chips.includes('data-id="'+value+'"'),"Quick filter missing "+value);
+const sortingStart=js.indexOf("function garageCars(){"),sortingEnd=js.indexOf("\nfunction visibleDealerCars(",sortingStart);
+const sortingCtx={state:garageMockState,garageStatus:"all",garageBranch:"all",garageSort:"type",
+ typeOf:garageMock.typeOf,carReady:garageMock.carReady,vehicleNeedsAttention:garageMock.vehicleNeedsAttention,
+ garageClassOrder:(a,b)=>["hatch","limo","partybus"].indexOf(a.type)-["hatch","limo","partybus"].indexOf(b.type)};
+const orderingTest=vm.runInNewContext(js.slice(sortingStart,sortingEnd)+"\ngarageCars",sortingCtx);
+const unsortedInput=[garageMockState.fleet[2],garageMockState.fleet[0],garageMockState.fleet[1]];
+sortingCtx.state={fleet:unsortedInput};
+const beforeOrder=unsortedInput.map(x=>x.id);
+const ordered=orderingTest();
+assert.deepEqual(Array.from(ordered,x=>x.id),["h","l","p"],"Garage display must sort by vehicle class");
+assert.deepEqual(unsortedInput.map(x=>x.id),beforeOrder,
+ "Garage sorting must not mutate saved fleet array");
+console.log("PASS: Section 4 Garage parking/list modes, six filters, class artwork, incident states and save-safe ordering.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
