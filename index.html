@@ -1584,7 +1584,234 @@ select option{background:#18234a;color:white}
 .fleet-overview .fleet-kpi strong{font-size:16px}
 .parking-count{font-size:8px}
 }
-</style></head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
+</style><style id="ctr-design-foundation-section-01">
+
+/* SECTION 01 OF 20 — DESIGN FOUNDATION.
+ * Shared visual tokens and shell only; all gameplay logic, save storage,
+ * rental economy, map, auction and vehicle source data remain untouched.
+ * The approved portrait dashboard mockup is the visual reference.
+ */
+:root {
+  color-scheme:dark;
+  --bg:#050e22;--surface:#0b1f3e;--surface2:#102b52;--surface3:#17365b;
+  --line:#3e78ad;--muted:#bdd4e9;--text:#f6faff;
+  --gold:#ffd25d;--orange:#ffab6a;--green:#74efc2;
+  --cyan:#55cfff;--red:#ff8eaa;--radius:18px;
+  --arcade-border:rgba(70,159,235,.66);
+  --arcade-gold-border:#ffe18a;
+  --arcade-panel:linear-gradient(148deg,#153d68 0%,#0b2850 34%,#081630 100%);
+  --arcade-panel-quiet:linear-gradient(156deg,#153457,#0a1b3a 70%,#0b1630);
+  --arcade-gold:linear-gradient(122deg,#fff1a0 0%,#ffd45d 42%,#ff9b57 100%);
+  --arcade-shadow:0 12px 24px #020817a8,inset 0 1px 0 #ffffff12;
+  --shadow:var(--arcade-shadow);
+}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(ellipse at 91% 3%,#25134fa3 0%,transparent 34%),
+    radial-gradient(ellipse at 8% 42%,#0b437c9c 0%,transparent 41%),
+    linear-gradient(180deg,#06102b,#030b1b 65%,#061631);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transparent 1px 140px);opacity:.35}
+.main{min-width:0}
+.eyebrow,.biz-eyebrow,.dealer-kicker{color:#7fe3ff;font-weight:900;letter-spacing:1.25px}
+.section-title{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;font-weight:900;letter-spacing:-.35px}
+.muted,.subtle{color:#bad0e5}
+.price,.money{color:#ffda75}
+.card,.listing,.garage-card,.dealer-card,.biz-card,.mission-card,.save-slot,.fleet-tile{
+  border-color:var(--arcade-border);
+  background:var(--arcade-panel-quiet);
+  box-shadow:var(--arcade-shadow);
+}
+.card,.listing,.garage-card,.dealer-card,.biz-card,.mission-card,.save-slot,.fleet-tile{border-radius:var(--radius)}
+.card:hover,.listing:hover,.garage-card:hover,.dealer-card:hover,.biz-card:hover,.fleet-tile:hover{border-color:#6cbaff}
+.card.pad,.card.pad-sm{box-sizing:border-box}
+.section-head{gap:9px}
+.divider{background:#4774a06b}
+.icon-avatar,.stat-icon,.car-thumb{background:radial-gradient(circle at 32% 25%,#3475aa,#152a4d 75%);border-color:#5b99ca}
+.pill{background:#15395b;color:#cdeaff;border:1px solid #4a88ad73;border-radius:10px}
+.pill.green{background:#103d42;color:#84ffcf;border-color:#287e81}
+.pill.orange{background:#4c3443;color:#ffdb8a;border-color:#8b6c74}
+.pill.red{background:#4a2943;color:#ffafc5;border-color:#955377}
+.pill.blue{background:#154365;color:#9feaff;border-color:#367eb4}
+.chip{background:linear-gradient(130deg,#14375e,#091d3b);border:1px solid #528bc4;color:#e2f5ff}
+.chip.cash{
+  background:var(--arcade-gold);color:#1c2342;
+  border:2px solid #ffedab;border-radius:18px;
+  box-shadow:0 4px 0 #a74e3d,0 10px 23px #f7a6523e,inset 0 1px 0 #fff9d6;
+  font-weight:950;font-variant-numeric:tabular-nums;
+}
+.btn,.tab,.garage-view-tabs button,.map-control button{
+  background:linear-gradient(155deg,#183d68,#0d2347 70%,#091a39);
+  border:1px solid #5e93cd;color:#f2f9ff;
+  border-radius:13px;box-shadow:0 4px 0 #07152e,0 8px 17px #0006,inset 0 1px 0 #ffffff16;
+  font-weight:850;
+}
+.btn:hover:not(:disabled),.tab:hover:not(:disabled){background:linear-gradient(145deg,#1c4b7a,#143358);border-color:#8ac6ff}
+.btn.primary,.tab.active{
+  color:#152342;background:var(--arcade-gold);border:1px solid #fff1ab;
+  box-shadow:0 4px 0 #ae5459,0 9px 20px #ffac6e35,inset 0 1px 0 #fff9d6;
+}
+.btn.primary:hover:not(:disabled){background:linear-gradient(122deg,#fff4b9,#ffd76c 48%,#ffaf6e)}
+.btn.green{background:linear-gradient(120deg,#b5ffe4,#55e5bb);border-color:#bcffeb;color:#092c34;box-shadow:0 4px 0 #267a74,0 9px 19px #34f6c52b}
+.btn.ghost{background:#112b4bdc;border-color:#4f86b1}
+.btn.danger{background:linear-gradient(150deg,#7c315b,#502c55);border-color:#d46e94;color:#ffe0e9}
+.btn:not(:disabled):active,.tab:not(:disabled):active{transform:translateY(2px);box-shadow:0 2px 8px #0008}
+.tab{min-height:38px}
+.meter,.mini-progress{background:#0b2549;border:1px solid #2e5b84}
+.meter span{background:linear-gradient(90deg,#5ae9be,#baffd3)}
+.mini-progress>span{background:linear-gradient(90deg,#ffb55a,#ffe077)}
+.notice,.compact-info-panel,.garage-bulk-details,.garage-ops-details,.map-caption-details{
+  border-color:#447cac;background:var(--arcade-panel-quiet);color:#d7ecf9;
+}
+.modal{border-color:#71a5d2;background:linear-gradient(155deg,#143b66,#091a3b 85%);color:var(--text)}
+.modal-backdrop{backdrop-filter:blur(8px)}
+:focus-visible,button:focus-visible,[role="button"]:focus-visible,summary:focus-visible{outline:3px solid #ffe48a;outline-offset:2px}
+/* Built-in components for the remaining 19 screen passes. */
+.arcade-tile,.arcade-kpi,.arcade-info-strip,.arcade-section-banner{
+  border:1px solid var(--arcade-border);border-radius:var(--radius);
+  background:var(--arcade-panel);box-shadow:var(--arcade-shadow)
+}
+.arcade-tile{min-height:76px;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.arcade-kpi{padding:11px;min-width:0}
+.arcade-info-strip{padding:10px 12px;display:flex;align-items:center;gap:10px}
+.arcade-section-banner{padding:10px 15px;border-top:3px solid var(--gold)}
+.arcade-tile-label{font-size:12px;font-weight:900;line-height:1.2;text-align:center}
+.arcade-kpi-value{font-weight:950;font-size:clamp(17px,4vw,28px);font-variant-numeric:tabular-nums}
+.arcade-status{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:9px;font-size:10px;font-weight:900;background:#103a60;border:1px solid #538ac3}
+.arcade-status--ready{color:#92ffd4;border-color:#38ad90;background:#123d43}
+.arcade-status--warning{color:#ffda85;border-color:#a37549;background:#473245}
+.arcade-status--danger{color:#ffadc7;border-color:#a55c7b;background:#452c49}
+/* Brand/command shell, shared by every page. */
+.topbar.arcade-header{
+  position:relative;isolation:isolate;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:9px 16px;align-items:center;
+  min-height:0;padding:13px 16px 11px;margin:8px 0 14px;
+  border:1px solid #477eb1;border-radius:18px;
+  background:radial-gradient(ellipse at 45% 0%,#2b5f9680 0%,transparent 61%),linear-gradient(135deg,#103967 0%,#0a234b 56%,#080f32 100%);
+  box-shadow:0 8px 28px #0208178c,inset 0 1px 0 #94ceff3a;
+  backdrop-filter:blur(10px);
+}
+.arcade-header::before{
+  content:"";pointer-events:none;position:absolute;z-index:-1;inset:0;
+  background:linear-gradient(180deg,transparent 38%,#0a2c5277 75%,#060e2bdb),
+    linear-gradient(140deg,#286fa480,#2353843a);
+  clip-path:polygon(0 66%,7% 58%,15% 61%,23% 44%,33% 48%,41% 48%,51% 51%,59% 36%,65% 52%,75% 59%,86% 43%,94% 58%,100% 49%,100% 100%,0 100%);
+  opacity:.65;
+}
+.arcade-identity{display:flex;align-items:center;gap:8px;min-width:0;position:relative}
+.arcade-brand-icon{display:grid;place-items:center;flex:none;width:43px;height:38px;font-size:27px;filter:drop-shadow(0 3px 3px #0009)}
+.arcade-brand-text{display:flex;flex-direction:column;min-width:0;line-height:.94;filter:drop-shadow(0 2px 4px #0009)}
+.arcade-brand-text b,.arcade-brand-text strong{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-style:italic;font-weight:1000;letter-spacing:-.6px;white-space:nowrap}
+.arcade-brand-text b{font-size:17px;color:#fff;text-shadow:0 1px 0 #67bcff}
+.arcade-brand-text strong{font-size:20px;color:#ffcb47;text-shadow:0 1px 0 #60390e}
+.arcade-brand-text small{font-size:7px;letter-spacing:1.2px;font-weight:850;color:#ccecff;margin-top:3px;white-space:nowrap}
+.arcade-header .topmeta{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap;min-width:0;position:relative}
+.arcade-header .chip.cash{padding:8px 12px;min-height:38px;font-size:clamp(12px,2.5vw,17px)}
+.arcade-header .arcade-settings{
+  min-width:37px;width:37px;height:37px;display:grid;place-items:center;
+  border-radius:50%;border:1px solid #68cbff;background:linear-gradient(145deg,#235c89,#091b40);
+  font-size:19px;color:#fff;box-shadow:0 3px 0 #05244b,0 5px 15px #0008;
+}
+.arcade-page-head{grid-column:1/-1;position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;border-top:1px solid #91cfff33;padding-top:8px;min-width:0}
+.arcade-page-copy{min-width:0}
+.arcade-page-head .eyebrow{font-size:9px;letter-spacing:1.2px;color:#8fe5ff}
+.arcade-page-head h1{margin:3px 0 0;font-size:clamp(19px,3.3vw,27px);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:1000;letter-spacing:-.7px;color:#ffe39c;text-shadow:0 3px 5px #0007}
+.arcade-rep-chip{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;flex:none;border:1px solid #4178ad;background:#0b2750c7;border-radius:12px;padding:5px 10px;color:#ffe283;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 #ffffff16}
+.arcade-rep-chip b{font-size:12px;white-space:nowrap}.arcade-rep-chip small{font-size:9px;font-weight:700;color:#d0e9ff;white-space:nowrap}
+.sidebar{background:linear-gradient(180deg,#091938,#08162f 56%,#050e22);border-color:#3c6a9c}
+.logo{border-color:#376b9e}.logo-title em{color:#ffd35b}
+.nav-btn{color:#d0e3f5;border-radius:13px}
+.nav-btn.active{border-color:#ffd881;color:#ffde8e;background:linear-gradient(120deg,#244977,#102a54);box-shadow:inset 4px 0 #ffd15e,0 5px 16px #0108208c}
+.mobile-nav{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+/* Handset portrait: use a dense two-row command bar and a six-slot gold dock. */
+@media (orientation:portrait) and (max-width:900px){
+  .app{display:block;max-width:100%;overflow-x:clip}
+  .sidebar{display:none!important}
+  .main{padding:0 10px calc(87px + env(safe-area-inset-bottom));max-width:100%;overflow-x:clip}
+  .topbar.arcade-header{
+    position:relative;top:auto;z-index:9;
+    margin:7px 0 11px;padding:9px 10px 10px;
+    min-height:0;gap:7px 5px;border-radius:16px;
+    grid-template-columns:minmax(0,1fr) auto;
+    background:radial-gradient(ellipse at 45% -10%,#2d74ac7c,transparent 65%),linear-gradient(135deg,#123b6e,#091839 72%,#090e2b)
+  }
+  .arcade-brand-icon{width:29px;height:30px;font-size:23px}
+  .arcade-identity{gap:4px}
+  .arcade-brand-text b{font-size:11.5px;letter-spacing:-.4px}
+  .arcade-brand-text strong{font-size:16px}
+  .arcade-brand-text small{font-size:6px;letter-spacing:.3px}
+  .arcade-header .topmeta{gap:5px;max-width:none;flex-wrap:nowrap}
+  .arcade-header .chip.weather{display:none!important}
+  .arcade-header .chip.cash{max-width:none;font-size:clamp(11px,3.3vw,14px);padding:6px 8px;min-height:35px;white-space:nowrap;border-radius:13px}
+  .arcade-header .arcade-settings{min-width:33px;width:33px;height:33px;font-size:18px;border-radius:11px}
+  .arcade-page-head{padding-top:7px;align-items:center}
+  .arcade-page-head .eyebrow{font-size:8px;letter-spacing:.65px}
+  .arcade-page-head h1{font-size:clamp(18px,5vw,24px);line-height:1.05;margin-top:2px}
+  .arcade-rep-chip{padding:5px 8px;border-radius:10px}
+  .arcade-rep-chip b{font-size:10px}
+  .arcade-rep-chip small{font-size:8px}
+  .grid,.grid-2,.grid-3,.grid-4,.two-thirds{gap:9px}
+  .mobile-nav{
+    display:grid!important;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:1px;align-items:stretch;
+    position:fixed;top:auto;bottom:0;left:0;right:0;
+    width:100%;height:auto;min-height:0;
+    padding:7px max(5px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));
+    border:1px solid #4caeff;border-bottom:0;border-radius:20px 20px 0 0;
+    background:linear-gradient(180deg,#092550f5,#06122a 70%);
+    box-shadow:0 -8px 26px #000a,inset 0 1px 0 #ffffff23;z-index:80
+  }
+  .mobile-nav button{
+    min-width:0;min-height:56px;padding:5px 1px 4px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    border:1px solid transparent;border-radius:14px;background:transparent;
+    box-shadow:none;color:#b6d2ed;font-size:9px;font-weight:850;line-height:1.1;
+    white-space:normal;overflow:hidden
+  }
+  .mobile-nav button span{display:block;font-size:23px;line-height:1.15;filter:drop-shadow(0 3px 2px #0008)}
+  .mobile-nav button.active{
+    color:#fff0c0;border-color:#ffdf79;
+    background:linear-gradient(150deg,#c48c36,#54401a 50%,#132e54 100%);
+    box-shadow:0 3px 0 #a8573a,0 0 13px #ffdc6e40,inset 0 1px 0 #fff4ba
+  }
+  .mobile-nav button.active span{filter:drop-shadow(0 2px 3px #ffdf9273)}
+  .card,.listing,.garage-card,.dealer-card,.biz-card{border-radius:15px}
+  .card.pad,.card.pad-sm{padding:11px}
+  .btn,.tab{border-radius:11px}
+  .btn{min-height:40px}
+  .section-title{font-size:16px}
+  .toast-stack{bottom:calc(80px + env(safe-area-inset-bottom))}
+}
+@media (orientation:portrait) and (max-width:365px){
+ .arcade-header .topmeta{gap:3px}
+ .arcade-header .chip.cash{font-size:11px;padding:6px}
+ .arcade-brand-text b{font-size:10px}.arcade-brand-text strong{font-size:14px}
+ .arcade-brand-icon{width:25px}
+ .mobile-nav button{font-size:8px;min-height:52px}
+ .mobile-nav button span{font-size:20px}
+}
+/* Keep the established Android landscape rail and compact landscape header. */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:820px){
+ .topbar.arcade-header{position:sticky;top:0;margin:0 -10px 8px;padding:6px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;min-height:47px;gap:5px}
+ .arcade-header .arcade-identity{display:none}
+ .arcade-header .arcade-page-head{grid-column:1;grid-row:1;border:0;padding:0;justify-content:flex-start}
+ .arcade-header .arcade-rep-chip,.arcade-header .arcade-page-head .eyebrow{display:none}
+ .arcade-header .topmeta{grid-column:2;grid-row:1}
+ .arcade-header .arcade-page-head h1{font-size:17px}
+ .arcade-header::before{opacity:.2}
+}
+@media(prefers-reduced-motion:reduce){
+ .btn,.tab,.mobile-nav button,.arcade-tile{transition:none!important;animation:none!important}
+}
+
+</style>
+</head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
 /* Distinct 2D side artwork for UI; roof sprites are kept solely for live maps. */
@@ -2550,7 +2777,14 @@ function renderModal(){if(!modal)return '';let title='',body='',actions='';
  return `<div class="modal-backdrop" data-action="closemodal"><div class="modal ${modal==='offline'?'modal-offline-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;
 }
 function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const main=activePage==='overview'?renderOverview():activePage==='fleet'?renderFleet():activePage==='map'?renderMapPage():activePage==='business'?renderBusiness():activePage==='events'?renderEvents():renderProgress();
- document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><div class="rotate-hint"><span class="phone-icon">📱</span>Landscape view recommended</div><header class="topbar"><div><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash">💰 ${money(state.cash)}</span>${btn('guide','?','btn-icon')}</div></header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${icon}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`;
+ document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><header class="topbar arcade-header">
+<div class="arcade-identity" aria-label="Cape Town Rentals">
+ <span class="arcade-brand-icon" aria-hidden="true">🏎️</span>
+ <span class="arcade-brand-text"><b>CAPE TOWN</b><strong>RENTALS</strong><small>CAR RENTAL TYCOON</small></span>
+</div>
+<div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash">💰 ${money(state.cash)}</span>${btn('guide','⚙','btn-icon arcade-settings','aria-label="Game guide" title="How to play"')}</div>
+<div class="arcade-page-head"><div class="arcade-page-copy"><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><span class="arcade-rep-chip" aria-label="Reputation level ${state.rep}, ${Math.floor(state.xp)} of ${repNeeded(state.rep)} experience points"><b>👑 LV ${state.rep}</b><small>${Math.floor(state.xp)} / ${repNeeded(state.rep)} XP</small></span></div>
+</header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${icon}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`;
  lastRenderedAt=now();shouldRepaint=false;
 }
 function afterAction(){save(true);render();}
