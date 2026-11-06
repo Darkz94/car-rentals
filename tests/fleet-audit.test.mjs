@@ -214,4 +214,21 @@ assert.ok(welcomeOnly.includes("Collect & continue")&&welcomeOnly.includes("clos
 assert.ok(offlineWelcomeSource.includes("modal-offline-compact"),"Offline-only modal style class must be selected");
 assert.ok(html.includes('id="ctr-offline-welcome-compact"'),"Compact modal CSS must be bundled");
 console.log("PASS: Compact offline welcome report retains metrics, Info disclosure and continue action.");
+
+const garageClassOrderSource=js.match(/function garageClassOrder\(a,b\)\{[^\n]*\}/)?.[0];
+const fleetInGarageOrderSource=js.match(/function fleetInGarageOrder\(cars\)\{[^\n]*\}/)?.[0];
+assert.ok(garageClassOrderSource&&fleetInGarageOrderSource,"Garage class-order helpers missing");
+const orderFleet=vm.runInNewContext(typeSource+"\n"+garageClassOrderSource+"\n"+fleetInGarageOrderSource+"\nfleetInGarageOrder");
+const unsortedCars=[{type:"hyper",id:"h"},{type:"bakkie",id:"b1"},{type:"hatch",id:"a"},{type:"sedan",id:"s"},{type:"bakkie",id:"b2"},{type:"jeep",id:"j"}];
+assert.deepEqual(Array.from(orderFleet(unsortedCars),x=>x.type),["hatch","sedan","bakkie","bakkie","jeep","hyper"],"Vehicle tabs must follow Garage class order");
+assert.deepEqual(Array.from(unsortedCars,x=>x.id),["h","b1","a","s","b2","j"],"Ordering must not mutate saved fleet data");
+assert.ok(js.includes("return garageClassOrder(a,b);"),"Garage must share class ordering");
+assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(x=>smallCar(x,{action:'care'}))"),"Workshop ordering mismatch");
+assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(c=>{let t=typeOf(c.type),cost="),"Performance ordering mismatch");
+assert.ok(js.includes("fleetInGarageOrder(free).map(c=>"),"Branch transfer ordering mismatch");
+assert.ok(js.includes("fleetInGarageOrder(state.fleet.filter(canListPlayerAuctionCar))"),"Owned auction ordering mismatch");
+assert.ok(js.includes('data-compact-info="garage-bulk-actions"')&&js.includes('data-compact-info="garage-operations"'),"Garage operations must be reachable");
+assert.ok(js.includes('data-compact-info="map-details"'),"Map details must remain reachable");
+assert.ok(html.includes('id="ctr-responsive-compact-v2"'),"Compact CSS missing");
+console.log("PASS: Garage vehicle ordering and responsive Info sections.");
 console.log("PASS: JavaScript syntax, 15 vehicle classes, 22 customers, all assets and 62 auction scenarios.");
