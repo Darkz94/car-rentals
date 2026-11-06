@@ -1457,6 +1457,33 @@ select option{background:#18234a;color:white}
 .rental-compact-route,.rental-compact-eta{font-size:10px}
 .rental-compact-duration{font-size:9px}
 }
+</style><style id="ctr-offline-welcome-compact">
+/* Compact the welcome-back report only; other game dialogs remain untouched. */
+.modal.modal-offline-compact{max-width:410px;width:100%;padding:17px 18px 16px;border-radius:19px;max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain}
+.modal-offline-compact>.eyebrow{font-size:9px;letter-spacing:1.5px}
+.modal-offline-compact>h2{font:700 25px/1.14 Georgia,serif;margin:6px 0 13px}
+.offline-compact-report{display:grid;gap:9px;min-width:0}
+.offline-compact-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;color:#c3d5da;font-size:11px}
+.offline-compact-meta b{color:#f9faf7}
+.offline-compact-net{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#122d40;border:1px solid #3b6074;border-radius:12px}
+.offline-compact-net>span{font-size:12px;font-weight:750;color:#d2e4e7}
+.offline-compact-net>strong{font-size:22px;line-height:1.1;overflow-wrap:anywhere;text-align:right}
+.offline-compact-finances{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.offline-compact-finances>div{display:grid;gap:5px;min-width:0;padding:9px 10px;background:#10283a;border:1px solid #345266;border-radius:11px}
+.offline-compact-finances span{color:#b9cdd6;font-size:10px;line-height:1.2}
+.offline-compact-finances b{font-size:15px;line-height:1.15;overflow-wrap:anywhere}
+.offline-compact-details{min-width:0;border:1px solid #39596c;border-radius:10px;background:#102739;overflow:hidden}
+.offline-compact-details summary{display:flex;justify-content:space-between;align-items:center;gap:8px;list-style:none;cursor:pointer;padding:9px 11px;font-size:11px;font-weight:800;color:#bde8ef}
+.offline-compact-details summary::-webkit-details-marker{display:none}
+.offline-compact-details summary span{transition:transform .18s}
+.offline-compact-details[open] summary span{transform:rotate(180deg)}
+.offline-compact-details summary:focus-visible{outline:2px solid #ffd898;outline-offset:-2px}
+.offline-compact-explanation{padding:4px 11px 9px;border-top:1px solid #39596c}
+.modal-offline-compact .offline-compact-explanation p{margin:7px 0;color:#bed0d6;font-size:11px;line-height:1.45}
+.modal-offline-compact .offline-compact-explanation p b{color:#f4e5ce}
+.modal-offline-compact>.btn-group.mt-16{margin-top:11px}
+.modal-offline-compact>.btn-group .btn{min-height:40px;padding:9px 12px;font-size:12px}
+@media(max-width:380px){.modal.modal-offline-compact{padding:14px 13px}.modal-offline-compact>h2{font-size:22px}.offline-compact-net>strong{font-size:19px}.offline-compact-finances b{font-size:13px}}
 </style></head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -2379,8 +2406,24 @@ ${autoDeskControl()}
 function renderModal(){if(!modal)return '';let title='',body='',actions='';
  if(modal==='offline'){
  const r=lastOfflineReport||state.lastOfflineReport;
- title='🌙 Welcome back to your fleet!';
- body=r?`<div class="offline-report"><div class="eyebrow">YOUR OFFLINE BUSINESS REPORT</div><p class="small muted">Time away: <b>${offlineHours(r.elapsed)}</b> · Counted: <b>${offlineHours(r.covered)}</b> (12-hour cap)</p><div class="offline-report-grid"><div><small>🚘 Returned rentals</small><b>${r.rentals}</b></div><div><small>💵 Rental income & rewards</small><b class="positive">+${money(r.revenue)}</b></div><div><small>🛠️ Fleet care & overheads</small><b class="negative">−${money(r.expenses)}</b></div><div><small>📈 Net change</small><b class="${r.net>=0?'positive':'negative'}">${r.net>=0?'+':'−'}${money(Math.abs(r.net))}</b></div></div><p class="small muted">${r.qualified?`Your Auto-Dispatch Desk handled ${r.simulated} simulated hires. Each was paid only after the 20-second to 5-minute return.`:'No extra idle hires generated: keep the Auto-Dispatch Desk owned and enabled to earn while away.'} Real fuel, service, towing and capped running costs still apply.</p></div>`:'';
+ title='🌙 Welcome back!';
+ body=r?`<div class="offline-compact-report">
+  <div class="offline-compact-meta"><span>⏱️ ${offlineHours(r.elapsed)} away</span><span>🚘 <b>${r.rentals}</b> rentals returned</span></div>
+  <div class="offline-compact-net"><span>📈 Net change</span><strong class="${r.net>=0?'positive':'negative'}">${r.net>=0?'+':'−'}${money(Math.abs(r.net))}</strong></div>
+  <div class="offline-compact-finances">
+    <div><span>💵 Income & rewards</span><b class="positive">+${money(r.revenue)}</b></div>
+    <div><span>🛠️ Care & overheads</span><b class="negative">−${money(r.expenses)}</b></div>
+  </div>
+  <details class="offline-compact-details" data-compact-info="offline-return-report" ${openInfoPanels.has('offline-return-report')?'open':''}>
+    <summary>ⓘ Info <span aria-hidden="true">⌄</span></summary>
+    <div class="offline-compact-explanation">
+      <p><b>Time away:</b> ${offlineHours(r.elapsed)} · <b>Counted:</b> ${offlineHours(r.covered)} (maximum 12 hours).</p>
+      <p><b>Completed rentals:</b> ${r.rentals}, including hires already on the road.</p>
+      <p>${r.qualified?`Your Auto-Dispatch Desk handled ${r.simulated} simulated hires. Each pays only once the car returns from its 20-second to 5-minute trip.`:'No additional idle hires were generated. Keep Auto-Dispatch Desk owned and enabled to earn while away.'}</p>
+      <p>Fuel, servicing, towing and capped running costs still apply. Income and costs are already included in the net change above.</p>
+    </div>
+  </details>
+ </div>`:'';
  actions=btn('closemodal','Collect & continue','btn primary block');
  }
  if(modal==='guide'){title='How to play';body=`<div class="step"><span class="step-num">1</span><p>Go to <b>Dashboard</b>, choose a customer and press <b>Rent now</b>. The correct ready car is automatically selected.</p></div><div class="step"><span class="step-num">2</span><p>Watch the trip on <b>Live Map</b>. The customer pays after <b>20 seconds to 5 minutes</b> when the car returns.</p></div><div class="step"><span class="step-num">3</span><p>Use <b>Fleet</b> to refuel, wash and service your vehicles. Only parked cars can be maintained.</p></div><div class="step"><span class="step-num">4</span><p>In <b>Business</b>, buy a <b>Workshop</b> to make servicing and repairs free. Buy the <b>Car Wash</b> for free washing.</p></div><div class="step"><span class="step-num">5</span><p>Expand into branches, hire staff, sign contracts, win auctions and unlock prestige vehicles.</p></div>`;actions=btn('closemodal','Start playing','btn primary block');}
@@ -2388,7 +2431,7 @@ function renderModal(){if(!modal)return '';let title='',body='',actions='';
  if(modal==='sell'){let c=state.fleet.find(x=>x.id===modalCar);title='Sell this vehicle?';body=c?`<div class="fleet-detail-hero"><div class="car-thumb"><img src="${CAR_IMAGES[c.type]}" alt="Car"></div><div><strong>${esc(typeOf(c.type).name)}</strong><div class="car-plate">${esc(c.plate)}</div><div class="dealer-price">Receive ${money(getResale(c))}</div></div></div><p class="small muted mt-16">Selling permanently removes the car from your fleet. Its resale price depends on its condition and tuning. Your other cars and progress remain unchanged.</p>`:'Vehicle no longer available.';actions=c?listBtn('confirmsell',c.id,'Confirm sale','btn danger')+btn('closemodal','Keep my car','btn ghost'):btn('closemodal','Close','btn');}
  if(modal==='reset'){title='Start a new company?';body='<p>This will delete your local saved game. Export a JSON backup first if you want to return to your progress later.</p>';actions=btn('confirmreset','Yes, reset my company','btn danger')+btn('closemodal','Cancel','btn ghost');}
  if(modal==='prestige'){title='Begin a prestige run?';body='<p>This will reset your cash, fleet, branches, contracts and other progress in exchange for '+prestigeReward(state.prestige+1)+' permanent prestige points. Your purchased perks remain. Save a backup first.</p>';actions=btn('confirmprestige','Confirm prestige','btn primary')+btn('closemodal','Cancel','btn ghost');}
- return `<div class="modal-backdrop" data-action="closemodal"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;
+ return `<div class="modal-backdrop" data-action="closemodal"><div class="modal ${modal==='offline'?'modal-offline-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;
 }
 function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const main=activePage==='overview'?renderOverview():activePage==='fleet'?renderFleet():activePage==='map'?renderMapPage():activePage==='business'?renderBusiness():activePage==='events'?renderEvents():renderProgress();
  document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><div class="rotate-hint"><span class="phone-icon">📱</span>Landscape view recommended</div><header class="topbar"><div><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash">💰 ${money(state.cash)}</span>${btn('guide','?','btn-icon')}</div></header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${icon}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`;

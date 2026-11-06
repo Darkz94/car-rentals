@@ -202,4 +202,16 @@ assert.ok(compactRentalCard.includes('data-rental-progress='),"Rental progress b
 assert.ok(compactRentalCard.includes('formatTripTime('),"Rental total duration must remain visible");
 assert.ok(!compactRentalCard.includes('Money arrives automatically'),"Redundant rental payment notice must stay removed");
 console.log("PASS: Compact rental cards preserve countdown, progress, and duration.");
+
+const offlineWelcomeSource=js.slice(js.indexOf("function renderModal(){"),js.indexOf("function render(){"));
+const welcomeOnly=offlineWelcomeSource.slice(offlineWelcomeSource.indexOf("if(modal==='offline')"),offlineWelcomeSource.indexOf("if(modal==='guide')"));
+assert.ok(welcomeOnly.includes("offline-compact-report"),"Offline modal should use a compact summary");
+assert.ok(welcomeOnly.includes("offline-compact-net")&&welcomeOnly.includes("r.net"),"Net change must stay prominent");
+assert.ok(welcomeOnly.includes("r.revenue")&&welcomeOnly.includes("r.expenses")&&welcomeOnly.includes("r.rentals"),"All report totals must stay visible");
+assert.ok(welcomeOnly.includes('<details')&&welcomeOnly.includes('data-compact-info="offline-return-report"'),"Info must expand using the existing persisted details control");
+assert.ok(welcomeOnly.indexOf('r.qualified?')>welcomeOnly.indexOf('<details'),"Offline calculation explanation must only appear under Info");
+assert.ok(welcomeOnly.includes("Collect & continue")&&welcomeOnly.includes("closemodal"),"Return-to-game action must remain available");
+assert.ok(offlineWelcomeSource.includes("modal-offline-compact"),"Offline-only modal style class must be selected");
+assert.ok(html.includes('id="ctr-offline-welcome-compact"'),"Compact modal CSS must be bundled");
+console.log("PASS: Compact offline welcome report retains metrics, Info disclosure and continue action.");
 console.log("PASS: JavaScript syntax, 15 vehicle classes, 22 customers, all assets and 62 auction scenarios.");
