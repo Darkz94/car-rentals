@@ -154,4 +154,22 @@ const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
 assert.equal(successful, 62, "Failed auction bidding, owned-sale or protection scenarios");
+// Verify the Reputation curve from a new Reputation 2 save: 300 normal returns.
+const repSource = js.match(/function repNeeded\(level\)\{[^\n]*\}/)?.[0];
+const awardSource = js.match(/function awardRepXP\(amount\)\{[^\n]*\}/)?.[0];
+assert.ok(repSource && awardSource, "Reputation progression functions missing");
+const repNeeded = vm.runInNewContext(repSource + "\nrepNeeded");
+const requiredRentals = Array.from({length:8}, (_,i) => repNeeded(i+2)/10);
+assert.deepEqual(requiredRentals, [20,25,30,35,40,45,50,55],
+  "Reputation level requirements must increase progressively");
+assert.equal(requiredRentals.reduce((a,b)=>a+b,0), 300, "Reputation 2 to 10 should require 300 unboosted rentals");
+const progressState={rep:2,xp:0};
+const awardRepXP=vm.runInNewContext(repSource+"\n"+awardSource+"\nawardRepXP",
+  {state:progressState,note:()=>{}});
+for(let i=0;i<299;i++)awardRepXP(10);
+assert.equal(progressState.rep,9, "299 rentals should not reach Reputation 10");
+awardRepXP(10);
+assert.equal(progressState.rep,10, "300 rentals should reach Reputation 10");
+assert.equal(progressState.xp,0, "XP should reset on the exact Reputation 10 threshold");
+console.log("PASS: Reputation 2 to 10 needs exactly 300 base-XP rentals.");
 console.log("PASS: JavaScript syntax, 15 vehicle classes, 22 customers, all assets and 62 auction scenarios.");
