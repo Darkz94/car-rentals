@@ -154,6 +154,27 @@ const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
 assert.equal(successful, 62, "Failed auction bidding, owned-sale or protection scenarios");
+// Protect the extended Prestige perk catalogue and the new 100-rank cap.
+const prestigePerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
+assert.equal(prestigePerks.length,10,"There must be 10 permanent Prestige perks");
+assert.equal(new Set(prestigePerks.map(p=>p[0])).size,10,"Prestige perk identifiers must be unique");
+assert.ok(prestigePerks.every(p=>p.length===4 && p.every(Boolean)),"Every Prestige perk needs an id, icon, name and description");
+assert.match(js,/const PRESTIGE_MAX_LEVEL=100;/,"Prestige perks must allow level 100");
+assert.match(js,/function buyPerk\(id\)\{[^\n]*perkLevel\(id\)>=PRESTIGE_MAX_LEVEL/,
+  "Prestige purchasing must enforce the level 100 cap");
+const perkLevelSource=js.match(/function perkLevel\(id\)\{[^\n]*\}/)?.[0];
+const perkEffectSource=js.match(/function perkEffect\(id,max\)\{[^\n]*\}/)?.[0];
+assert.ok(perkLevelSource && perkEffectSource,"Safe diminishing-return perk helpers must exist");
+const perkState={perks:{safety:0}};
+const prestigeHelpers=vm.runInNewContext("const PRESTIGE_MAX_LEVEL=100;\n"+perkLevelSource+"\n"+perkEffectSource+"\n({perkLevel,perkEffect})",{state:perkState});
+assert.equal(prestigeHelpers.perkLevel('safety'),0);
+perkState.perks.safety=100;
+assert.equal(prestigeHelpers.perkLevel('safety'),100);
+assert.ok(prestigeHelpers.perkEffect('safety',.65)>0 && prestigeHelpers.perkEffect('safety',.65)<.65,
+  "Maxed Fleet Safety must not eliminate all wear or incidents");
+perkState.perks.safety=1000;
+assert.equal(prestigeHelpers.perkLevel('safety'),100,"Existing save data may not exceed the new cap");
+console.log("PASS: 10 permanent Prestige upgrades, 100 levels and safe diminishing returns.");
 // Verify the Reputation curve from a new Reputation 2 save: 300 normal returns.
 const repSource = js.match(/function repNeeded\(level\)\{[^\n]*\}/)?.[0];
 const awardSource = js.match(/function awardRepXP\(amount\)\{[^\n]*\}/)?.[0];
