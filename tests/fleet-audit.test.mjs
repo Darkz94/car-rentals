@@ -634,7 +634,7 @@ const card=v7view.renderPerformanceCar(v7limo);
 assert.ok(card.includes('src="assets/limo-side.webp"')&&card.includes("CA 777"),"Limo artwork/plate incorrect");
 assert.ok(card.includes("+26%")&&card.includes('aria-valuenow="2"'),"Level 2 bonus/progress wrong");
 assert.ok(card.includes("491")&&card.includes("542"),"Horsepower previews wrong");
-assert.ok(card.includes(v7ctx.money(Math.round(2450*1.26)))&&card.includes(v7ctx.money(Math.round(2450*1.39))),"Rate previews wrong");
+assert.ok(card.includes(v7ctx.money(Math.round(2450*(1+2*.13))))&&card.includes(v7ctx.money(Math.round(2450*(1+3*.13)))),"Rate previews must match the exact existing tuning formula");
 assert.ok(card.includes(v7ctx.money(Math.round(14000*Math.pow(3,1.65)))),"Tune price changed");
 assert.ok(card.includes('data-action="tune"')&&!card.includes(" disabled"),"Parked tuning disabled");
 assert.ok(v7view.renderPerformanceCar({...v7limo,tune:5}).includes("FULLY TUNED")&&v7view.renderPerformanceCar({...v7limo,tune:5}).includes("disabled"),"Max level must disable tune");
