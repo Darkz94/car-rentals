@@ -860,3 +860,25 @@ assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReser
 console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
 
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
+
+
+// Section 12 dealership: premium presentation, no changes to economy or save version.
+assert.ok(html.includes('id="ctr-dealership-section-12"'),"Dealership section style missing");
+const d12start=js.indexOf("function renderDealership(){"),d12end=js.indexOf("\nfunction renderWorkshopVehicle(",d12start),d12=js.slice(d12start,d12end);
+assert.ok(d12start>0&&d12end>d12start,"Dealership renderer missing");
+for(const token of ["dealership-v12","dealer-v12-stage","renderHeroArt()","CAR_IMAGES[t.id]","CAR_IMAGES[x.id]","dealer-v12-filter-chips","dealer-comparison","data-dealer-result-count","data-role=\"dealer-search\"","data-role=\"dealer-class\"","data-role=\"dealer-sort\"","data-role=\"dealer-branch\"","freeCash()","bidReserve()","garageCapacity()","data-action=\"dealerfilter\""]){
+ assert.ok(d12.includes(token),"Section 12 visual/behaviour feature missing "+token);
+}
+assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='hq')")&&
+ js.includes("let cost=price??t.price;if(!spend(cost,")&&
+ js.includes("state.fleet.push(car)")&&
+ js.includes("modal='dealerbuy'")&&
+ js.includes("if(action==='confirmbuycar')")&&
+ js.includes("addCar(id,null,false,dealerBranch)"),"Purchasing must still route through original transactions");
+for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper']"]){
+ assert.ok(js.includes(category),"Original dealer categories changed "+category);
+}
+assert.ok(js.includes("dealerSearch.trim().toLowerCase()"),"Dealer search must filter UI only");
+assert.equal(typeList.length,17,"All 17 vehicle classes remain available");
+assert.ok(js.includes("s.version!==3")&&js.includes("function saveToSlot(n)"),"Existing save model must remain");
+console.log("PASS: Section 12 dealership visuals, 17 vehicles, category/search, comparison, purchase confirmation and save safety.");
