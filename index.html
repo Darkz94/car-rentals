@@ -2058,7 +2058,7 @@ function tick(){if(document.visibilityState==='hidden')return;let t=now();let of
  restoreFinished();
  for(let c of state.fleet){if(c.status==='transfer'&&c.transferDue<=t){c.status='available';c.branch=c.transferTo;c.transferTo=undefined;c.transferDue=undefined;note(`${c.plate} arrived in ${DEST[c.branch]?.name}.`);notify(`Vehicle transfer complete: ${c.plate}`);}}
  for(let c of state.fleet)autoCareVehicle(c);
- if(t-state.lastOfferAt>(up('marketing')?4800:staffed('sales')?6800:8200)*difficulty().demand*weatherEffect().demand*(isNight()?1.08:1)){state.lastOfferAt=t;if(state.offers.length<5)newOffer();}
+ if(t-state.lastOfferAt>(up('marketing')?4800:staffed('sales')?6800:8200)*difficulty().demand*weatherEffect().demand*(isNight()?1.08:1)*(1-perkEffect('customers',.35))){state.lastOfferAt=t;if(state.offers.length<5)newOffer();}
  state.offers=state.offers.filter(x=>x.expires>t);
  for(let c of CONTRACTS){if(!state.contracts.includes(c.id))continue;if(t-(state.contractLast[c.id]||0)>=c.period*1000&&state.offers.length<6){state.contractLast[c.id]=t;newOffer(c);}}
  if(up('auto')&&state.settings.autoDispatch!==false){for(let offer of [...state.offers]){let car=bestCar(offer);if(car)startRental(offer.id,car.id,true);}}
