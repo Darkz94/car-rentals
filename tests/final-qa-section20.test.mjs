@@ -98,7 +98,7 @@ function setup(){
  const state={cash:10000,rep:2,fleet:[car],rentals:[rental],
   stats:{earned:0,returned:0},branchReports:{},contractReports:{},incidents:[]};
  let t=25000,credits=0,saves=0;
- const ctx={state,now:()=>t,save:()=>saves++,round:Math.round,
+ const ctx={state,now:()=>t,save:()=>saves++,round:Math.round,money:n=>'R'+Math.round(n),
   RENTAL_MIN_SECONDS:20,RENTAL_MAX_SECONDS:300,
   clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
   rand:(a,b)=>a===0&&b===100?100:a,Math,
@@ -130,7 +130,7 @@ function setup(){
   status:'active',ends:100000,nextBidAt:200000,reserve:80000,highest:90000};
  const state={cash:1500,fleet:[car,{id:'carB',status:'available'}],
   stats:{earned:0,sales:0},ledger:[],playerAuctions:[a]};
- const ctx={state,now:()=>120000,round:Math.round,selectedCar:'carA',
+ const ctx={state,now:()=>120000,round:Math.round,money:n=>'R'+Math.round(n),selectedCar:'carA',
   notify:()=>{},note:()=>{},pick:a=>a[0],rand:()=>1,Math};
  vm.createContext(ctx);
  vm.runInContext(slice('function finishPlayerAuction(a)','const PRESTIGE_PERKS='),ctx);
