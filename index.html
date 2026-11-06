@@ -2129,6 +2129,88 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 
 </style>
+<style id="ctr-fleet-shell-section-03">
+/* SECTION 03 OF 20: fleet shell visuals only; vehicle details and economy unchanged. */
+.fleet-shell-v3{display:flex;flex-direction:column;gap:13px;min-width:0}
+.fleet-command-banner{position:relative;isolation:isolate;overflow:hidden;min-height:185px;display:grid;grid-template-columns:minmax(170px,.85fr) minmax(0,1.15fr);align-items:center;gap:14px;padding:15px 19px;border:1.8px solid #55cdff;border-radius:20px;background:linear-gradient(110deg,#0b487d,#0b2b58 60%,#071a41);box-shadow:0 4px 0 #073760,0 14px 25px #020817ae,inset 0 1px 0 #b9f2ff55}
+.fleet-banner-sky{position:absolute;inset:0;z-index:-2;overflow:hidden;pointer-events:none;opacity:.55}
+.fleet-banner-sky .hero-art{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.fleet-command-banner:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#0a1a3459,#08234bd2 48%,#05132dea 95%)}
+.fleet-banner-art{grid-column:1;grid-row:1;display:grid;place-items:center;align-self:stretch;min-width:0;min-height:140px;filter:drop-shadow(0 11px 8px #001126cf)}
+.fleet-banner-art img{width:100%;max-width:380px;height:165px;max-height:100%;object-fit:contain;filter:brightness(1.18) saturate(1.12)}
+.fleet-banner-copy{grid-column:2;grid-row:1;position:relative;min-width:0}
+.fleet-banner-kicker{font-size:11px;font-weight:1000;letter-spacing:1.3px;color:#ffdf83}
+.fleet-banner-copy h2{margin:6px 0 7px;font-size:clamp(27px,3.6vw,43px);font-weight:1000;line-height:.97;letter-spacing:-1.1px;color:#fff;text-shadow:0 3px 7px #001128}
+.fleet-banner-copy h2 em{font-style:italic;color:#ffd15a}
+.fleet-banner-copy p{font-size:13px;line-height:1.33;color:#e0eefb;margin:0 0 12px}
+.fleet-banner-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fleet-banner-actions .btn{min-height:39px;padding:8px 12px;font-size:12px}
+.fleet-command-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.fleet-command-kpi{position:relative;min-width:0;min-height:92px;display:flex;align-items:center;gap:9px;padding:12px 11px;border:1.5px solid #5aa7df;border-radius:16px;background:linear-gradient(143deg,#17507b,#0a2b51 62%,#081b39);box-shadow:var(--arcade-shadow)}
+.fleet-command-kpi--gold{border-color:#ffe181;background:linear-gradient(145deg,#52616d,#143451 62%,#101d3b)}
+.fleet-command-kpi--green{border-color:#43dfb3;background:linear-gradient(145deg,#135a5c,#0a304a 65%,#081f3d)}
+.fleet-command-kpi--blue{border-color:#49bfff}
+.fleet-command-kpi--purple{border-color:#cf94f8;background:linear-gradient(145deg,#4d3c7a,#1b2950 67%,#111b40)}
+.fleet-kpi-art{width:45px;height:45px;flex:none;display:block;filter:drop-shadow(0 4px 4px #000a)}
+.fleet-command-kpi>div{min-width:0}
+.fleet-command-kpi small{display:block;color:#e5effa;font-size:9.5px;line-height:1.16;font-weight:950;letter-spacing:.4px}
+.fleet-command-kpi strong{display:block;margin:4px 0 2px;color:#ffde70;font-size:clamp(17px,2.3vw,26px);font-weight:1000;letter-spacing:-.5px;line-height:1.04;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fleet-command-kpi--green strong{color:#8afacb}.fleet-command-kpi--blue strong{color:#d8f7ff}.fleet-command-kpi--purple strong{color:#efdaff}
+.fleet-command-kpi>div>span{display:block;color:#c8dbea;font-size:10px;line-height:1.2}
+.fleet-command-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.fleet-command-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:132px;padding:13px 8px;border:1.5px solid #4babe8;border-radius:18px;background:linear-gradient(150deg,#174f80,#0c305d 65%,#081d40);box-shadow:0 4px 0 #051c41,0 10px 15px #02081799,inset 0 1px 0 #dcf9ff36;color:#fff;font:inherit;cursor:pointer}
+.fleet-command-tab:hover,.fleet-command-tab:focus-visible{filter:brightness(1.12);border-color:#ffe9a1}
+.fleet-command-tab:focus-visible{outline:3px solid #fff0a7;outline-offset:2px}
+.fleet-command-tab.active{border:2px solid #ffe38b;background:linear-gradient(160deg,#35667d,#21446e 58%,#132747);box-shadow:0 4px 0 #b78736,0 0 19px #ffd26946,inset 0 1px 0 #fff6be80}
+.fleet-command-tab-art{display:grid;place-items:center;width:61px;height:57px;filter:drop-shadow(0 4px 4px #000b)}
+.fleet-command-tab-label{font-size:clamp(12px,1.6vw,17px);font-weight:950;line-height:1.13;text-align:center;min-width:0}
+.fleet-command-tab-sub{font-size:10px;line-height:1.15;text-align:center;color:#c9e6f8}
+.fleet-command-tab-count{position:absolute;right:7px;top:7px;min-width:23px;padding:3px 5px;font-size:10px;font-weight:950;line-height:1.1;border:1px solid #77add4;border-radius:12px;background:#0a2245e8;color:#fff6c8;text-align:center}
+.fleet-command-tab.active .fleet-command-tab-count{background:#ffdd81;color:#092344;border-color:#fff2bd}
+.fleet-command-filters{padding:11px 12px 12px;border-radius:16px;border:1px solid #57a9e2;background:linear-gradient(145deg,#173d68,#0b2750 62%,#081b3b);box-shadow:var(--arcade-shadow)}
+.fleet-filter-heading{display:flex;align-items:baseline;justify-content:space-between;gap:9px;flex-wrap:wrap;margin:0 0 8px}
+.fleet-filter-heading span{font-size:12px;font-weight:950;color:#ffe49b;letter-spacing:.4px}
+.fleet-filter-heading small{font-size:10px;color:#c6ddf3}
+.fleet-command-filters .fleet-toolbar{display:grid;grid-template-columns:minmax(150px,1.5fr) repeat(3,minmax(105px,1fr));gap:8px;margin:0;padding:0;border:0;background:transparent;border-radius:0}
+.fleet-command-filters .fleet-toolbar input,.fleet-command-filters .fleet-toolbar select{width:100%;max-width:none;min-width:0;min-height:42px;margin:0;padding:9px 10px;box-sizing:border-box;border-radius:10px;border:1px solid #568dbd;background:#091f42;color:#f1faff;box-shadow:inset 0 1px 2px #0006;font-size:12px}
+.fleet-command-filters .fleet-toolbar :focus-visible{border-color:#ffdd80;outline:2px solid #ffdd80;outline-offset:1px}
+.fleet-command-content{min-width:0}
+.fleet-shell-v3 .parking-section{margin-top:0}
+@media(max-width:1000px){
+ .fleet-command-kpi{padding:9px 8px;gap:6px}.fleet-kpi-art{width:35px;height:35px}
+ .fleet-command-kpi small{font-size:8.5px}.fleet-command-kpi>div>span{font-size:9px}.fleet-command-tab{min-height:118px}
+}
+@media(max-width:720px){
+ .fleet-shell-v3{gap:9px}
+ .fleet-command-banner{grid-template-columns:minmax(0,115px) minmax(0,1fr);min-height:157px;gap:8px;padding:12px 10px;border-radius:15px}
+ .fleet-banner-art{min-height:120px}.fleet-banner-art img{height:125px;width:130px;max-width:100%;transform:scale(1.08)}
+ .fleet-banner-kicker{font-size:8px;letter-spacing:.8px}.fleet-banner-copy h2{font-size:clamp(19px,5.3vw,31px);letter-spacing:-.65px;margin:4px 0 6px}
+ .fleet-banner-copy p{font-size:10px;line-height:1.25;margin-bottom:8px}
+ .fleet-banner-actions{gap:5px}.fleet-banner-actions .btn{min-height:33px;font-size:10px;padding:6px 8px}
+ .fleet-command-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .fleet-command-kpi{min-height:67px;padding:9px;gap:8px;border-radius:13px}
+ .fleet-kpi-art{width:34px;height:34px}.fleet-command-kpi small{font-size:9px}.fleet-command-kpi strong{font-size:clamp(16px,4.5vw,23px)}
+ .fleet-command-tab{min-height:88px;padding:6px 3px;border-radius:12px;gap:3px}.fleet-command-tabs{gap:6px}
+ .fleet-command-tab-art{width:39px;height:39px}.fleet-command-tab-label{font-size:clamp(9px,2.5vw,12px)}
+ .fleet-command-tab-sub{display:none}.fleet-command-tab-count{right:3px;top:3px;min-width:18px;font-size:8px;padding:2px 3px}
+ .fleet-command-filters{padding:9px;border-radius:13px}
+ .fleet-command-filters .fleet-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .fleet-command-filters .fleet-toolbar input{grid-column:1/-1}
+ .fleet-command-filters .fleet-toolbar select:last-child{grid-column:1/-1}
+ .fleet-command-filters .fleet-toolbar input,.fleet-command-filters .fleet-toolbar select{min-height:39px;font-size:11px;padding:8px 9px}
+ .fleet-filter-heading small{font-size:9px}
+}
+@media(max-width:370px){
+ .fleet-command-banner{grid-template-columns:88px minmax(0,1fr);gap:4px}
+ .fleet-banner-art img{height:100px}.fleet-banner-actions .btn{font-size:9px;padding:6px}
+ .fleet-command-tab-art{width:33px;height:33px}.fleet-command-tab-label{font-size:8.8px}.fleet-kpi-art{width:28px;height:28px}
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:820px){
+ .fleet-command-banner{min-height:122px;padding:9px 14px}.fleet-banner-art img{height:120px}
+ .fleet-command-tab{min-height:90px}.fleet-command-tab-art{width:39px;height:39px}
+}
+@media(prefers-reduced-motion:reduce){.fleet-command-tab{transition:none!important}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -2897,7 +2979,39 @@ function renderMap(compact=false){let w=1000,h=620,land='#d8d0af',tripPaths=[],c
  <g stroke="#e6d9b0" opacity=".15">${Array.from({length:14},(_,i)=>`<path d="M${620+i*25} ${360+i%3*12}l150 78"/>`).join('')}</g><text x="47" y="96" font-size="21" font-weight="900" fill="#d5f0ef" opacity=".7">ATLANTIC OCEAN</text><text x="635" y="589" font-size="20" font-weight="900" fill="#d0e7e2" opacity=".35">OVERBERG</text><text x="417" y="394" font-size="14" font-weight="800" fill="#cde1b7" opacity=".6">MOUNTAIN RANGE</text>
  ${tripPaths.join('')}${nodes}${cars.join('')}</svg>${compact?'':`<div class="map-control"><button type="button" data-action="zoomplus" aria-label="Zoom in">+</button><button type="button" data-action="zoomminus" aria-label="Zoom out">−</button></div>`}<div class="map-overlay"><span class="pill green">● ${state.rentals.length} LIVE RENTALS</span>${state.fleet.some(c=>c.status==='transfer')?'<span class="pill blue">● VEHICLE TRANSFER</span>':''}</div><div class="map-legend"><span>🟢 Owned branches</span><span>🟠 Destinations</span><span>🚗 Actual rentals</span></div></div>`;
 }
-function renderFleet(){let tabs=[['garage','🚙 My Garage'],['dealership','🏷️ Dealership'],['care','🔧 Workshop & Wash'],['tuning','🏁 Performance']];return `<div class="fadein">${featureHeading('🚗','The collection','Manage every vehicle in one place, discover your next dream car and build a fleet that earns while you explore Cape Town.')}<div class="mt-16">${renderTabs('fleet',tabs)}${activeSub.fleet==='garage'?renderGarage():activeSub.fleet==='dealership'?renderDealership():activeSub.fleet==='care'?renderCare():renderTuning()}</div></div>`;}
+function renderFleet(){
+ const preview=state.fleet.find(c=>c.id===selectedCar)||state.fleet[0]||null;
+ const ready=available().length,outs=state.fleet.filter(c=>c.status==='rented'||c.status==='transfer').length,attention=state.fleet.filter(vehicleNeedsAttention).length;
+ const cap=garageCapacity(),resale=state.fleet.reduce((sum,c)=>sum+getResale(c),0),unlocked=TYPES.filter(t=>t.unlock<=state.rep).length;
+ const selected=['garage','dealership','care','tuning'].includes(activeSub.fleet)?activeSub.fleet:'garage';
+ const tabs=[
+  ['garage','Garage','Your collection',state.fleet.length],
+  ['dealership','Dealership','Find your next ride',unlocked],
+  ['care','Workshop & Wash','Keep cars ready',attention],
+  ['tuning','Performance','Tune for higher returns',state.fleet.filter(c=>(c.tune||0)>0).length]
+ ];
+ const heroCar=preview?(CAR_IMAGES[typeOf(preview.type).id]||CAR_IMAGES.hatch):CAR_IMAGES.hatch;
+ return `<div class="fadein fleet-shell-v3" aria-label="Fleet command centre">
+  <section class="fleet-command-banner" aria-label="Fleet headquarters">
+   <div class="fleet-banner-sky" aria-hidden="true">${renderHeroArt()}</div>
+   <div class="fleet-banner-art" aria-hidden="true"><img src="${heroCar}" alt=""></div>
+   <div class="fleet-banner-copy"><span class="fleet-banner-kicker">CAPE TOWN · FLEET HQ</span>
+    <h2>Your fleet.<br><em>Your city.</em></h2>
+    <p>${state.fleet.length} vehicle${state.fleet.length===1?'':'s'} in your collection · ${ready} ready for the next rental.</p>
+    <div class="fleet-banner-actions">${btn('sub','＋ Shop cars','btn primary','data-group="fleet" data-id="dealership"')}${btn('sub','🔧 Workshop','btn ghost','data-group="fleet" data-id="care"')}</div>
+   </div>
+  </section>
+  <section class="fleet-command-kpis" aria-label="Live fleet statistics">
+   <div class="fleet-command-kpi fleet-command-kpi--gold"><span class="fleet-kpi-art">${arcadeIcon('garage')}</span><div><small>FLEET CAPACITY</small><strong>${state.fleet.length} / ${cap}</strong><span>Parking spaces used</span></div></div>
+   <div class="fleet-command-kpi fleet-command-kpi--green"><span class="fleet-kpi-art">${arcadeIcon('ready')}</span><div><small>READY TO RENT</small><strong>${ready}</strong><span>Available for hire</span></div></div>
+   <div class="fleet-command-kpi fleet-command-kpi--blue"><span class="fleet-kpi-art">${arcadeIcon('road')}</span><div><small>ON THE ROAD</small><strong>${outs}</strong><span>Hire and transfers</span></div></div>
+   <div class="fleet-command-kpi fleet-command-kpi--purple"><span class="fleet-kpi-art">${arcadeIcon('earnings')}</span><div><small>FLEET RESALE VALUE</small><strong>${compact(resale)}</strong><span>${attention} need${attention===1?'s':''} attention</span></div></div>
+  </section>
+  <nav class="fleet-command-tabs" role="tablist" aria-label="Fleet areas">${tabs.map(([key,title,sub,count])=>`<button type="button" class="fleet-command-tab ${selected===key?'active':''}" role="tab" aria-selected="${selected===key}" data-action="sub" data-group="fleet" data-id="${key}" aria-controls="fleet-command-content"><span class="fleet-command-tab-art">${arcadeIcon(key)}</span><span class="fleet-command-tab-label">${title}</span><span class="fleet-command-tab-sub">${sub}</span><span class="fleet-command-tab-count">${count}</span></button>`).join('')}</nav>
+  ${selected==='garage'?`<section class="fleet-command-filters" aria-label="Find and sort fleet vehicles"><div class="fleet-filter-heading"><span>🔎 FIND YOUR VEHICLE</span><small>Search, filter and sort without changing saved vehicle order</small></div>${renderFleetFilters()}</section>`:''}
+  <div id="fleet-command-content" class="fleet-command-content" role="tabpanel">${selected==='garage'?renderGarage():selected==='dealership'?renderDealership():selected==='care'?renderCare():renderTuning()}</div>
+ </div>`;
+}
 const openInfoPanels=new Set();
 function compactInfoPanel(id,title,desc){return `<section class="compact-info-panel"><details data-compact-info="${esc(id)}" ${openInfoPanels.has(id)?'open':''}><summary><strong>${title}</strong><span class="compact-info-toggle">ⓘ Info <span aria-hidden="true">⌄</span></span></summary><div class="compact-info-description">${desc}</div></details></section>`;}
 function featureHeading(icon,title,desc){return compactInfoPanel("feature-"+title,icon+" "+title,desc);}
@@ -2913,15 +3027,14 @@ function garageBayCard(c,index){
  <div class="parking-bottom"><span class="money">${money(round(t.rate*(1+(c.tune||0)*.13)))}/hire</span>${listBtn('selectcar',c.id,chosen?'✓ Inspecting':'Inspect →',`btn sm ${chosen?'primary':'ghost'}`)}</div></div></article>`;
 }
 function garageEmptyBay(index){return `<article class="parking-slot empty-slot"><div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light off"></span><span class="slot-branch">EMPTY</span></div><div class="parking-scene"><div class="parking-backwall"><span>YOUR NEXT CAR</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-empty-icon">＋</div></div><div class="parking-info"><h3>Available parking space</h3><p class="small muted">Grow your collection one vehicle at a time.</p>${btn('sub','Browse dealership →','btn sm primary mt-12','data-group="fleet" data-id="dealership"')}</div></article>`;}
+function renderFleetFilters(){return `<div class="fleet-toolbar"><input data-role="garage-search" aria-label="Find a vehicle" type="search" placeholder="🔎 Search name, plate, branch…" value="${esc(garageSearch)}"><select data-role="garage-status" aria-label="Filter garage status">${[['all','All vehicles'],['ready','Ready for hire'],['parked','Parked'],['care','Needs attention'],['out','Out on the road'],['incident','Incidents'],['auction','At auction']].map(([k,v])=>`<option value="${k}" ${garageStatus===k?'selected':''}>${v}</option>`).join('')}</select><select data-role="garage-branch" aria-label="Filter by branch">${[['all','Every branch'],...BRANCHES.filter(x=>owned(x.id)).map(x=>[x.id,x.name])].map(([k,v])=>`<option value="${k}" ${garageBranch===k?'selected':''}>${esc(v)}</option>`).join('')}</select><select data-role="garage-sort" aria-label="Sort garage cars">${[['type','By vehicle class'],['name','Name A–Z'],['condition','Lowest condition'],['earnings','Highest earnings']].map(([k,v])=>`<option value="${k}" ${garageSort===k?'selected':''}>${v}</option>`).join('')}</select></div>`;}
 function renderGarage(){
  let c=state.fleet.find(x=>x.id===selectedCar)||state.fleet[0],parked=state.fleet.filter(x=>x.status==='available'),attention=state.fleet.filter(vehicleNeedsAttention).length,capacity=garageCapacity(),estValue=state.fleet.reduce((a,x)=>a+getResale(x),0),cars=garageCars(),search=garageSearch.trim().toLowerCase(),matches=cars.filter(x=>(typeOf(x.type).name+' '+typeOf(x.type).category+' '+x.plate+' '+(DEST[x.branch]?.name||x.branch)).toLowerCase().includes(search));
- let filterBar=`<div class="fleet-toolbar"><input data-role="garage-search" aria-label="Find a vehicle" type="search" placeholder="🔎 Search name, plate, branch…" value="${esc(garageSearch)}"><select data-role="garage-status" aria-label="Filter garage status">${[['all','All vehicles'],['ready','Ready for hire'],['parked','Parked'],['care','Needs attention'],['out','Out on the road'],['incident','Incidents'],['auction','At auction']].map(([k,v])=>`<option value="${k}" ${garageStatus===k?'selected':''}>${v}</option>`).join('')}</select><select data-role="garage-branch" aria-label="Filter by branch">${[['all','Every branch'],...BRANCHES.filter(x=>owned(x.id)).map(x=>[x.id,x.name])].map(([k,v])=>`<option value="${k}" ${garageBranch===k?'selected':''}>${esc(v)}</option>`).join('')}</select><select data-role="garage-sort" aria-label="Sort garage cars">${[['type','By vehicle class'],['name','Name A–Z'],['condition','Lowest condition'],['earnings','Highest earnings']].map(([k,v])=>`<option value="${k}" ${garageSort===k?'selected':''}>${v}</option>`).join('')}</select></div>`;
  let bulkOptions=[['prepare','✨ Prepare all'],['service','🔧 Service all'],['wash','🫧 Wash all'],['fuel','⛽ Refuel all']];
  let costs=bulkOptions.map(([k,label])=>{let n=parked.filter(x=>k==='prepare'?careNeeded(x)||x.body<99.9:k==='service'?x.condition<99.9||x.body<99.9:k==='wash'?x.clean<99.9:x.fuel<99.9);let cost=n.reduce((a,x)=>{let p=carePrices(x);return a+(k==='prepare'?p.fuel+p.service+p.wash+bodyRepairCost(x):k==='service'?p.service+bodyRepairCost(x):p[k]);},0);return listBtn('bulkcare',k,`${label} ${n.length?'· '+(cost?money(cost):'FREE'):''}`,'btn sm',n.length?'':'disabled');}).join('');
  let extra=(garageStatus==='all'&&garageBranch==='all'&&!search&&capacity>state.fleet.length)?garageEmptyBay(state.fleet.length):'';
- return `<div class="fleet-overview"><div class="fleet-kpi"><small>🚘 VEHICLES OWNED</small><strong>${state.fleet.length} / ${capacity}</strong><em>Garage capacity</em></div><div class="fleet-kpi"><small>✅ READY TO RENT</small><strong>${available().length}</strong><em>Can accept bookings</em></div><div class="fleet-kpi"><small>🔧 NEEDS ATTENTION</small><strong>${attention}</strong><em>Fuel, condition or cleaning</em></div><div class="fleet-kpi"><small>💎 RESALE VALUE</small><strong>${compact(estValue)}</strong><em>Estimated fleet market value</em></div></div>
- <section class="parking-section"><div class="parking-head"><div>${compactInfoPanel('garage-collection','🚗 Your arcade garage','Inspect, tune and prepare your cars. Vehicles out on hire still occupy a garage bay.')}</div><div class="parking-head-actions">${btn('sub','＋ Add vehicle','btn sm primary','data-group="fleet" data-id="dealership"')}<span class="parking-count">${state.fleet.length} OWNED · ${parked.length} PARKED</span></div></div>
- <details class="garage-filters" ${garageFiltersOpen?'open':''}><summary>🔎 Find and filter vehicles</summary>${filterBar}</details>
+ return `<section class="parking-section"><div class="parking-head"><div>${compactInfoPanel('garage-collection','🚗 Your arcade garage','Inspect, tune and prepare your cars. Vehicles out on hire still occupy a garage bay.')}</div><div class="parking-head-actions">${btn('sub','＋ Add vehicle','btn sm primary','data-group="fleet" data-id="dealership"')}<span class="parking-count">${state.fleet.length} OWNED · ${parked.length} PARKED</span></div></div>
+ 
  <details class="garage-bulk-details" data-compact-info="garage-bulk-actions" ${openInfoPanels.has('garage-bulk-actions')?'open':''}><summary>🧰 Fleet-wide care <span>ⓘ Actions ⌄</span></summary><div class="fleet-batch">${costs}</div></details><div class="parking-slots-grid" id="fleet-results">${matches.map((x,i)=>garageBayCard(x,state.fleet.indexOf(x))).join('')}${extra}</div><div class="section2-help" data-search-empty style="display:${matches.length?'none':'block'}">No cars match these filters. Try another status or branch.</div><p class="tiny muted mt-12" data-fleet-count>${matches.length} vehicles shown · Bulk actions apply to parked cars only.</p></section>
  ${autoCareControl()}
  <div class="grid two-thirds garage-inspection-grid"><section class="card pad garage-ops-card"><details class="garage-ops-details" data-compact-info="garage-operations" ${openInfoPanels.has('garage-operations')?'open':''}><summary>⚙️ Fleet operations <span>ⓘ Info ⌄</span></summary><div class="garage-ops-content"><div class="garage-summary-row"><span>🟢 ${available().length} ready</span><span>🚙 ${state.rentals.length} on hire</span><span>🛠️ ${attention} need care</span></div><div class="notice mt-16">${up('workshop')?'✓ Servicing and body repairs are FREE':'🔧 Workshop upgrade makes mechanical maintenance free.'}</div><div class="notice mt-12">${up('carwash')?'✓ Washing is FREE':'🫧 Company Car Wash makes washing free.'}</div><div class="notice mt-12">⛽ Fuel remains chargeable. ${up('fuelcard')?'Your fuel partnership gives 25% off.':''}</div>${btn('sub','View workshop upgrades','btn ghost mt-16',`data-group="fleet" data-id="care"`)}</div></details></section>
