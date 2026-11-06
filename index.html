@@ -2325,6 +2325,69 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 @media(min-width:1550px){.fleet-shell-v3 .garage-bay-grid-v4{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.garage-bay-v4,.garage-view-choice{transition:none!important}}
 </style>
+<style id="ctr-vehicle-details-section-05">
+/* Section 05: visual-only vehicle inspection; original game controls and economy untouched. */
+.vehicle-details-v5{min-width:0;padding:13px!important;border:1.5px solid #5abcf7!important;border-radius:17px!important;background:linear-gradient(155deg,#164778,#09274e 45%,#081a39)!important;overflow:hidden;box-shadow:0 10px 28px #0008!important}
+.vehicle-v5-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.vehicle-v5-header h3{font-size:clamp(21px,2.6vw,29px);font-style:italic;font-weight:1000;color:#ffdf8b;margin:4px 0;line-height:1.1}
+.vehicle-v5-header small{display:block;color:#98e3ff;font-weight:950;letter-spacing:.8px;font-size:9px}
+.vehicle-v5-plate{display:inline-block;border:1px solid #72b3da;border-radius:7px;padding:4px 8px;background:#0a2b50;color:#e1f3ff;font-size:10px;font-weight:850}
+.vehicle-v5-pager{display:flex;align-items:center;gap:5px;border:1px solid #3b79a9;border-radius:12px;background:#071d3e;padding:4px;flex:none}
+.vehicle-v5-pager span{font-size:10px;font-weight:950;min-width:39px;text-align:center;font-variant-numeric:tabular-nums}
+.vehicle-v5-arrow{border-radius:8px;border:1px solid #ffe58a;background:linear-gradient(135deg,#fff2b4,#ffca53);color:#102645;cursor:pointer;width:33px;height:33px;font-size:24px;font-weight:950;line-height:1}
+.vehicle-v5-arrow:disabled{opacity:.4;cursor:not-allowed}
+.vehicle-v5-stage{position:relative;isolation:isolate;display:grid;place-items:center;min-height:230px;overflow:hidden;border-radius:15px;border:1px solid #77c8f6;background:linear-gradient(130deg,#226c9d,#09325f);box-shadow:0 3px 0 #0b3755}
+.vehicle-v5-sky{position:absolute;inset:0;z-index:-2;pointer-events:none;opacity:.75}
+.vehicle-v5-sky svg{width:100%;height:100%;object-fit:cover}
+.vehicle-v5-stage:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#041732fa,#071d3f99 35%,transparent 80%);pointer-events:none}
+.vehicle-v5-side{display:block;position:relative;z-index:1;width:92%;max-width:435px;height:164px;object-fit:contain;margin:17px 0 31px}
+.vehicle-v5-status{position:absolute;top:10px;left:10px;z-index:3;border:1px solid #8accff;border-radius:9px;padding:6px 8px;background:#10365ce8;color:#fff;font-size:9px;font-weight:950;max-width:65%}
+.vehicle-v5-status--ready{border-color:#44edb4;background:#11564bea;color:#baffe4}
+.vehicle-v5-status--care{border-color:#f1c067;background:#654020e8;color:#ffedbd}
+.vehicle-v5-status--danger{border-color:#fd8eaa;background:#702c44e8;color:#ffe2eb}
+.vehicle-v5-roof{position:absolute;right:9px;top:9px;z-index:3;display:flex;align-items:center;flex-direction:column;gap:4px;width:68px;height:89px;border:1px solid #84d2ff;border-radius:10px;background:#071d3fe9;padding:5px}
+.vehicle-v5-roof span{font-size:8px;font-weight:950;color:#d5f2ff}
+.vehicle-v5-roof img{display:block;width:56px;height:60px;object-fit:contain}
+.vehicle-v5-stage-foot{position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:5px;padding:9px 10px;background:#051630e8;border-top:1px solid #5da9d69e;font-size:10px;color:#e7f6ff;font-weight:850}
+.vehicle-v5-stage-foot span:last-child{color:#ffe0a3;text-align:right}
+.vehicle-v5-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:12px 0}
+.vehicle-v5-stat{min-width:0;padding:9px 8px;min-height:72px;display:flex;flex-direction:column;justify-content:center;gap:5px;border:1px solid #5e9acb;border-radius:11px;background:linear-gradient(140deg,#184e7c,#0b274f)}
+.vehicle-v5-stat--0{border-color:#ffe18b}.vehicle-v5-stat--1{border-color:#4ae1b3;background:linear-gradient(140deg,#15565b,#0b2b49)}.vehicle-v5-stat--3{border-color:#d39df7;background:linear-gradient(140deg,#4b3877,#152549)}
+.vehicle-v5-stat small{font-size:8.5px;line-height:1.2;color:#dceefa;font-weight:950}
+.vehicle-v5-stat strong{font-size:clamp(14px,1.8vw,23px);line-height:1.12;font-weight:1000;color:#ffe091;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.vehicle-v5-stat--1 strong{color:#a7ffe0}.vehicle-v5-stat--3 strong{color:#f2ddff}
+.vehicle-v5-stat span{font-size:9px;color:#bad8ed}
+.vehicle-v5-notice{padding:10px 11px;border:1px solid #5ba5d6;border-radius:10px;background:#103957;color:#e3f4ff;font-size:11px;line-height:1.4;margin-bottom:12px}
+.vehicle-v5-notice--ready{border-color:#3bc8a1;background:#0d4846;color:#baffdf}
+.vehicle-v5-notice--care{border-color:#d7a656;background:#423627;color:#ffebc1}
+.vehicle-v5-notice--danger{border-color:#e77d9e;background:#4b2b42;color:#ffdeea}
+.vehicle-v5-meters-title{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 8px;font-size:13px}.vehicle-v5-meters-title small{font-size:10px;color:#bcd6ec}
+.vehicle-v5-meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.vehicle-v5-meter{min-width:0;padding:10px;background:#071f40;border:1px solid #417ba8;border-radius:10px}
+.vehicle-v5-meter>span{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:10px;color:#dcecff}
+.vehicle-v5-meter b{color:#ffe2a1;font-variant-numeric:tabular-nums}
+.vehicle-v5-meter>i{display:block;height:8px;border-radius:8px;overflow:hidden;background:#04142a;margin-top:8px}
+.vehicle-v5-meter em{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#3bbcdc,#66efba)}
+.vehicle-v5-meter em.mid{background:linear-gradient(90deg,#eca747,#ffe37a)}
+.vehicle-v5-meter em.low{background:linear-gradient(90deg,#e95d7a,#ffa17f)}
+.vehicle-v5-info{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:9px 10px;margin-top:9px;background:#0d2b4f;border:1px solid #467ba8;border-radius:10px;color:#d7eafa;font-size:10px;font-weight:800}
+.vehicle-details-v5>.divider{margin:15px 0 11px;background:#5795be6e}
+.vehicle-details-v5 .btn{white-space:normal;min-height:38px;overflow-wrap:anywhere}
+.vehicle-details-v5 .component{background:#103453;border-color:#4a84b2}
+@media(max-width:900px){.vehicle-v5-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.vehicle-v5-stat strong{font-size:clamp(15px,3.8vw,22px)}}
+@media(max-width:720px){
+ .vehicle-details-v5{padding:10px!important}
+ .vehicle-v5-header h3{font-size:21px}.vehicle-v5-header small{font-size:8px}
+ .vehicle-v5-pager{padding:3px;gap:2px}.vehicle-v5-arrow{width:29px;height:29px}.vehicle-v5-pager span{min-width:32px}
+ .vehicle-v5-stage{min-height:187px}.vehicle-v5-side{height:122px;max-width:305px;margin:18px 0 29px}
+ .vehicle-v5-roof{width:54px;height:68px;padding:4px}.vehicle-v5-roof img{height:43px;width:45px}.vehicle-v5-roof span{font-size:7px}
+ .vehicle-v5-stage-foot{font-size:9px;padding:8px}
+ .vehicle-v5-stats{gap:6px;margin:9px 0}.vehicle-v5-stat{min-height:60px;padding:8px}
+ .vehicle-v5-meters{gap:6px}.vehicle-v5-meter{padding:8px}
+ .vehicle-details-v5 .grid.grid-2>.btn{font-size:10px}
+}
+@media(max-width:365px){.vehicle-v5-stage{min-height:177px}.vehicle-v5-side{height:115px}.vehicle-v5-stat strong{font-size:14px}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -3181,8 +3244,31 @@ function renderGarage(){
 function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
 
 function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='auction'?'Listed at auction — cannot rent or service until sale closes.':c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
- return `<div class="card pad"><div class="flex between center gap-8"><h3 class="section-title">Vehicle inspection</h3><span class="pill ${!parked?'orange':readiness?'green':'red'}">${!parked?statusMsg(c.status):readiness?'RENTAL READY':'NEEDS CARE'}</span></div><div class="fleet-detail-hero"><div class="car-thumb big"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="section-title" style="font-size:20px">${esc(t.name)}</div><div class="car-plate">${esc(c.plate)}</div><div class="small muted mt-12">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="small muted mt-12">${c.rides||0} rentals completed · ${esc(t.category)} · ${t.tank}L tank</div><div class="dealer-price" style="font-size:17px">${money(round(t.rate*(1+(c.tune||0)*.13)))}/base hire</div></div></div><div class="fleet-tip mt-16">${reason}</div>
- ${[['Fuel',c.fuel,'⛽'],['Mechanical condition',c.condition,'🔧'],['Cleanliness',c.clean,'🫧']].map(([name,val,icon])=>`<div class="mt-16"><div class="flex between small"><span>${icon} ${name}</span><b>${Math.round(val)}%</b></div><div class="meter mt-12 ${val<30?'bad':val<60?'warn':''}"><span style="width:${clamp(val)}%"></span></div></div>`).join('')}
+ const ordered=fleetInGarageOrder(state.fleet),number=Math.max(0,ordered.findIndex(x=>x.id===c.id))+1;
+ const status=c.status==='incident'?'RECOVERY NEEDED':c.status==='auction'?'AT AUCTION':c.status==='rented'?'ON HIRE':c.status==='transfer'?'IN TRANSIT':readiness?'READY TO RENT':'NEEDS PREPARATION';
+ const tone=c.status==='incident'?'danger':!parked?'road':readiness?'ready':'care';
+ const rate=round(t.rate*(1+(c.tune||0)*.13));
+ const stats=[['BASE HIRE',money(rate),'Rate per rental'],['HIRES COMPLETE',String(c.rides||0),'This vehicle'],['HORSEPOWER',String(carHorsepower(c))+' HP','After tuning'],['RESALE VALUE',money(getResale(c)),'Estimate']];
+ const levels=[['⛽','Fuel',c.fuel],['🔧','Mechanical',c.condition],['🫧','Cleanliness',c.clean],['🛡️','Bodywork',c.body??100]];
+ return `<div class="card pad vehicle-details-v5" aria-label="Inspect ${esc(t.name)}">
+  <div class="vehicle-v5-header"><div><small>CAPE TOWN GARAGE · VEHICLE INSPECTION</small><h3>${esc(t.name)}</h3><span class="vehicle-v5-plate">${esc(c.plate)}</span></div><div class="vehicle-v5-pager">
+    ${btn('garageprev','‹','vehicle-v5-arrow','aria-label="Previous vehicle" '+(ordered.length<2?'disabled':''))}
+    <span>${number} / ${ordered.length}</span>
+    ${btn('garagenext','›','vehicle-v5-arrow','aria-label="Next vehicle" '+(ordered.length<2?'disabled':''))}
+  </div></div>
+  <div class="vehicle-v5-stage">
+   <div class="vehicle-v5-sky" aria-hidden="true">${renderHeroArt()}</div>
+   <span class="vehicle-v5-status vehicle-v5-status--${tone}">${status}</span>
+   <img class="vehicle-v5-side" src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)} side profile" style="filter:${paintFilter(c)} drop-shadow(0 14px 13px #0009)" loading="lazy">
+   <div class="vehicle-v5-roof"><span>TOP VIEW</span><img src="${MAP_CAR_IMAGES[t.id]||CAR_IMAGES[t.id]}" alt="${esc(t.name)} top-down view" loading="lazy"></div>
+   <div class="vehicle-v5-stage-foot"><span>📍 ${esc(DEST[c.branch]?.name||c.branch)}</span><span>${esc(t.category)} · ${t.tank}L</span></div>
+  </div>
+  <div class="vehicle-v5-stats">${stats.map(([name,value,sub],i)=>`<div class="vehicle-v5-stat vehicle-v5-stat--${i}"><small>${name}</small><strong>${value}</strong><span>${sub}</span></div>`).join('')}</div>
+  <div class="vehicle-v5-notice vehicle-v5-notice--${tone}">${reason}</div>
+  <div class="vehicle-v5-meters-title"><strong>Vehicle condition</strong><small>Live vehicle status</small></div>
+  <div class="vehicle-v5-meters">${levels.map(([icon,name,value])=>`<div class="vehicle-v5-meter"><span>${icon} ${name}<b>${round(value)}%</b></span><i><em class="${value<30?'low':value<60?'mid':'good'}" style="width:${clamp(value)}%"></em></i></div>`).join('')}</div>
+  <div class="vehicle-v5-info"><span>🏁 Tuning ${c.tune||0}/5 · +${(c.tune||0)*13}% base rate</span><span>🎨 ${esc(PAINTS[c.paint]?.name||'Glacier Silver')}</span></div>
+
  <div class="divider"></div><div class="flex between center"><div class="small muted">Prepare vehicle</div><div class="bold ${total?'':'positive'}">${total?money(total):'FREE / ALREADY READY'}</div></div><div class="grid grid-2 mt-16" style="gap:8px">${listBtn('fuel',c.id,`⛽ Refuel · ${p.fuel?money(p.fuel):'FULL'}`,'btn sm',!parked||c.fuel>=99.9?'disabled':'')}${listBtn('wash',c.id,`🫧 Wash · ${c.clean>=99.9?'CLEAN':p.wash?money(p.wash):'FREE'}`,'btn sm',!parked||c.clean>=99.9?'disabled':'')}${listBtn('service',c.id,`🔧 Service · ${c.condition>=99.9?'SERVICED':p.service?money(p.service):'FREE'}`,'btn sm',!parked||c.condition>=99.9?'disabled':'')}${listBtn('care',c.id,`✨ Prepare all · ${total?money(total):'FREE'}`,'btn sm primary',!parked||!careNeeded(c)?'disabled':'')}</div>
  <div class="divider"></div><div class="flex between center"><span class="bold">🏁 Performance tuning</span><span class="pill blue">Lv ${c.tune||0}/5</span></div><p class="small muted mt-12">Each tuning level adds 13% to rental payouts.</p><div class="mini-progress"><span style="width:${(c.tune||0)*20}%"></span></div>${listBtn('tune',c.id,c.tune>=5?'Maximum tuning reached':`Upgrade tuning · ${money(round(14000*Math.pow((c.tune||0)+1,1.65)))}`,'btn block mt-16',!parked||c.tune>=5?'disabled':'')}
 
@@ -3431,7 +3517,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='dealerpaint'){if(!PAINTS[id])return;dealerPaint=id;render();return;}
  if(action==='dealerprev'||action==='dealernext'){let i=TYPES.findIndex(t=>t.id===dealerPreview);let step=action==='dealerprev'?-1:1;dealerPreview=TYPES[(i+step+TYPES.length)%TYPES.length].id;render();return;}
  if(action==='garagescene'){garageScene=['showroom','workshop','wash'].includes(id)?id:'showroom';render();return;}
- if(action==='garageprev'||action==='garagenext'){let i=state.fleet.findIndex(x=>x.id===selectedCar);let delta=action==='garageprev'?-1:1;selectedCar=state.fleet[(i+delta+state.fleet.length)%state.fleet.length]?.id;render();return;}
+ if(action==='garageprev'||action==='garagenext'){let ordered=fleetInGarageOrder(state.fleet);if(!ordered.length)return;let i=ordered.findIndex(x=>x.id===selectedCar);if(i<0)i=0;let delta=action==='garageprev'?-1:1;selectedCar=ordered[(i+delta+ordered.length)%ordered.length].id;render();document.getElementById('garage-inspection-anchor')?.scrollIntoView({block:'start'});return;}
  if(action==='mapfocus'){mapFocus=id;notify(`${DEST[id]?.name||id} selected on map.`);render();return;}
  if(action==='zoomplus'){mapZoom=clamp(mapZoom+.25,1,2.25);render();return;}
  if(action==='zoomminus'){mapZoom=clamp(mapZoom-.25,1,2.25);render();return;}
