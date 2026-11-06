@@ -27,6 +27,8 @@ jobs:
         run: node tests/fleet-audit.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility
         run: node tests/progress-section18.test.mjs
+      - name: Verify Section 19 vehicle artwork, mapping and transparency
+        run: node tests/vehicle-art-section19.test.mjs
       - name: Rebuild the latest playable game, including all artwork
         run: python3 rebuild.py
       - name: Verify standalone game matches current source

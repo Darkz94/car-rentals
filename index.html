@@ -3373,11 +3373,31 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 @media(max-width:580px){.progress18{gap:10px}.progress18-hero{min-height:126px;padding:13px;border-radius:16px}.progress18-hero h2{font-size:23px}.progress18-hero p{font-size:10px}.progress18-hero-icon{width:63px;height:63px;flex-basis:63px;border-radius:16px;font-size:34px}.progress18-kpi{padding:9px;gap:7px}.progress18-kpi>span{font-size:21px}.progress18-kpi small,.progress18-kpi em{font-size:9px}.progress18-kpi strong{font-size:16px}.progress18-panel{padding:11px;border-radius:15px}.progress18-cards,.progress18-saves{grid-template-columns:1fr}.progress18-finance{grid-template-columns:1fr 1fr}.progress18 .tab{flex:1 1 43%;min-width:0;padding:8px;font-size:11px}.progress18-reputation{padding:12px}.progress18-operating{grid-template-columns:1fr 1fr}.progress18-slot p{min-height:0}}
 @media(max-width:355px){.progress18-kpi strong{font-size:14px}.progress18-kpi>span{font-size:17px}.progress18-finance{grid-template-columns:1fr}}
 </style>
+<style id="ctr-vehicle-art-section-19">
+/* Section 19: consistent, unclipped vehicle presentation. Original class IDs,
+   map rotations, paint filters and showroom interaction remain unchanged. */
+.car-thumb img,.dealer-visual img,.dealer-side-view,.vehicle-v5-side,
+.vehicle-v5-roof img,.rental-trip-v9-art img,.workshop-vehicle-art img,
+.p7-car-img img,.p7-feature-car img,.dashboard-feature-image img,
+.rental-desk-v8-vehicle img,.event17-inc-vehicle img{
+ object-fit:contain;object-position:center center;image-rendering:auto;
+}
+.dealer-visual img,.dealer-side-view,.vehicle-v5-side,.p7-feature-car img{
+ transform-origin:center center;
+}
+.vehicle-v5-roof img,.workshop-vehicle-art img,.rental-trip-v9-art img{
+ max-inline-size:100%;
+}
+@media(max-width:640px){
+ .dealer-visual img,.dealer-side-view,.vehicle-v5-side{object-fit:contain;object-position:center}
+ .vehicle-v5-roof img{object-fit:contain}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
-const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
+const CAR_IMAGES={hatch:'assets/art19-hatch-side.svg',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/art19-bakkie-side.svg',jeep:'assets/art19-jeep-side.svg',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
 /* Distinct 2D side artwork for UI; roof sprites are kept solely for live maps. */
-const MAP_CAR_IMAGES={...CAR_IMAGES,hatch:'assets/city-hatch-topdown.png',sedan:'assets/executive-sedan-topdown.webp',bakkie:'assets/adventure-bakkie-topdown.png',jeep:'assets/jeep-4x4-topdown.webp',coupe:'assets/coastal-coupe-topdown.webp',truck:'assets/delivery-truck-topdown.webp',tow:'assets/tow-truck-topdown.webp',donk:'assets/donk-topdown.webp',limo:'assets/limo-topdown.webp',partybus:'assets/partybus-topdown.webp',sport:'assets/performance-sport-topdown.webp',bus:'assets/tourbus-topdown.webp',super:'assets/supercar-gt-topdown.webp',hyper:'assets/hypercar-topdown.webp',muscle:'assets/muscle-car-topdown.webp',classic:'assets/classic-car-topdown.webp',van:'assets/modern-panelvan-topdown.webp'};
+const MAP_CAR_IMAGES={...CAR_IMAGES,hatch:'assets/art19-hatch-topdown.svg',sedan:'assets/executive-sedan-topdown.webp',bakkie:'assets/art19-bakkie-topdown.svg',jeep:'assets/art19-jeep-topdown.svg',coupe:'assets/coastal-coupe-topdown.webp',truck:'assets/delivery-truck-topdown.webp',tow:'assets/tow-truck-topdown.webp',donk:'assets/donk-topdown.webp',limo:'assets/limo-topdown.webp',partybus:'assets/partybus-topdown.webp',sport:'assets/performance-sport-topdown.webp',bus:'assets/tourbus-topdown.webp',super:'assets/supercar-gt-topdown.webp',hyper:'assets/hypercar-topdown.webp',muscle:'assets/muscle-car-topdown.webp',classic:'assets/classic-car-topdown.webp',van:'assets/modern-panelvan-topdown.webp'};
 function createCapeCarArt(kind){
  const specs={
  hatch:{c:'#1bb6c5',roof:'hatch',accent:'#c1f6f5'},

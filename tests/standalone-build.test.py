@@ -14,7 +14,7 @@ for id_ in ("classic", "muscle", "van", "hatch", "sedan", "bakkie", "jeep", "tru
     assert "id:'" + id_ + "'" in standalone, f"Missing modern class: {id_}"
 for name in ("modern-panelvan-side.webp", "modern-panelvan-topdown.webp",
              "muscle-car-side.webp", "classic-car-side.webp",
-             "jeep-4x4-side.webp", "jeep-4x4-topdown.webp",
+             "art19-jeep-side.svg", "art19-jeep-topdown.svg",
              "donk-side.webp", "donk-topdown.webp",
              "limo-side.webp", "limo-topdown.webp",
              "partybus-side.webp", "partybus-topdown.webp",
