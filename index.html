@@ -1811,6 +1811,202 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 
 </style>
+<style id="ctr-dashboard-section-02">
+
+/* SECTION 02 OF 20 — DASHBOARD PRESENTATION.
+ * Scoped dashboard styling: no rental, auction, economy, reputation or
+ * save model changes. The shared arcade foundation is Section 01.
+ */
+.dashboard-v2{display:flex;flex-direction:column;gap:12px;min-width:0}
+.arcade-header{overflow:hidden}
+.dashboard-header-sky{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;border-radius:inherit;opacity:.38}
+.dashboard-header-sky .hero-art{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;min-height:0}
+.dashboard-feature{
+ position:relative;overflow:hidden;isolation:isolate;display:grid;
+ grid-template-columns:minmax(190px,.37fr) minmax(0,1fr) auto;
+ align-items:center;column-gap:20px;min-height:178px;padding:16px 18px;
+ border:1px solid #5dd7ff;border-radius:20px;
+ background:linear-gradient(122deg,#133c68,#0b2854 45%,#071633 80%);
+ box-shadow:0 4px 0 #06324f,0 12px 22px #020717a8,inset 0 1px 0 #cff5ff4d;
+}
+.dashboard-feature .hero-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.47;pointer-events:none;z-index:-3;min-height:0}
+.dashboard-feature:before{
+ content:"";pointer-events:none;position:absolute;inset:0;z-index:-2;
+ background:linear-gradient(90deg,#06122e32 0%,#0a2c56b0 31%,#05112af0 86%),
+ radial-gradient(ellipse at 8% 72%,#38b4d43b,transparent 42%);
+}
+.dashboard-feature-image{grid-column:1;grid-row:1;min-width:0;max-height:145px;display:grid;place-items:center;align-self:end;pointer-events:none;filter:drop-shadow(0 11px 8px #020a23ca)}
+.dashboard-feature-image img{display:block;width:min(100%,325px);height:136px;object-fit:contain;transform:scale(1.20);filter:brightness(1.1) saturate(1.15)}
+.dashboard-feature-copy{grid-column:2;grid-row:1;min-width:0;z-index:1}
+.dashboard-kicker{font-size:11px;letter-spacing:1.1px;color:#ffd16e;font-weight:950;line-height:1.15;display:block}
+.dashboard-feature-copy h2{font-size:clamp(20px,2.5vw,32px);line-height:1.07;letter-spacing:-.6px;margin:6px 0 7px;color:#fff;font-weight:950;text-shadow:0 2px 8px #020f29bd}
+.dashboard-feature-copy p{font-size:clamp(12px,1.3vw,15px);line-height:1.42;color:#d2e7fb;margin:0;max-width:420px}
+.dashboard-feature .dashboard-feature-cta{grid-column:3;grid-row:1;position:relative;min-height:51px;padding:12px 18px;font-weight:950;font-size:15px;white-space:nowrap;z-index:1}
+.dashboard-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0}
+.dashboard-metric{
+ position:relative;min-width:0;min-height:83px;padding:12px 13px 10px 53px;
+ border-radius:15px;border:1px solid #47aeeb;
+ box-shadow:var(--arcade-shadow);background:linear-gradient(135deg,#0d5682,#07365b 50%,#072444);
+}
+.dashboard-metric-pay{border-color:#4adeb3;background:linear-gradient(135deg,#075e55,#073c42 55%,#072735)}
+.dashboard-metric-rewards{border-color:#c78afb;background:linear-gradient(135deg,#5a3f98,#2a2458 55%,#181c43)}
+.dashboard-metric-icon{position:absolute;left:12px;top:17px;font-size:27px;line-height:1.1;filter:drop-shadow(0 3px 3px #0008)}
+.dashboard-metric small{display:block;font-size:10px;line-height:1.18;letter-spacing:.3px;font-weight:950;color:#e3ebfa}
+.dashboard-metric strong{display:block;font-size:clamp(19px,2.5vw,31px);font-weight:950;line-height:1.12;color:#fff;margin-top:5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.dashboard-metric-pay strong{color:#bcffe0}
+.dashboard-metric-rewards strong{color:#ffe6a3}
+.dashboard-claim{margin-top:4px;font-size:10px!important;min-height:26px!important;padding:4px 7px!important}
+.dashboard-shortcuts{display:flex;flex-direction:column;gap:10px}
+.dashboard-shortcuts-main,.dashboard-shortcuts-more{display:grid;gap:10px}
+.dashboard-shortcuts-main{grid-template-columns:repeat(4,minmax(0,1fr))}
+.dashboard-shortcuts-more{grid-template-columns:repeat(5,minmax(0,1fr))}
+.dashboard-shortcut{
+ min-width:0;min-height:105px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+ padding:10px 6px;border:1.5px solid #40b8ff;border-radius:19px;color:#fff;
+ background:linear-gradient(152deg,#134875,#0c2a51 62%,#09193a);
+ box-shadow:0 4px 0 #041b43,0 12px 18px #01091f9c,inset 0 1px 0 #ffffff21;
+ cursor:pointer;transition:transform .14s ease,filter .14s ease,border-color .14s ease
+}
+.dashboard-shortcut:hover,.dashboard-shortcut:focus-visible{border-color:#ffde87;filter:brightness(1.16)}
+.dashboard-shortcut:active{transform:translateY(2px)}
+.dashboard-shortcut--gold{border-color:#ffe07b;background:linear-gradient(150deg,#346a88,#123a6a 58%,#0b2849);box-shadow:0 4px 0 #ba8740,0 8px 24px #ffd05b36,inset 0 1px 0 #fffab066}
+.dashboard-shortcut--teal{border-color:#56e6bd}
+.dashboard-shortcut--goldline{border-color:#e4b66e}
+.dashboard-shortcut-icon{display:grid;place-items:center;width:51px;height:48px;font-size:34px;line-height:1;filter:drop-shadow(0 5px 3px #01081f8c)}
+.dashboard-shortcut-label{font-weight:950;font-size:clamp(11px,1.5vw,17px);letter-spacing:-.2px;line-height:1.15;text-align:center;overflow-wrap:anywhere}
+.dashboard-city-strip{
+ display:grid;grid-template-columns:minmax(0,1.3fr) auto auto;
+ align-items:center;gap:7px 15px;padding:10px 14px;
+ border:1px solid #45bcff;border-radius:17px;
+ background:linear-gradient(135deg,#104b7e,#092f59 55%,#061c44);
+ box-shadow:var(--arcade-shadow)
+}
+.dashboard-city-weather{display:flex;align-items:center;gap:6px;min-width:0;font-size:15px;color:#f5faff}
+.dashboard-city-weather b{font-size:15px}
+.dashboard-sun-icon{font-size:25px}
+.dashboard-city-time{font-size:13px;white-space:nowrap;color:#dfedfb}
+.dashboard-fuel{display:flex;gap:7px;align-items:center;font-size:13px;color:#e8f4ff;white-space:nowrap}
+.dashboard-fuel span{font-size:21px}
+.dashboard-city-action{min-width:0;white-space:nowrap}
+.dashboard-city-caption{grid-column:1/-1;display:block;color:#b6d6ee;font-size:11px;border-top:1px solid #74bce933;padding-top:7px}
+.dashboard-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dashboard-summary-card{
+ min-width:0;min-height:116px;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+ gap:5px;padding:15px 14px 13px;border:1.5px solid #ffd466;border-radius:18px;
+ background:linear-gradient(145deg,#15476c 0%,#102a4b 48%,#091a3b 100%);
+ box-shadow:var(--arcade-shadow);
+}
+.dashboard-summary-card--ready{border-color:#4be8c8;background:linear-gradient(145deg,#095d64,#0c344c 60%,#091e40)}
+.dashboard-summary-card--earned{border-color:#d694fc;background:linear-gradient(145deg,#4b3b7b,#202750 65%,#111c3c)}
+.dashboard-summary-card small{font-size:12px;font-weight:850;color:#c9d7eb;padding-right:41px}
+.dashboard-summary-card strong{font-size:clamp(18px,2.2vw,28px);line-height:1.13;font-weight:950;color:#ffdb75;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%}
+.dashboard-summary-card--ready strong{color:#80ffd0}.dashboard-summary-card--earned strong{color:#fff}
+.dashboard-summary-card>span:last-child{font-size:11px;color:#c7d7e9}
+.dashboard-summary-icon{position:absolute;top:11px;right:13px;width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(140deg,#3770a0,#152954);border:1px solid #699dd3;font-size:22px}
+.dashboard-rental-desk{
+ display:flex;flex-direction:column;gap:11px;padding:12px 15px;
+ border:1px solid #5f87dc;border-top:2px solid #ffca72;border-radius:18px;
+ background:linear-gradient(116deg,#102743,#1b2850 55%,#101f40);
+ box-shadow:var(--arcade-shadow)
+}
+.dashboard-rental-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dashboard-rental-heading h2{margin:0;font-size:18px;font-weight:950}
+.dashboard-rental-help{position:relative;flex:none}
+.dashboard-rental-help summary{cursor:pointer;list-style:none;border-radius:10px;padding:7px 10px;border:1px solid #598ac0;background:#1d3b67;color:#f0f7ff;font-weight:850;font-size:12px}
+.dashboard-rental-help summary::-webkit-details-marker{display:none}
+.dashboard-rental-help[open] summary{border-color:#ffdb8a}
+.dashboard-rental-help-body{position:absolute;right:0;top:calc(100% + 6px);z-index:12;width:min(295px,calc(100vw - 37px));padding:13px;border:1px solid #5eb2e6;border-radius:14px;background:#101e41;box-shadow:0 16px 34px #000b;color:#e4effb;font-size:12px;line-height:1.5}
+.dashboard-rental-help-body ol{padding-left:19px;margin:6px 0 10px}
+.dashboard-rental-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dashboard-rental-actions .btn{min-width:0;white-space:normal;min-height:47px;font-size:14px;line-height:1.15}
+.dashboard-live-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,.9fr);gap:12px;align-items:start}
+.dashboard-live-column{display:grid;gap:12px;align-content:start;min-width:0}
+.dashboard-live-panel{min-width:0}
+.dashboard-v2 .dashboard-live-panel .section-head{align-items:center}
+.dashboard-v2 .dashboard-live-panel .blank{padding:16px 10px;min-height:0}
+.dashboard-v2 .dashboard-live-panel .blank .big-icon{font-size:29px}
+.dashboard-v2 .dashboard-map-panel .map-frame{min-height:175px}
+.dashboard-v2 .dashboard-map-panel .map-svg{min-height:175px}
+.dashboard-v2 .dashboard-map-panel .map-caption{font-size:11px}
+.dashboard-v2 .dashboard-live-panel .item-row{gap:9px;padding:9px 0}
+.dashboard-v2 .auto-desk{margin:0;border-color:#51ceae;background:linear-gradient(120deg,#0d4d53,#102c55)}
+@media(max-width:1050px){
+ .dashboard-feature{grid-template-columns:minmax(145px,.34fr) minmax(0,1fr) auto;gap:10px}
+ .dashboard-feature .dashboard-feature-cta{padding:11px 12px;font-size:13px}
+ .dashboard-summary-card{padding:12px}
+ .dashboard-summary-card strong{font-size:clamp(16px,2vw,26px)}
+}
+@media(max-width:750px){
+ .dashboard-v2{gap:9px}
+ .dashboard-feature{
+  grid-template-columns:minmax(0,118px) minmax(0,1fr);grid-template-rows:auto auto;
+  min-height:150px;padding:12px 11px;gap:5px 8px;border-radius:17px
+ }
+ .dashboard-feature-image{grid-column:1;grid-row:1/3;align-self:center;height:120px;overflow:visible}
+ .dashboard-feature-image img{height:118px;width:128px;transform:scale(1.17)}
+ .dashboard-feature-copy{grid-column:2;grid-row:1;align-self:end}
+ .dashboard-kicker{font-size:9px;letter-spacing:.7px}
+ .dashboard-feature-copy h2{font-size:clamp(16px,4.7vw,23px);margin:4px 0;letter-spacing:-.4px}
+ .dashboard-feature-copy p{font-size:11px;line-height:1.25}
+ .dashboard-feature .dashboard-feature-cta{grid-column:2;grid-row:2;min-height:37px;font-size:12px;padding:8px 10px;justify-self:stretch;align-self:end;white-space:normal}
+ .dashboard-metrics{gap:6px}
+ .dashboard-metric{min-height:75px;padding:9px 6px 8px;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;border-radius:12px}
+ .dashboard-metric-icon{position:static;font-size:20px;line-height:1}
+ .dashboard-metric small{font-size:8px;letter-spacing:0;line-height:1.09}
+ .dashboard-metric strong{font-size:clamp(13px,4vw,23px);margin:0}
+ .dashboard-claim{font-size:9px!important}
+ .dashboard-shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .dashboard-shortcuts-main,.dashboard-shortcuts-more{display:contents}
+ .dashboard-shortcut{min-height:83px;padding:7px 3px;border-radius:14px;gap:4px}
+ .dashboard-shortcut-icon{width:38px;height:38px;font-size:29px}
+ .dashboard-shortcut-label{font-size:11px;line-height:1.14}
+ .dashboard-city-strip{grid-template-columns:minmax(0,1fr) auto;gap:5px 7px;padding:9px 10px;border-radius:14px}
+ .dashboard-city-weather{font-size:12px;gap:4px}
+ .dashboard-city-weather b{font-size:12px}
+ .dashboard-sun-icon{font-size:19px}
+ .dashboard-city-time{font-size:11px}
+ .dashboard-fuel{grid-column:1;grid-row:2;font-size:11px}
+ .dashboard-fuel span{font-size:16px}
+ .dashboard-city-action{grid-column:2;grid-row:1/3;font-size:10px;min-height:35px;padding:7px 9px}
+ .dashboard-city-caption{grid-column:1/-1;font-size:10px}
+ .dashboard-summary{gap:6px}
+ .dashboard-summary-card{min-height:93px;padding:10px 8px 9px;border-radius:13px;gap:5px}
+ .dashboard-summary-icon{top:7px;right:6px;width:23px;height:23px;border-radius:8px;font-size:14px}
+ .dashboard-summary-card small{font-size:9px;padding-right:19px}
+ .dashboard-summary-card strong{font-size:clamp(13px,3.55vw,21px)}
+ .dashboard-summary-card>span:last-child{font-size:9px;line-height:1.15}
+ .dashboard-rental-desk{padding:10px 11px;gap:9px}
+ .dashboard-rental-heading h2{font-size:16px}
+ .dashboard-rental-actions .btn{font-size:12px;min-height:43px}
+ .dashboard-live-grid{grid-template-columns:1fr;gap:9px}
+ .dashboard-live-column{gap:9px}
+ .dashboard-v2 .dashboard-live-panel .section-head p{font-size:10px}
+}
+@media(max-width:365px){
+ .dashboard-feature{grid-template-columns:minmax(0,94px) minmax(0,1fr)}
+ .dashboard-feature-image img{width:104px}
+ .dashboard-kicker{font-size:8px}
+ .dashboard-feature-copy h2{font-size:16px}
+ .dashboard-shortcut-label{font-size:10px}
+ .dashboard-metric small{font-size:7.5px}
+ .dashboard-city-time{font-size:10px}
+ .dashboard-summary-card strong{font-size:12px}
+ .dashboard-summary-card small{font-size:8px}
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:820px){
+ .dashboard-v2{gap:8px}
+ .dashboard-feature{min-height:125px;padding:9px 13px;grid-template-columns:125px minmax(0,1fr) auto}
+ .dashboard-feature-image img{height:105px;max-width:120px}
+ .dashboard-feature-copy h2{font-size:18px}
+ .dashboard-feature-copy p{font-size:11px}
+ .dashboard-shortcut{min-height:80px}
+ .dashboard-shortcut-icon{font-size:26px;height:30px}
+ .dashboard-shortcut-label{font-size:11px}
+ .dashboard-metric{min-height:68px}
+}
+@media(prefers-reduced-motion:reduce){.dashboard-shortcut{transition:none!important}}
+
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -2483,6 +2679,7 @@ function rentalCard(r){let car=state.fleet.find(c=>c.id===r.carId);let p=clamp((
 function offerCard(o){let c=bestCar(o);return `<div class="item-row"><div class="icon-avatar">${o.icon||'👤'}</div><div class="grow"><div class="flex between center gap-8"><div class="bold truncate">${esc(o.customer)}</div><span class="pill ${o.contract?'orange':'blue'}">${o.contract?'CONTRACT':'REQUEST'}</span></div><div class="small muted mt-12">Looking for ${esc(o.need)} · ${esc(DEST[o.dest]?.name||o.dest)} · <span class="nowrap"><span data-countdown-offer="${o.id}">${relativeTime(o.expires)}</span> left</span></div><div class="flex between center gap-8 mt-12"><span class="small ${c?'money':'muted'}">${c?`~${money(estimatedRentalPayout(c,o))} avg. on return · ${typeOf(c.type).name}`:'No ready matching car'}</span>${listBtn('rent',o.id,'Rent now →',`btn sm ${c?'primary':'ghost'}`,c?'':'disabled')}</div></div></div>`;}
 function emptyState(icon,title,message,action=''){return `<div class="blank"><div class="big-icon">${icon}</div><b>${title}</b><p>${message}</p>${action?`<div class="mt-16">${action}</div>`:''}</div>`;}
 function renderHeroArt(){return `<svg class="hero-art" viewBox="0 0 1400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#cc7d73"/><stop offset=".5" stop-color="#a2a1ad"/><stop offset="1" stop-color="#4b8695"/></linearGradient><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#55a8b9"/><stop offset="1" stop-color="#22516c"/></linearGradient><linearGradient id="road" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#394e5c"/><stop offset="1" stop-color="#0a1b29"/></linearGradient></defs><rect width="1400" height="420" fill="url(#sky)"/><circle cx="1038" cy="101" r="77" fill="#ffe3b4" opacity=".58"/><path d="M0 225L124 222L172 206L208 211L241 195L316 201L345 180L391 178L430 185L454 155L694 155L710 183L731 185L757 169L804 171L822 206L873 211L900 233L1030 232L1093 246L1400 248V420H0Z" fill="#465c6c"/><path d="M0 258L248 244L312 229L536 233L561 207L690 211L712 232L826 248L1010 258L1400 267V420H0Z" fill="#1c4158"/><path d="M0 292Q270 268 480 300T1400 284V420H0Z" fill="url(#sea)"/><path d="M0 330Q340 300 640 347T1400 350V420H0Z" fill="#3c7186" opacity=".6"/><path d="M560 420Q950 360 1400 282V420Z" fill="#304648"/><path d="M770 420Q1030 360 1400 295L1400 420Z" fill="url(#road)"/><path d="M960 404Q1180 353 1400 316" fill="none" stroke="#d2c8a8" stroke-width="4" stroke-dasharray="38 20" opacity=".56"/><path d="M630 356Q1070 315 1400 238" fill="none" stroke="#8ac0a2" stroke-width="7" opacity=".42"/><g fill="#142e43" opacity=".7"><rect x="680" y="215" width="25" height="63"/><rect x="711" y="226" width="14" height="52"/><rect x="735" y="202" width="21" height="76"/><rect x="765" y="222" width="31" height="55"/><rect x="805" y="207" width="21" height="70"/><rect x="837" y="224" width="16" height="53"/><rect x="871" y="211" width="26" height="68"/></g><g transform="translate(1140 318) rotate(-8)"><ellipse cx="44" cy="31" rx="105" ry="19" fill="#020b10" opacity=".45"/><path d="M-54 0L-12 -27H63L89 -8L105 -5V19H-69V7Q-63 1 -54 0" fill="#f6a06c" stroke="#ffc996" stroke-width="3"/><path d="M2 -21H57L77 -7H-20Z" fill="#2f6073"/><circle cx="-31" cy="21" r="18" fill="#0d1b29" stroke="#c9bdac" stroke-width="6"/><circle cx="70" cy="21" r="18" fill="#0d1b29" stroke="#c9bdac" stroke-width="6"/></g></svg>`;}
+
 function smartOverview(){
  let ready=available().length,waiting=state.offers.filter(x=>bestCar(x)),attention=state.fleet.filter(c=>c.status==='available'&&(c.condition<75||c.fuel<25||c.clean<35||c.body<55)).length;
  let mission=section4Missions().filter(x=>!x.claimed&&x.value>=x.target);
@@ -2491,23 +2688,73 @@ function smartOverview(){
  : !ready && !state.rentals.length ? ['⛽','Get a car ready','Check fuel and engine condition in your garage.','page','fleet']
  : waiting.length ? ['💸','Your next rental is waiting',`${waiting.length} matching customer requests are available.`,'autorent',null]
  : ['🌊','Your business is running','More customer requests arrive automatically.','page','business'];
- return `<section class="ops-spotlight" aria-label="Business operating guide"><div class="ops-guide"><span class="ops-emoji">${tip[0]}</span><div class="ops-message"><small>YOUR NEXT BEST MOVE</small><b>${tip[1]}</b><span>${tip[2]}</span></div>${btn(tip[3],tip[3]==='autorent'?'Rent a car →':'Go →','btn sm primary',tip[4]?`data-id="${tip[4]}"`:'')}</div><div class="ops-metrics"><div><small>ON THE ROAD</small><b>${state.rentals.length}</b></div><div><small>PAYMENT ON RETURN</small><b>${money(state.rentals.reduce((v,r)=>v+r.payout,0))}</b></div><div><small>DAILY REWARDS READY</small><b>${mission.length}</b>${mission.length?btn('jumpmissions','Claim →','btn sm ghost'):''}</div></div></section>`;
+ let pending=state.rentals.reduce((sum,r)=>sum+r.payout,0);
+ return `<section class="dashboard-feature" aria-label="Your next best move">
+  ${renderHeroArt()}
+  <div class="dashboard-feature-image" aria-hidden="true"><img src="${CAR_IMAGES.limo}" alt=""></div>
+  <div class="dashboard-feature-copy"><span class="dashboard-kicker">YOUR NEXT BEST MOVE</span><h2>${tip[1]}</h2><p>${tip[2]}</p></div>
+  ${btn(tip[3],tip[3]==='autorent'?'Rent a car →':'Go →','btn primary dashboard-feature-cta',tip[4]?`data-id="${tip[4]}"`:'')}
+ </section>
+ <section class="dashboard-metrics" aria-label="Current rental activity">
+  <div class="dashboard-metric dashboard-metric-road"><span class="dashboard-metric-icon" aria-hidden="true">🚙</span><small>ON THE ROAD</small><strong>${state.rentals.length}</strong></div>
+  <div class="dashboard-metric dashboard-metric-pay"><span class="dashboard-metric-icon" aria-hidden="true">💸</span><small>PAYMENT ON RETURN</small><strong>${money(pending)}</strong></div>
+  <div class="dashboard-metric dashboard-metric-rewards"><span class="dashboard-metric-icon" aria-hidden="true">🎁</span><small>DAILY REWARDS READY</small><strong>${mission.length}</strong>${mission.length?btn('jumpmissions','Claim →','btn sm ghost dashboard-claim'):''}</div>
+ </section>`;
+}
+function dashboardShortcut(icon,label,page,section,kind=''){
+ return `<button type="button" class="dashboard-shortcut ${kind?'dashboard-shortcut--'+kind:''}" data-action="dashshortcut" data-id="${page}" data-sub="${section}" aria-label="${label}"><span class="dashboard-shortcut-icon" aria-hidden="true">${icon}</span><span class="dashboard-shortcut-label">${label}</span></button>`;
 }
 function autoDeskControl(){return up('auto')?`<div class="auto-desk"><div><b>✨ Auto-Dispatch Desk</b><span>${state.settings.autoDispatch===false?'Paused — accept rentals yourself.':'Running — matches ready cars to new requests.'}</span></div>${btn('toggleautodespatch',state.settings.autoDispatch===false?'▶ Turn ON':'⏸ Pause',`btn sm ${state.settings.autoDispatch===false?'primary':'ghost'}`)}</div>`:'';}
 
-function renderOverview(){let availableCars=available().length,readyRevenue=state.rentals.reduce((a,r)=>a+r.payout,0),moved=state.stats.returned;
- const heroHelpOpen=!!document.querySelector("section.hero-compact details.hero-help")?.open;
- return `<div class="fadein">${smartOverview()}<section class="hero hero-compact">${renderHeroArt()}<div class="hero-shade"></div><div class="hero-content"><div class="hero-compact-top"><strong class="hero-compact-title">🚗 Rental desk</strong><details class="hero-help" ${heroHelpOpen?'open':''}><summary>ⓘ Info <span aria-hidden="true">⌄</span></summary><div class="hero-help-menu"><b>Quick guide</b><ol><li>Buy vehicles in your garage to build your fleet.</li><li>Dispatch a ready car to a waiting customer.</li><li>Earn rental income when the vehicle returns.</li></ol>${btn('guide','Full game guide','btn sm ghost')}</div></details></div><div class="hero-actions">${btn('autorent','🚘 Dispatch best rental','btn primary')}${btn('page','Explore your garage','btn ghost','data-id="fleet"')}</div></div></section>
- <div class="city-status"><div>${weatherEffect().icon} <b>${state.weather}</b> · ${clockInfo().label} ${isNight()?'🌙 Night':'☀️ Day'}</div><span>${difficulty().name} economy · Fuel ${money(fuelPrice())}/L · ${money(state.rentals.reduce((a,r)=>a+r.payout,0))} pending returns</span>${btn('page','City conditions →','btn sm ghost','data-id="events"')}</div><section class="grid grid-4 stats">
- ${stat('💰','Bank balance',money(state.cash),'Cash in hand','money')}${stat('🚗','Ready vehicles',`${availableCars} / ${state.fleet.length}`,'Available for hire','')}${stat('🚦','Cars on the road',`${state.rentals.length}`,'Rentals in progress','')}${stat('📈','Lifetime revenue',compact(state.stats.earned),`${moved} completed rentals`,'')}
- </section>
- <div class="grid two-thirds"><div class="grid" style="align-content:start">
- ${autoDeskControl()}<section class="card pad">${paneHeading('🚘 Active rentals','Earnings are deposited on return—not when you dispatch a car.',`<span class="pill green">${money(readyRevenue)} ON THE ROAD</span>`)}${state.rentals.length?state.rentals.map(rentalCard).join(''):emptyState('🛣️','No vehicles out right now','Accept a customer request below to start earning. The trip takes 20 seconds to 5 minutes.')}</section>
- <section class="card pad">${paneHeading('🙋 Customer requests','Match customers with available cars.','<span class="pill">'+state.offers.length+' WAITING</span>')}${state.offers.length?state.offers.slice(0,5).map(offerCard).join(''):emptyState('☕','Your desk is clear','New requests arrive automatically every few seconds.')}</section>
- </div><div class="grid" style="align-content:start">
- <section class="card pad">${paneHeading('Your next move','Easy actions to keep growing.')}${nextActions()}</section>
- <section class="card pad">${paneHeading('Live city activity','Trips are shown at their actual route positions.',btn('page','Open full map ↗','btn sm',`data-id="map"`))}${renderMap(true)}<p class="map-caption">Illustrated game map of Cape Town and surroundings. Vehicles only appear when travelling.</p></section>
- <section class="card pad">${paneHeading('Latest updates','Your business activity in real time.')}${renderLog(5)}</section></div></div></div>`;
+
+function renderOverview(){
+ const availableCars=available().length,readyRevenue=state.rentals.reduce((sum,r)=>sum+r.payout,0),moved=state.stats.returned;
+ const heroHelpOpen=!!document.querySelector(".dashboard-rental-help")?.open;
+ return `<div class="fadein dashboard-v2">
+  ${smartOverview()}
+  <section class="dashboard-shortcuts" aria-label="Business quick actions">
+   <div class="dashboard-shortcuts-main">
+    ${dashboardShortcut('🔑','Dispatch Rental','fleet','garage','gold')}
+    ${dashboardShortcut('🚘','Garage','fleet','garage','garage')}
+    ${dashboardShortcut('🛠️','Workshop & Wash','fleet','care','teal')}
+    ${dashboardShortcut('🏁','Performance','fleet','tuning','blue')}
+   </div>
+   <div class="dashboard-shortcuts-more">
+    ${dashboardShortcut('🔨','Auctions','events','auctions','blue')}
+    ${dashboardShortcut('🏬','Dealership','fleet','dealership','blue')}
+    ${dashboardShortcut('📍','Branches','business','branches','teal')}
+    ${dashboardShortcut('👥','Staff','business','staff','blue')}
+    ${dashboardShortcut('📈','Upgrades','business','upgrades','goldline')}
+   </div>
+  </section>
+  <section class="dashboard-city-strip" aria-label="Cape Town conditions">
+   <div class="dashboard-city-weather"><span class="dashboard-sun-icon" aria-hidden="true">${weatherEffect().icon}</span><b>${state.weather}</b><span class="dashboard-city-time">· ${clockInfo().label} · ${isNight()?'🌙 Night':'☀️ Day'}</span></div>
+   <div class="dashboard-fuel"><span aria-hidden="true">⛽</span> Fuel ${money(fuelPrice())}/L</div>
+   ${btn('dashshortcut','City conditions →','btn sm ghost dashboard-city-action','data-id="events" data-sub="weather"')}
+   <small class="dashboard-city-caption">${difficulty().name} economy · ${money(readyRevenue)} pending returns</small>
+  </section>
+  <section class="dashboard-summary" aria-label="Business snapshot">
+   <div class="dashboard-summary-card dashboard-summary-card--cash"><span class="dashboard-summary-icon" aria-hidden="true">💰</span><small>Bank balance</small><strong>${money(state.cash)}</strong><span>Cash in hand</span></div>
+   <div class="dashboard-summary-card dashboard-summary-card--ready"><span class="dashboard-summary-icon" aria-hidden="true">🚗</span><small>Ready vehicles</small><strong>${availableCars} / ${state.fleet.length}</strong><span>Available for hire</span></div>
+   <div class="dashboard-summary-card dashboard-summary-card--earned"><span class="dashboard-summary-icon" aria-hidden="true">📈</span><small>Lifetime revenue</small><strong>${compact(state.stats.earned)}</strong><span>${moved} completed rentals</span></div>
+  </section>
+  <section class="dashboard-rental-desk" aria-label="Rental desk">
+   <div class="dashboard-rental-heading"><h2>🚗 Rental desk</h2><details class="dashboard-rental-help" ${heroHelpOpen?'open':''}><summary>ⓘ Info <span aria-hidden="true">⌄</span></summary><div class="dashboard-rental-help-body"><b>Quick guide</b><ol><li>Buy vehicles in your garage to build your fleet.</li><li>Dispatch a ready car to a waiting customer.</li><li>Earn rental income when the vehicle returns.</li></ol>${btn('guide','Full game guide','btn sm ghost')}</div></details></div>
+   <div class="dashboard-rental-actions">${btn('autorent','🔑 Dispatch best rental','btn primary') }${btn('page','Explore your garage','btn ghost','data-id="fleet"')}</div>
+  </section>
+  <div class="dashboard-live-grid">
+   <div class="dashboard-live-column">
+    ${autoDeskControl()}
+    <section class="card pad dashboard-live-panel">${paneHeading('🚘 Active rentals','Earnings arrive when each vehicle returns.',`<span class="pill green">${money(readyRevenue)} PENDING</span>`)}${state.rentals.length?state.rentals.map(rentalCard).join(''):emptyState('🛣️','No vehicles on the road','Accept a waiting request to begin a rental.')}</section>
+    <section class="card pad dashboard-live-panel">${paneHeading('🙋 Customer requests','Match a waiting customer with a ready vehicle.',`<span class="pill">${state.offers.length} WAITING</span>`)}${state.offers.length?state.offers.slice(0,5).map(offerCard).join(''):emptyState('☕','Your desk is clear','New requests arrive automatically.')}</section>
+   </div>
+   <div class="dashboard-live-column">
+    <section class="card pad dashboard-live-panel">${paneHeading('Your next move','Ideas to grow your rental company.')}${nextActions()}</section>
+    <section class="card pad dashboard-live-panel dashboard-map-panel">${paneHeading('Live city activity','Watch your rented cars move.',btn('page','Open full map ↗','btn sm',`data-id="map"`))}${renderMap(true)}<p class="map-caption">Vehicle positions update during active trips.</p></section>
+    <section class="card pad dashboard-live-panel">${paneHeading('Latest updates','Recent business activity.')}${renderLog(5)}</section>
+   </div>
+  </div>
+ </div>`;
 }
 function stat(icon,label,value,foot,style=''){return `<div class="card stat"><div class="stat-top"><span class="label">${label}</span><span class="stat-icon">${icon}</span></div><div class="value ${style}">${value}</div><div class="tiny muted mt-12">${foot}</div></div>`;}
 function nextActions(){let actions=[];if(state.fleet.length<4)actions.push(['fleet','🚗','Expand your fleet','Buy another vehicle to handle more bookings.']);if(!up('workshop'))actions.push(['business','🔧','Own your workshop','Eliminate all vehicle service and repair fees.']);if(!up('carwash'))actions.push(['business','🫧','Open a car wash','Clean your cars for free, forever.']);if(state.incidents.length)actions.unshift(['events','🚨','Roadside assistance needed','Recover stranded cars and keep earning.']);if(!available().length)actions.unshift(['fleet','⛽','Prepare your fleet','Refuel, wash or service parked vehicles.']);return (actions.length?actions.slice(0,4):[['progress','🏆','Keep building your legend','Check milestones and expansion goals.']]).map(([page,icon,title,sub])=>`<div class="item-row"><div class="icon-avatar">${icon}</div><div class="grow"><div class="bold">${title}</div><div class="small muted mt-12">${sub}</div></div>${btn('page','→','btn sm',`data-id="${page}"`)}</div>`).join('');}
@@ -2777,7 +3024,7 @@ function renderModal(){if(!modal)return '';let title='',body='',actions='';
  return `<div class="modal-backdrop" data-action="closemodal"><div class="modal ${modal==='offline'?'modal-offline-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;
 }
 function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const main=activePage==='overview'?renderOverview():activePage==='fleet'?renderFleet():activePage==='map'?renderMapPage():activePage==='business'?renderBusiness():activePage==='events'?renderEvents():renderProgress();
- document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><header class="topbar arcade-header">
+ document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><header class="topbar arcade-header">${activePage==='overview'?`<div class="dashboard-header-sky" aria-hidden="true">${renderHeroArt()}</div>`:''}
 <div class="arcade-identity" aria-label="Cape Town Rentals">
  <span class="arcade-brand-icon" aria-hidden="true">🏎️</span>
  <span class="arcade-brand-text"><b>CAPE TOWN</b><strong>RENTALS</strong><small>CAR RENTAL TYCOON</small></span>
@@ -2793,6 +3040,13 @@ document.getElementById('app').addEventListener('click',e=>{
  if(summary){const id=summary.parentElement.dataset.compactInfo;if(openInfoPanels.has(id))openInfoPanels.delete(id);else openInfoPanels.add(id);return;}
  const button=e.target.closest('[data-action]');if(!button||button.disabled)return;if(modal&&!button.closest('[role="dialog"]'))return;
  let action=button.dataset.action,id=button.dataset.id;
+ if(action==='dashshortcut'){
+   const destinations={fleet:['garage','dealership','care','tuning'],business:['command','upgrades','branches','contracts','staff','finance'],events:['auctions','incidents','challenges','weather'],progress:['milestones','premium','stats','roadmap','settings']};
+   const section=button.dataset.sub;
+   if(!destinations[id]?.includes(section))return;
+   activePage=id;activeSub[id]=section;
+   window.scrollTo({top:0,behavior:'instant'});render();return;
+ }
  if(action==='page'){if(!NAV.some(x=>x[0]===id))return;activePage=id;if(id==='business'&&!activeSub.business)activeSub.business='command';if(id==='fleet')activeSub.fleet='garage';window.scrollTo({top:0,behavior:'instant'});render();return;}
  if(action==='sub'){activeSub[button.dataset.group]=id;render();return;}
  if(action==='closemodal'){modal=null;render();return;}
