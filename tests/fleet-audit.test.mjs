@@ -115,7 +115,7 @@ assert.ok(!canServe("Tow", "Truck"), "No unapproved Tow cross-class substitution
 assert.ok(canServe("Donk", "Donk"), "Donk customer matching works");
 assert.ok(!canServe("Donk", "Muscle"), "No unapproved Donk substitutions");
 
-const engine = js.slice(js.indexOf("function makeAuction(){"), js.indexOf("function buyPerk(id){"));
+const engine = js.slice(js.indexOf("function makeAuction(){"), js.indexOf("const PREMIUM_MAX_LEVEL=100;"));
 assert.ok(engine.includes("function advancePlayerAuctions("));
 const testScript = [
   typeSource,
@@ -154,27 +154,41 @@ const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
 assert.equal(successful, 62, "Failed auction bidding, owned-sale or protection scenarios");
-// Protect the extended Prestige perk catalogue and the new 100-rank cap.
-const prestigePerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
-assert.equal(prestigePerks.length,10,"There must be 10 permanent Prestige perks");
-assert.equal(new Set(prestigePerks.map(p=>p[0])).size,10,"Prestige perk identifiers must be unique");
-assert.ok(prestigePerks.every(p=>p.length===4 && p.every(Boolean)),"Every Prestige perk needs an id, icon, name and description");
-assert.match(js,/const PRESTIGE_MAX_LEVEL=100;/,"Prestige perks must allow level 100");
-assert.match(js,/function buyPerk\(id\)\{[^\n]*perkLevel\(id\)>=PRESTIGE_MAX_LEVEL/,
-  "Prestige purchasing must enforce the level 100 cap");
+// Protect the Premium Upgrade catalogue, 100-level cap, prices and garage capacity.
+const premiumPerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
+assert.equal(premiumPerks.length,10,"There must be 10 Premium Upgrade categories");
+assert.equal(new Set(premiumPerks.map(p=>p[0])).size,10,"Premium identifiers must be unique");
+assert.ok(premiumPerks.every(p=>p.length===4&&p.every(Boolean)),"Premium categories require id, icon, name and description");
+assert.match(js,/const PREMIUM_MAX_LEVEL=100;/);
+assert.ok(js.includes("function buyPremium(id,requested=1)"),"Premium purchasing must exist");
+assert.ok(!js.includes("function prestigeRun()"),"Prestige reset must be removed");
+assert.ok(!js.includes("if(action==='confirmprestige')"),"Prestige reset action must be removed");
+assert.ok(js.includes("['premium','🌟 Premium Upgrades']"),"Premium navigation must replace Prestige");
 const perkLevelSource=js.match(/function perkLevel\(id\)\{[^\n]*\}/)?.[0];
 const perkEffectSource=js.match(/function perkEffect\(id,max\)\{[^\n]*\}/)?.[0];
-assert.ok(perkLevelSource && perkEffectSource,"Safe diminishing-return perk helpers must exist");
+assert.ok(perkLevelSource&&perkEffectSource,"Diminishing-return helpers must remain");
 const perkState={perks:{safety:0}};
-const prestigeHelpers=vm.runInNewContext("const PRESTIGE_MAX_LEVEL=100;\n"+perkLevelSource+"\n"+perkEffectSource+"\n({perkLevel,perkEffect})",{state:perkState});
-assert.equal(prestigeHelpers.perkLevel('safety'),0);
+const premiumHelpers=vm.runInNewContext("const PREMIUM_MAX_LEVEL=100;\n"+perkLevelSource+"\n"+perkEffectSource+"\n({perkLevel,perkEffect})",{state:perkState});
+assert.equal(premiumHelpers.perkLevel('safety'),0);
 perkState.perks.safety=100;
-assert.equal(prestigeHelpers.perkLevel('safety'),100);
-assert.ok(prestigeHelpers.perkEffect('safety',.65)>0 && prestigeHelpers.perkEffect('safety',.65)<.65,
-  "Maxed Fleet Safety must not eliminate all wear or incidents");
+assert.equal(premiumHelpers.perkLevel('safety'),100);
+assert.ok(premiumHelpers.perkEffect('safety',.65)>0&&premiumHelpers.perkEffect('safety',.65)<.65);
 perkState.perks.safety=1000;
-assert.equal(prestigeHelpers.perkLevel('safety'),100,"Existing save data may not exceed the new cap");
-console.log("PASS: 10 permanent Prestige upgrades, 100 levels and safe diminishing returns.");
+assert.equal(premiumHelpers.perkLevel('safety'),100,"Old saves must not exceed 100 levels");
+const premiumMath=vm.runInNewContext(js.match(/function premiumCost\(level\)\{[^\n]*\}/)[0]+"\n"+js.match(/function premiumTotalCost\(level,qty\)\{[^\n]*\}/)[0]+"\n({premiumCost,premiumTotalCost})");
+assert.equal(premiumMath.premiumCost(0),10000);
+assert.equal(premiumMath.premiumCost(99),857440);
+assert.equal(premiumMath.premiumTotalCost(0,5),[0,1,2,3,4].reduce((n,i)=>n+premiumMath.premiumCost(i),0));
+const capSource=js.match(/function garageCapacity\(\)\{[^\n]*\}/)[0];
+const garageState={prestige:0,legacyGarageCapacity:0,perks:{capacity:0},upgrades:{}};
+const garageTest=vm.runInNewContext("const PREMIUM_MAX_LEVEL=100;\n"+perkLevelSource+"\n"+capSource+"\ngarageCapacity",{state:garageState,up:id=>!!garageState.upgrades[id]});
+assert.equal(garageTest(),10);
+garageState.perks.capacity=1;assert.equal(garageTest(),15);
+garageState.perks.capacity=100;assert.equal(garageTest(),510);
+garageState.perks.capacity=0;garageState.upgrades.garage=true;assert.equal(garageTest(),24);
+garageState.legacyGarageCapacity=100;assert.equal(garageTest(),100);
+assert.ok(js.includes("premiumMigrated"),"Legacy saves must have a migration path");
+console.log("PASS: 10 Premium Upgrades, rising costs, 100 levels, garage +5, legacy capacity and no Prestige reset.");
 // Verify the Reputation curve from a new Reputation 2 save: 300 normal returns.
 const repSource = js.match(/function repNeeded\(level\)\{[^\n]*\}/)?.[0];
 const awardSource = js.match(/function awardRepXP\(amount\)\{[^\n]*\}/)?.[0];
