@@ -455,4 +455,65 @@ assert.deepEqual(unsortedInput.map(x=>x.id),beforeOrder,
  "Garage sorting must not mutate saved fleet array");
 console.log("PASS: Section 4 Garage parking/list modes, six filters, class artwork, incident states and save-safe ordering.");
 
+
+// Section 5: Premium vehicle detail presentation must use each car's original artwork,
+// accurate current statistics and all existing transactional controls.
+assert.ok(html.includes('id="ctr-vehicle-details-section-05"'),
+ "The premium Vehicle Detail panel styling must be bundled in the offline game");
+const vehicleDetailStart=js.indexOf("function renderCarDetails(c){");
+const vehicleDetailEnd=js.indexOf("\nfunction ",vehicleDetailStart+10);
+const vehicleDetailJs=js.slice(vehicleDetailStart,vehicleDetailEnd);
+assert.ok(vehicleDetailStart>=0&&vehicleDetailEnd>vehicleDetailStart,
+ "Section 5 vehicle inspection renderer missing");
+for(const token of ["vehicle-v5-stage","vehicle-v5-side","vehicle-v5-roof","vehicle-v5-stats",
+ "vehicle-v5-meters","MAP_CAR_IMAGES[t.id]","CAR_IMAGES[t.id]","carHorsepower(c)",
+ "fleetInGarageOrder(state.fleet)"])
+ assert.ok(vehicleDetailJs.includes(token),"Section 5 vehicle detail missing "+token);
+const v5Car={id:"lim-01",type:"limo",plate:"CPT 666",status:"available",branch:"hq",condition:84,
+ fuel:72,clean:89,body:96,tune:1,rides:8,paint:"silver",
+ parts:{engine:82,tyres:81,brakes:80,oil:79,battery:78}};
+const v5Other={id:"hatch-02",type:"hatch",plate:"CPT 123",status:"available",branch:"hq",condition:90,
+ fuel:90,clean:90,body:90,tune:0,rides:3,paint:"silver"};
+const v5State={fleet:[v5Car,v5Other]};
+const v5Ctx={
+ state:v5State,typeOf:id=>({id,name:id==="limo"?"Limo":"Hatchback",category:id==="limo"?"Limo":"Hatch",tank:id==="limo"?69:45,rate:id==="limo"?2450:1500}),
+ carePrices:()=>({service:0,wash:0,fuel:120}),carReady:c=>c.status==="available"&&c.fuel>=15&&c.condition>=35,
+ fleetInGarageOrder:cars=>[...cars].sort((a,b)=>a.type==="hatch"?-1:1),
+ getResale:()=>290000,carHorsepower:()=>441,paintFilter:()=>"none",
+ CAR_IMAGES:{limo:"assets/limo-side.webp",hatch:"assets/city-hatch-side.png"},
+ MAP_CAR_IMAGES:{limo:"assets/limo-topdown.webp",hatch:"assets/city-hatch-topdown.png"},
+ renderHeroArt:()=>"<svg></svg>",DEST:{hq:{name:"Cape Town HQ"}},
+ PAINTS:{silver:{name:"Glacier Silver",hex:"#b4c6d0"},red:{name:"Racing Red",hex:"#f35c65"}},
+ CAR_PARTS:[["engine","⚙️","Engine"],["tyres","🛞","Tyres"],["brakes","🛑","Brakes"],["oil","🛢️","Oil"],["battery","🔋","Battery"]],
+ BRANCHES:[{id:"hq",name:"HQ"},{id:"airport",name:"Airport"}],
+ owned:()=>true,up:()=>false,careNeeded:()=>true,canListPlayerAuctionCar:()=>true,bodyRepairCost:()=>1000,
+ round:Math.round,clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
+ money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),esc:v=>String(v).replace(/"/g,"&quot;"),
+ btn:(action,label,cls,attrs="")=>'<button data-action="'+action+'" '+attrs+'>'+label+"</button>",
+ listBtn:(action,id,label,cls,extra="")=>'<button data-action="'+action+'" data-id="'+id+'" '+extra+'>'+label+"</button>"
+};
+const v5Render=vm.runInNewContext(vehicleDetailJs+"\nrenderCarDetails",v5Ctx);
+const baseline=JSON.stringify(v5State.fleet);
+const v5Markup=v5Render(v5Car);
+assert.ok(v5Markup.includes('src="assets/limo-side.webp"')&&v5Markup.includes('src="assets/limo-topdown.webp"'),
+ "Vehicle inspection must render both the matching side and top-down artwork");
+assert.ok(v5Markup.includes("R2,769")&&v5Markup.includes("HIRES COMPLETE")&&v5Markup.includes(">8</strong>"),
+ "Vehicle stats must show actual tuned base rate and completed hires");
+assert.ok(v5Markup.includes("441 HP")&&v5Markup.includes("CPT 666")&&v5Markup.includes("Cape Town HQ"),
+ "Vehicle detail must use true car data, power and location");
+for(const action of ["garageprev","garagenext","fuel","wash","service","care","tune","bodyrepair",
+ "paintcar","transfer","asksell","listauction"])
+ assert.ok(v5Markup.includes('data-action="'+action+'"'),
+   "Vehicle detail lost action: "+action);
+assert.equal(JSON.stringify(v5State.fleet),baseline,"Vehicle display must not mutate fleet state");
+const rentedView=v5Render({...v5Car,status:"rented"});
+assert.ok(rentedView.includes("ON HIRE")&&rentedView.includes("Currently on hire"),
+ "Rented car inspection must clearly describe when it returns");
+const incidentView=v5Render({...v5Car,status:"incident"});
+assert.ok(incidentView.includes("RECOVERY NEEDED")&&incidentView.includes("Roadside recovery required"),
+ "Incident car inspection must preserve recovery restrictions");
+assert.ok(js.includes("let ordered=fleetInGarageOrder(state.fleet);if(!ordered.length)return;"),
+ "Inspection arrow navigation must use the class-ordered nonmutating fleet view");
+console.log("PASS: Section 5 vehicle artwork, real specs, 12 controls, rental restrictions and save-safe class navigation.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
