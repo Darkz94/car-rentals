@@ -3589,9 +3589,40 @@ function section4Missions(){let d=dailyRecord(),b=d.base;return [
 function claimMission(id){let m=section4Missions().find(m=>m.id===id);if(!m)return false;if(m.claimed)return notify('You already collected this reward.');if(m.value<m.target)return notify('Finish the goal before claiming its reward.','bad');state.daily.claimed.push(m.id);earn(m.reward,`Daily goal reward · ${m.title}`);note(`Daily goal completed: ${m.title}. +${money(m.reward)}.`);notify(`Daily reward collected! +${money(m.reward)}`);arcadeFx('DAILY REWARD',money(m.reward),true);return true;}
 function applyMissedPayment(){state.credit=clamp((state.credit??680)-25,300,850);state.rep=Math.max(1,state.rep-1);}
 function creditLabel(){return state.credit>=750?'Excellent':state.credit>=680?'Good':state.credit>=600?'Fair':'Needs attention';}
+/* Validation is deliberately minimal: legacy version-3 fields are optional. */
+function isCompatibleV3Checkpoint(s){
+ return !!s&&typeof s==='object'&&s.version===3&&
+   typeof s.cash==='number'&&Number.isFinite(s.cash)&&
+   Array.isArray(s.fleet)&&s.fleet.every(c=>c&&typeof c==='object'&&
+     typeof c.id==='string'&&c.id.length>0&&
+     typeof c.type==='string'&&c.type.length>0);
+}
 function saveToSlot(n){if(![1,2,3].includes(n))return false;save(true);try{localStorage.setItem(SLOT_PREFIX+n,JSON.stringify({date:now(),data:state}));notify(`Manual save stored in Slot ${n}.`);return true;}catch(e){notify('Could not save this slot; browser storage may be blocked.','bad');return false;}}
-function readSlot(n){try{const v=JSON.parse(localStorage.getItem(SLOT_PREFIX+n)||'null');return v&&v.data?.version===3?v:null;}catch(e){return null;}}
-function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empty or incompatible.`, 'bad');try{localStorage.setItem(KEY,JSON.stringify(v.data));state=readSave();selectedCar=state.fleet[0]?.id;modal=null;activePage='overview';restoreFinished();save(true);note(`Restored manual save Slot ${n}.`);notify(`Loaded Slot ${n}!`);return true;}catch(e){notify('Unable to restore this slot.','bad');return false;}}
+function readSlot(n){
+ if(![1,2,3].includes(n))return null;
+ try{const v=JSON.parse(localStorage.getItem(SLOT_PREFIX+n)||'null');return v&&isCompatibleV3Checkpoint(v.data)?v:null;}
+ catch(e){return null;}
+}
+function restoreSlot(n){
+ const v=readSlot(n);
+ if(!v){notify(`Slot ${n} is empty or incompatible.`,'bad');return false;}
+ let previous=null,oldState=state;
+ try{
+  previous=localStorage.getItem(KEY);
+  localStorage.setItem(KEY,JSON.stringify(v.data));
+  const restored=readSave();
+  if(!restored)throw new Error('Checkpoint could not be decoded');
+  state=restored;selectedCar=state.fleet[0]?.id||null;modal=null;activePage='overview';
+  restoreFinished();save(true);
+  note(`Restored manual save Slot ${n}.`);notify(`Loaded Slot ${n}!`);
+  return true;
+ }catch(e){
+  state=oldState;
+  try{if(previous===null)localStorage.removeItem(KEY);else localStorage.setItem(KEY,previous);}catch(_rollbackError){}
+  notify('Unable to restore this slot. Current game was kept.','bad');
+  return false;
+ }
+}
 
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
@@ -4059,7 +4090,7 @@ function importSaveFile(file){
  reader.onload=()=>{
   try{
    const v=JSON.parse(String(reader.result)),s=v.data||v;
-   if(s.version!==3||!Array.isArray(s.fleet)||typeof s.cash!=='number'||!Number.isFinite(s.cash))throw new Error('This is not a compatible Coastline Tycoon save.');
+   if(!isCompatibleV3Checkpoint(s))throw new Error('This is not a compatible Cape Town Rentals version 3 save.');
    pendingImportSave=s;modal='importsave';render();
   }catch(e){pendingImportSave=null;notify(e.message||'Could not import save.','bad');}
  };
@@ -4068,10 +4099,23 @@ function importSaveFile(file){
 }
 function confirmImportSave(){
  const s=pendingImportSave;
- if(!s)return notify('Select a compatible JSON backup first.','bad');
+ if(!isCompatibleV3Checkpoint(s)){notify('Select a compatible version 3 JSON backup first.','bad');return false;}
+ let previous=null,oldState=state;
  try{
-  localStorage.setItem(KEY,JSON.stringify(s));state=readSave();selectedCar=state.fleet[0]?.id;modal=null;pendingImportSave=null;restoreFinished();save(true);note('Save imported successfully.');notify('Saved game restored.');render();
- }catch(e){notify('Could not restore this backup. Original save may still be available; check your manual slots.','bad');}
+  previous=localStorage.getItem(KEY);
+  localStorage.setItem(KEY,JSON.stringify(s));
+  const restored=readSave();
+  if(!restored)throw new Error('Backup could not be decoded');
+  state=restored;selectedCar=state.fleet[0]?.id||null;modal=null;pendingImportSave=null;
+  restoreFinished();save(true);
+  note('Save imported successfully.');notify('Saved game restored.');render();
+  return true;
+ }catch(e){
+  state=oldState;
+  try{if(previous===null)localStorage.removeItem(KEY);else localStorage.setItem(KEY,previous);}catch(_rollbackError){}
+  notify('Could not restore this backup. Current game was kept.','bad');
+  return false;
+ }
 }
 
 initialize();
@@ -5017,11 +5061,11 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='toggleautodespatch'){if(!up('auto'))return;state.settings.autoDispatch=state.settings.autoDispatch===false;note(`Auto-Dispatch ${state.settings.autoDispatch?'enabled':'paused'} by the owner.`);notify(`Auto-Dispatch ${state.settings.autoDispatch?'ON':'PAUSED'}.`);afterAction();return;}
  if(action==='autorent'){let offer=state.offers.find(x=>bestCar(x));if(!offer){notify('No matching bookings for ready cars yet. Try refuelling or buying another car.','bad');return;}startRental(offer.id);afterAction();return;}
  if(action==='buycar'){if(!TYPES.some(t=>t.id===id))return;modalCar=id;modal='dealerbuy';render();return;}
- if(action==='confirmbuycar'){modal=null;addCar(id,null,false,dealerBranch);afterAction();return;}
+ if(action==='confirmbuycar'){if(modal!=='dealerbuy'||id!==modalCar)return;modal=null;addCar(id,null,false,dealerBranch);afterAction();return;}
  if(action==='modalbody')return;
  if(action==='bulkcare'){bulkCare(id);afterAction();return;}
  if(action==='asksell'){modalCar=id;modal='sell';render();return;}
- if(action==='confirmsell'){sellCar(id);afterAction();return;}
+ if(action==='confirmsell'){if(modal!=='sell'||id!==modalCar)return;sellCar(id);afterAction();return;}
  if(action==='listauction'){const carId=id||document.querySelector('[data-role="auction-owned-car"]')?.value;if(listCarForAuction(carId)){activePage='events';activeSub.events='auctions';}afterAction();return;}
  if(action==='comparecar'){dealerCompare=dealerCompare.includes(id)?dealerCompare.filter(x=>x!==id):[...dealerCompare.slice(-1),id];render();return;}
  if(action==='clearcompare'){dealerCompare=[];render();return;}
@@ -5039,7 +5083,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='branchtransfer'){const el=document.querySelector('[data-role="branch-transfer-select"][data-id="'+id+'"]');if(!el?.value)return notify('Choose a parked vehicle to transfer.','bad');transferCar(el.value,id);afterAction();return;}
  if(action==='stafffilter'){if(!['all','hired','available'].includes(id))return;staffFilter=id;render();return;}
  if(action==='hire'){const x=STAFF.find(c=>c.id===id);if(!x||staffed(id))return;modalCar=id;modal='staffhire';render();return;}
- if(action==='confirmhire'){modal=null;hire(id);afterAction();return;}
+ if(action==='confirmhire'){if(modal!=='staffhire'||id!==modalCar)return;modal=null;hire(id);afterAction();return;}
  if(action==='contract'){signContract(id);afterAction();return;}
  if(action==='loan'){takeLoan(id);afterAction();return;}
  if(action==='repayloan'){repayLoan(id);afterAction();return;}
@@ -5055,9 +5099,9 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='confirmsaveslot'){const n=Number(id);if(modal!=='overwriteslot'||n!==Number(modalCar))return;modal=null;saveToSlot(n);render();return;}
  if(action==='confirmimport'){if(modal!=='importsave')return;confirmImportSave();return;}
  if(action==='loadslot'){modalCar=id;modal='loadslot';render();return;}
- if(action==='confirmloadslot'){restoreSlot(Number(id));afterAction();return;}
+ if(action==='confirmloadslot'){if(modal!=='loadslot'||Number(id)!==Number(modalCar))return;if(restoreSlot(Number(id)))afterAction();else render();return;}
  if(action==='reset'){modal='reset';render();return;}
- if(action==='confirmreset'){state=fresh();state.offers=[];state.auction=null;activePage='overview';selectedCar=state.fleet[0]?.id;modal=null;initialize();notify('New company started!');afterAction();return;}
+ if(action==='confirmreset'){if(modal!=='reset')return;state=fresh();state.offers=[];state.auction=null;activePage='overview';selectedCar=state.fleet[0]?.id;modal=null;initialize();notify('New company started!');afterAction();return;}
  if(action==='premium'){buyPremium(id,Number(button.dataset.qty)||1);afterAction();return;}
  
  
@@ -5065,7 +5109,7 @@ document.getElementById('app').addEventListener('click',e=>{
 document.getElementById('app').addEventListener('change',e=>{const el=e.target;if(el.id==='import-save'){importSaveFile(el.files?.[0]);return;}if(el.dataset.role==='garage-status'){garageStatus=el.value;render();return;}if(el.dataset.role==='garage-branch'){garageBranch=el.value;render();return;}if(el.dataset.role==='garage-sort'){garageSort=el.value;render();return;}if(el.dataset.role==='dealer-class'){dealerClass=el.value;dealerPreview=visibleDealerCars()[0]?.id||dealerPreview;render();return;}if(el.dataset.role==='dealer-sort'){dealerSort=el.value;render();return;}if(el.dataset.role==='dealer-branch'){dealerBranch=el.value;return;}if(el.dataset.role==='finance-filter'){financeFilter=el.value;render();return;}if(el.dataset.role==='difficulty'){if(DIFFICULTIES[el.value]){state.difficulty=el.value;note('Difficulty changed to '+difficulty().name+'.');afterAction();}return;}if(el.id==='company-name'){state.companyName=el.value.trim().slice(0,36)||'Coastline Rentals';afterAction();return;}});
 document.getElementById('app').addEventListener('click',e=>{const s=e.target.closest('.garage-filters > summary');if(s)garageFiltersOpen=!s.parentElement.open;},true);
 document.getElementById('app').addEventListener('input',e=>{if(e.target.dataset.role==='dealer-search'){dealerSearch=e.target.value;const q=dealerSearch.trim().toLowerCase();let count=0;document.querySelectorAll('#dealer-results [data-dealer-search]').forEach(card=>{const shown=card.dataset.dealerSearch.includes(q);card.style.display=shown?'':'none';if(shown)count++;});const result=document.querySelector('[data-dealer-result-count]');if(result)result.textContent=count+' of '+TYPES.length+' models shown';const empty=document.querySelector('[data-dealer-empty]');if(empty)empty.style.display=count?'none':'block';return;}if(e.target.dataset.role!=='garage-search')return;garageSearch=e.target.value;let q=garageSearch.trim().toLowerCase(),count=0;document.querySelectorAll('#fleet-results [data-fleet-search]').forEach(el=>{let visible=el.dataset.fleetSearch.includes(q);el.style.display=visible?'':'none';if(visible)count++;});document.querySelectorAll('#fleet-results .empty-slot').forEach(el=>{el.style.display=q?'none':'';});let msg=document.querySelector('[data-search-empty]');if(msg)msg.style.display=count?'none':'block';let c=document.querySelector('[data-fleet-count]');if(c)c.textContent=count+' matching vehicles · Bulk services include parked vehicles only.';});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){if(modal==='importsave')pendingImportSave=null;modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){state.offlineLastActiveAt=now();save(true);}else{tick();render();}});window.addEventListener('beforeunload',()=>{state.offlineLastActiveAt=now();save(true);});
 function uiSignature(){return [state.cash,state.day,state.weather,state.rentals.map(x=>x.id).join(','),state.offers.map(x=>x.id).join(','),state.auction?.id,state.auction?.highest,state.auction?.bidder,(state.playerAuctions||[]).map(a=>[a.id,a.status,a.highest,a.bidCount].join(':')).join(','),state.fleet.map(c=>[c.status,c.branch,round(c.fuel),round(c.condition),round(c.clean),round(c.body)].join(':')).join(','),state.incidents.length,state.log[0]?.id].join('|');}
 function refreshLive(){let t=now();document.querySelectorAll('[data-countdown-event-day]').forEach(el=>{el.textContent=relativeTime(state.lastDayAt+GAME_DAY_MS);});document.querySelectorAll('[data-countdown-rental]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.countdownRental);if(r)el.textContent=relativeTime(r.due);});document.querySelectorAll('[data-rental-progress]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.rentalProgress);if(r){const p=clamp(100*(t-r.start)/Math.max(1,r.due-r.start),0,100);el.style.width=p+'%';el.parentElement?.setAttribute('aria-valuenow',String(round(p)));}});document.querySelectorAll('[data-countdown-offer]').forEach(el=>{let o=state.offers.find(x=>x.id===el.dataset.countdownOffer);if(o)el.textContent=relativeTime(o.expires);});document.querySelectorAll('[data-offer-progress]').forEach(el=>{const o=state.offers.find(x=>x.id===el.dataset.offerProgress);if(o){const duration=Math.max(1,o.expires-(o.created||o.expires-OFFER_LIFETIME_MS));const percent=clamp(100*(o.expires-t)/duration,0,100);el.style.width=percent+'%';el.closest('[role="progressbar"]')?.setAttribute('aria-valuenow',String(round(percent)));}});document.querySelectorAll('[data-contract-countdown]').forEach(el=>{let c=CONTRACTS.find(x=>x.id===el.dataset.contractCountdown);if(c)el.textContent=Math.max(0,Math.ceil((c.period*1000-(t-(state.contractLast[c.id]||0)))/1000))+'s';});document.querySelectorAll('[data-countdown-auction]').forEach(el=>{if(state.auction)el.textContent=relativeTime(state.auction.ends);});document.querySelectorAll('[data-countdown-owned-auction]').forEach(el=>{const a=(state.playerAuctions||[]).find(x=>x.id===el.dataset.countdownOwnedAuction);if(a)el.textContent=relativeTime(a.ends);});document.querySelectorAll('[data-mapcar]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.mapcar);if(r){let p=routePosition(r,t);el.setAttribute('transform',mapCarPose(r,t,state.fleet.find(c=>c.id===r.carId)?.type));}});document.querySelectorAll('[data-maptransfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.maptransfer);if(c&&c.transferDue){let r={from:c.transferFrom,dest:c.transferTo,start:c.transferDue-12000,due:c.transferDue};el.setAttribute('transform',mapCarPose(r,t,c.type));}});document.querySelectorAll('[data-countdown-transfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.countdownTransfer);if(c&&c.transferDue)el.textContent=relativeTime(c.transferDue);});if(selectedRental&&state.rentals.some(r=>r.id===selectedRental))document.querySelectorAll('.map-svg-v10').forEach(el=>el.setAttribute('viewBox',mapViewBox()));}

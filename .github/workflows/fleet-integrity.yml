@@ -29,6 +29,8 @@ jobs:
         run: node tests/progress-section18.test.mjs
       - name: Verify Section 19 vehicle artwork, mapping and transparency
         run: node tests/vehicle-art-section19.test.mjs
+      - name: Final QA save recovery and rental payout tests
+        run: node tests/final-qa-section20.test.mjs
       - name: Rebuild the latest playable game, including all artwork
         run: python3 rebuild.py
       - name: Verify standalone game matches current source
