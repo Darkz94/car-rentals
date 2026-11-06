@@ -929,3 +929,63 @@ assert.ok(auction13markup.includes(a13ctx.money(101000))&&auction13markup.includ
 assert.ok(auction13markup.includes("You are leading")&&auction13markup.includes("Collector")&&auction13markup.includes("Sold to Dealer"),"Auction status is incomplete");
 assert.equal(JSON.stringify(a13snapshot),a13copy,"Auction screen must not mutate saved data");
 console.log("PASS: Section 13 premium auction visuals, bidding, live timers, own listings, historic results and save safety.");
+
+
+// Section 14: Branch network visual integrity without changes to purchase/transfer financial rules.
+assert.ok(html.includes('id="ctr-branches-section-14"'),"Section 14 stylesheet missing");
+const b14s=js.indexOf("function renderBranches(){"),b14e=js.indexOf("\nfunction renderContracts(){",b14s);
+assert.ok(b14s>=0&&b14e>b14s,"Section 14 renderer missing");
+const b14code=js.slice(b14s,b14e);
+for(const required of ["branches-v14","branch-v14-hero","branch-v14-stat-row","branch-v14-map-frame","renderMap(true)",
+ "branch-v14-grid","branch-v14-card","branch-v14-finance","branch-v14-fleet","branch-v14-transfer-form",
+ "branch-v14-transfers","data-countdown-transfer","data-role=\"branch-transfer-select\"","CAR_IMAGES[c.type]",
+ "branchReport(b.id)","branchOverhead()","BRANCHES.map","btn('page'","listBtn('branch'","listBtn('branchtransfer'",
+ "freeCash()","state.fleet.filter","renderHeroArt()","relativeTime(c.transferDue)"]){
+ assert.ok(b14code.includes(required),"Section 14 missing "+required);
+}
+assert.ok(js.includes("function transferCar(carId,branch){")&&
+ js.includes("c.transferDue=now()+12000")&&js.includes("c.transferFrom=c.branch")&&
+ js.includes("c.status='transfer'")&&
+ js.includes("function buildBranch(id){let b=BRANCHES.find")&&
+ js.includes("state.branches.push(id)")&&
+ js.includes("function branchOverhead(){return round(BRANCHES.filter")&&
+ js.includes("function branchReport(id){return state.branchReports?.[id]||{count:0,revenue:0};}")&&
+ js.includes("document.querySelectorAll('[data-countdown-transfer]')"),
+ "Preserve original branch expansion and live transfer engine");
+const b14Branches=[
+ {id:"hq",name:"Cape Town HQ",price:0,upkeep:1500,desc:"Flagship"},
+ {id:"stellenbosch",name:"Stellenbosch",price:350000,upkeep:1900,desc:"Wine Country"},
+ {id:"franschhoek",name:"Franschhoek",price:600000,upkeep:2500,desc:"Scenic tours"}];
+const b14state={cash:750000,branches:["hq","stellenbosch"],fleet:[
+ {id:"one",type:"sedan",plate:"CA 123",branch:"hq",status:"available"},
+ {id:"two",type:"hatch",plate:"CA 456",branch:"stellenbosch",status:"rented"},
+ {id:"three",type:"bakkie",plate:"CA 999",branch:"hq",status:"transfer",transferFrom:"hq",transferTo:"stellenbosch",transferDue:12500}
+],branchReports:{hq:{revenue:12000,count:8},stellenbosch:{revenue:9000,count:4}}};
+const b14saved=JSON.stringify(b14state);
+const b14Money=x=>"R"+Math.round(x).toLocaleString("en-ZA");
+const b14ctx={
+ state:b14state,BRANCHES:b14Branches,DEST:{hq:{name:"Cape Town HQ"},stellenbosch:{name:"Stellenbosch"},franschhoek:{name:"Franschhoek"}},
+ CAR_IMAGES:{sedan:"assets/executive-sedan-side.webp",hatch:"assets/city-hatch-side.png",bakkie:"assets/adventure-bakkie-side.png"},
+ owned:id=>b14state.branches.includes(id),freeCash:()=>700000,branchOverhead:()=>3400,
+ branchReport:id=>b14state.branchReports[id]||{count:0,revenue:0},typeOf:id=>({id,name:id}),
+ statusMsg:status=>status.toUpperCase(),fleetInGarageOrder:cars=>[...cars],
+ esc:v=>String(v),money:b14Money,relativeTime:()=>"9s",
+ renderHeroArt:()=>'<svg class="hero-art"></svg>',renderMap:compact=>compact?'<div class="map-frame-v10">MAP</div>':"",
+ btn:(action,label,cls,attrs="")=>'<button data-action="'+action+'" '+attrs+'>'+label+'</button>',
+ listBtn:(action,id,label,cls,attrs="")=>'<button data-action="'+action+'" data-id="'+id+'" '+attrs+'>'+label+'</button>'
+};
+const b14Render=vm.runInNewContext(b14code+"\nrenderBranches",b14ctx);
+const b14Markup=b14Render();
+for(const field of ["Cape Town HQ","Stellenbosch","Franschhoek","R350","R600","R12","R9","R3","data-action=\"branchtransfer\"","data-action=\"branch\"","data-countdown-transfer=\"three\"","MAP"]){
+ assert.ok(b14Markup.includes(field),"Section 14 missing grounded branch UI "+field);
+}
+for(const asset of ["assets/executive-sedan-side.webp","assets/city-hatch-side.png","assets/adventure-bakkie-side.png"]){
+ assert.ok(b14Markup.includes('src="'+asset+'"'),"Section 14 car art mismatch "+asset);
+}
+assert.ok(b14Markup.includes('data-role="branch-transfer-select" data-id="hq"')&&
+ b14Markup.includes('data-role="branch-transfer-select" data-id="stellenbosch"'),
+ "Only open branches should offer vehicle transfers");
+assert.ok(!b14Markup.includes('data-role="branch-transfer-select" data-id="franschhoek"'),
+ "Locked branches must not expose transfer controls");
+assert.equal(JSON.stringify(b14state),b14saved,"Rendering branch network must not modify saved game data");
+console.log("PASS: Section 14 Branch Network, map reuse, vehicle assignments, accurate money, 12s transfers and save safety.");
