@@ -278,7 +278,7 @@ assert.deepEqual(Array.from(orderFleet(unsortedCars),x=>x.type),["hatch","sedan"
 assert.deepEqual(Array.from(unsortedCars,x=>x.id),["h","l","m","p","t","d","b1","a","s","b2","j"],"Ordering must not mutate saved fleet data");
 assert.ok(js.includes("return garageClassOrder(a,b);"),"Garage must share class ordering");
 assert.ok(js.includes("const ordered=fleetInGarageOrder(state.fleet);")&&js.includes("shown.map(renderWorkshopVehicle)"),"Workshop must preserve class-order display without mutating the fleet");
-assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(c=>{let t=typeOf(c.type),cost="),"Performance ordering mismatch");
+assert.ok(js.includes("const cars=fleetInGarageOrder(state.fleet)")&&js.includes("cars.map(renderPerformanceCar)"),"Performance class-order display mismatch");
 assert.ok(js.includes("fleetInGarageOrder(free).map(c=>"),"Branch transfer ordering mismatch");
 assert.ok(js.includes("fleetInGarageOrder(state.fleet.filter(canListPlayerAuctionCar))"),"Owned auction ordering mismatch");
 assert.ok(js.includes('data-compact-info="garage-bulk-actions"')&&js.includes('data-compact-info="garage-operations"'),"Garage operations must be reachable");
