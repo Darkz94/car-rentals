@@ -99,6 +99,7 @@ function setup(){
   stats:{earned:0,returned:0},branchReports:{},contractReports:{},incidents:[]};
  let t=25000,credits=0,saves=0;
  const ctx={state,now:()=>t,save:()=>saves++,round:Math.round,
+  RENTAL_MIN_SECONDS:20,RENTAL_MAX_SECONDS:300,
   clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
   rand:(a,b)=>a===0&&b===100?100:a,Math,
   staffed:()=>false,perkEffect:()=>0,difficulty:()=>({expenses:1,incident:0}),
