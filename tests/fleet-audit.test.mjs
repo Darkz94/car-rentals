@@ -696,7 +696,7 @@ const v8before=JSON.stringify(v8game);
 const v8markup=v8offerFn(v8offer);
 assert.ok(v8markup.includes('data-rental-offer="offer-8"')&&v8markup.includes("Executive Priya")&&v8markup.includes("Cape Town International"),
  "Offer must show correct customer and destination");
-assert.ok(v8markup.includes("R4 000")&&v8markup.includes("R5 250")&&v8markup.includes("2")&&
+assert.ok(v8markup.includes(v8ctx.money(4000))&&v8markup.includes(v8ctx.money(5250))&&v8markup.includes("2")&&
  v8markup.includes("RETURN PAYOUT"),"Offer must display real budget, mid-trip payout and eligible count");
 assert.ok(v8markup.includes('data-countdown-offer="offer-8"')&&v8markup.includes('data-offer-progress="offer-8"'),
  "Offer needs a live expiry clock and progress bar");
