@@ -603,4 +603,50 @@ assert.ok(justCare.includes('data-workshop-car="limo-6"')&&!justCare.includes('d
 assert.equal(JSON.stringify(workshopGameState.fleet),beforeV6,"Workshop filters must not sort/mutate the saved fleet");
 console.log("PASS: Section 6 Workshop service prices, ownership upgrades, statuses, 5 filters, roadside recovery and offline-safe rendering.");
 
+
+
+// Section 7 Performance: no gameplay changes, five levels, class order and correct tuning.
+assert.ok(html.includes('id="ctr-performance-section-07"'),"Performance CSS missing");
+const v7s=js.indexOf("function renderPerformanceCar(c){"),v7p=js.indexOf("\nfunction renderTuning(){",v7s),v7e=js.indexOf("\nfunction renderMapPage(){",v7p);
+assert.ok(v7s>=0&&v7p>v7s&&v7e>v7p,"Section 7 view missing");
+const v7js=js.slice(v7s,v7e);
+for(const token of ["carHorsepower(c)","carHorsepower({...c,tune:level+1})",
+ "14000*Math.pow((c.tune||0)+1,1.65)","t.rate*(1+level*.13)",
+ "fleetInGarageOrder(state.fleet)","CAR_IMAGES[t.id]","p7-hero","p7-track","p7-compare","listBtn('tune'"]){
+ assert.ok(v7js.includes(token),"Section 7 missing "+token);
+}
+const v7limo={id:"l7",type:"limo",plate:"CA 777",tune:2,status:"available",paint:"silver"};
+const v7hatch={...v7limo,id:"h7",type:"hatch",plate:"CA 111",tune:0};
+const v7state={fleet:[v7limo,v7hatch],rep:4};
+const v7ctx={
+ state:v7state,selectedCar:"l7",TYPES:[{id:"classic",name:"Classic",unlock:3,price:40000},{id:"muscle",name:"Muscle",unlock:4,price:140000},{id:"sport",name:"Sports",unlock:5,price:400000},{id:"super",name:"Supercar",unlock:8,price:800000},{id:"hyper",name:"Hypercar",unlock:12,price:1800000}],
+ typeOf:id=>id==="limo"?{id,name:"Limo",category:"Luxury",rate:2450}:{id,name:"Hatchback",category:"Economy",rate:500},
+ CAR_IMAGES:{limo:"assets/limo-side.webp",hatch:"assets/city-hatch-side.png",classic:"assets/classic-side.webp",muscle:"assets/muscle-side.webp",sport:"assets/sport-side.webp",super:"assets/super-side.webp",hyper:"assets/hyper-side.webp"},
+ paintFilter:()=> "none",round:Math.round,money:v=>"R"+Math.round(v).toLocaleString("en-ZA"),freeCash:()=>100000,
+ carHorsepower:c=>Math.round((c.type==="limo"?390:98)*(1+(c.tune||0)*.13)),
+ esc:v=>String(v).replace(/"/g,"&quot;"),renderHeroArt:()=>"<svg></svg>",arcadeIcon:()=>"<svg></svg>",
+ listBtn:(a,id,label,cls,extra="")=>'<button data-action="'+a+'" data-id="'+id+'" '+extra+'>'+label+"</button>",
+ fleetInGarageOrder:arr=>[...arr].sort((a,b)=>a.type==="hatch"?-1:b.type==="hatch"?1:0)
+};
+const v7view=vm.runInNewContext(v7js+"\n({renderPerformanceCar,renderTuning})",v7ctx);
+const oldFleet=JSON.stringify(v7state.fleet);
+const card=v7view.renderPerformanceCar(v7limo);
+assert.ok(card.includes('src="assets/limo-side.webp"')&&card.includes("CA 777"),"Limo artwork/plate incorrect");
+assert.ok(card.includes("+26%")&&card.includes('aria-valuenow="2"'),"Level 2 bonus/progress wrong");
+assert.ok(card.includes("491")&&card.includes("542"),"Horsepower previews wrong");
+assert.ok(card.includes(v7ctx.money(Math.round(2450*1.26)))&&card.includes(v7ctx.money(Math.round(2450*1.39))),"Rate previews wrong");
+assert.ok(card.includes(v7ctx.money(Math.round(14000*Math.pow(3,1.65)))),"Tune price changed");
+assert.ok(card.includes('data-action="tune"')&&!card.includes(" disabled"),"Parked tuning disabled");
+assert.ok(v7view.renderPerformanceCar({...v7limo,tune:5}).includes("FULLY TUNED")&&v7view.renderPerformanceCar({...v7limo,tune:5}).includes("disabled"),"Max level must disable tune");
+for(const status of ["rented","transfer","auction","incident"])assert.ok(v7view.renderPerformanceCar({...v7limo,status}).includes("disabled"),"Tuning allowed while "+status);
+v7ctx.freeCash=()=>0;
+assert.ok(v7view.renderPerformanceCar(v7limo).includes("NEED MORE CASH"),"Insufficient cash state missing");
+v7ctx.freeCash=()=>100000;
+const view=v7view.renderTuning();
+assert.ok(view.indexOf('data-performance-car="h7"')<view.indexOf('data-performance-car="l7"'),"Original class display order changed");
+assert.ok(view.includes("Performance Collection")&&view.includes("LOCKED"),"Reputation collection missing");
+assert.equal(JSON.stringify(v7state.fleet),oldFleet,"Performance rendering mutated saved fleet");
+assert.ok(js.includes("function tune(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status!=='available')")&&js.includes("let cost=round(14000*Math.pow(c.tune+1,1.65));"),"Tuning gameplay changed");
+console.log("PASS: Section 7 Performance preview, tuning, eligibility, original art, order, economy and save safety.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
