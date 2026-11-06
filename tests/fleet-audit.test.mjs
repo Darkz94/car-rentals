@@ -774,4 +774,29 @@ assert.ok(js.includes("const RENTAL_MIN_SECONDS=20,RENTAL_MAX_SECONDS=300;")&&
  "Payment on return, original duration and offline catchup must be preserved");
 console.log("PASS: Section 9 rental cards, timestamps, progress, real return ledger, payment timing and save safety.");
 
+
+// Section 10 Live Map regression: preserve destinations, routes and top-down imagery.
+assert.ok(html.includes('id="ctr-live-map-section-10"'),"Section 10 CSS missing");
+const m10s=js.indexOf("function mapViewBox(){"),m10r=js.indexOf("function renderMap(compact=false){",m10s),m10e=js.indexOf("\nfunction renderFleet(){",m10r);
+const m10p=js.indexOf("function renderMapPage(){"),m10pe=js.indexOf("\nfunction renderCommand(){",m10p);
+assert.ok(m10s>=0&&m10r>m10s&&m10e>m10r&&m10p>0&&m10pe>m10p,"Section 10 map render missing");
+const map10=js.slice(m10s,m10e),page10=js.slice(m10p,m10pe);
+for(const term of ["mapViewBox()","MAP_CAR_IMAGES[car?.type]","MAP_CAR_IMAGES[c.type]","data-mapcar","data-maptransfer","map-route-v10","map-control-v10","zoomplus","zoomminus","mapreset","map-legend-v10"])assert.ok(map10.includes(term),"Map missing "+term);
+for(const term of ["live-map-hero-v10","live-map-kpis-v10","renderMap()","data-countdown-transfer","state.rentals.map(rentalCard)","maptheme","data-compact-info=\"map-details\""])assert.ok(page10.includes(term),"Map page missing "+term);
+assert.ok(js.includes("if(action==='mapreset'){selectedRental=null;mapFocus='hq';mapZoom=1;render();return;}"),"Map reset missing");
+assert.ok(js.includes("document.querySelectorAll('[data-maptransfer]')")&&js.includes("el.setAttribute('viewBox',mapViewBox())"),"Transfer updates missing");
+assert.ok(js.includes("const DEST={hq:{name:'Cape Town HQ',x:242,y:234}"),"Original destination coordinates changed");
+assert.ok(js.includes("start:c.transferDue-12000,due:c.transferDue"),"12-second transfers changed");
+const state10={rentals:[{id:"r",customer:"Demo",carId:"car",from:"hq",dest:"airport",start:100000,due:180000}],fleet:[{id:"car",type:"sedan",plate:"CA 111"}]};
+const ctx10={state:state10,DEST:{hq:{name:"HQ",x:242,y:234},airport:{name:"Airport",x:540,y:279}},mapZoom:1.5,mapFocus:"airport",selectedRental:null,now:()=>140000,routePosition:()=>({x:420,y:255}),clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),esc:v=>String(v),owned:()=>false,MAP_CAR_IMAGES:{sedan:"assets/executive-sedan-topdown.webp",hatch:"assets/city-hatch-topdown.png"},mapCarPose:()=> "translate(420 255) rotate(0)",effectiveMapNight:()=>false,relativeTime:()=> "40s"};
+const funcs10=vm.runInNewContext(map10+"\n({mapViewBox,renderMap})",ctx10),snapshot10=JSON.stringify(state10);
+const vb10=funcs10.mapViewBox().split(" ").map(Number);assert.equal(vb10.length,4);assert.ok(vb10[0]>=0&&vb10[1]>=0&&vb10[2]<1000&&vb10[3]<620);
+const markup10=funcs10.renderMap(false);
+assert.ok(markup10.includes('href="assets/executive-sedan-topdown.webp"')&&markup10.includes('data-mapcar="r"'),"Original top-down image missing");
+assert.ok(markup10.includes("M242 234 Q391 191.5 540 279"),"Route curve altered");
+assert.ok(markup10.includes('data-action="mapfocus"')&&markup10.includes('data-action="rentalfocus"')&&markup10.includes('data-action="mapreset"'),"Map actions missing");
+assert.ok(!funcs10.renderMap(true).includes('data-action="zoomplus"'),"Dashboard map controls must stay compact");
+assert.equal(JSON.stringify(state10),snapshot10,"Map mutated save data");
+console.log("PASS: Section 10 map, geometry, original car sprites, zoom/focus, transfers and save safety.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
