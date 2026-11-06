@@ -303,7 +303,17 @@ for(const part of ["smartOverview()","dashboard-city-strip","dashboard-summary",
                   "renderLog(5)","nextActions()"]){
  assert.ok(dashMarkup.includes(part),"Dashboard regression: missing "+part);
 }
-const shortcutFn=vm.runInNewContext(js.slice(dashTileStart,dashTileEnd)+"\ndashboardShortcut");
+const dashIconStart=js.indexOf("function arcadeIcon("),dashIconEnd=js.indexOf("function renderHeroArt(",dashIconStart);
+assert.ok(dashIconStart>=0&&dashIconEnd>dashIconStart,"Section 2 illustrated arcade icon renderer missing");
+const shortcutFn=vm.runInNewContext(js.slice(dashIconStart,dashIconEnd)+"\n"+js.slice(dashTileStart,dashTileEnd)+"\ndashboardShortcut");
+assert.match(shortcutFn("🔑","Dispatch Rental","rental","","gold"),/class="arcade-art-icon"/,
+  "Dispatch shortcut must render the custom illustrated icon");
+assert.match(shortcutFn("🚘","Garage","fleet","garage"),/class="arcade-art-icon"/,
+  "Garage shortcut must render the custom illustrated icon");
+assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settings"'),
+  "Header gear must route to real Settings rather than the game guide");
+assert.ok(html.includes("SECTION 02 POLISH")&&js.includes("function renderHeroArt()"),
+  "Cape Town scene and portrait polish must be bundled for offline Android");
 assert.match(shortcutFn("🔑","Dispatch Rental","rental","","gold"),/data-action="autorent"/,
   "Dispatch tile must initiate a real rental, not merely open the Garage");
 assert.match(shortcutFn("🚘","Garage","fleet","garage"),/data-action="dashshortcut" data-id="fleet" data-sub="garage"/);
