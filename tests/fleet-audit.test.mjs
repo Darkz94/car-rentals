@@ -327,4 +327,65 @@ assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer
 console.log("PASS: Dashboard section 2 uses live dispatch, 9 routed actions, live rentals, requests, city status and saved game foundation.");
 
 
+
+// Section 3: Fleet command shell must render live KPIs, image-backed header,
+// all four real section routes, and exactly one working filter toolbar.
+const fleetShellStart=js.indexOf("function renderFleet(){");
+const fleetShellEnd=js.indexOf("\nconst openInfoPanels",fleetShellStart);
+const garageShellStart=js.indexOf("function renderGarage(){");
+const garageShellEnd=js.indexOf("\nfunction fleetCard(",garageShellStart);
+assert.ok(fleetShellStart>=0&&fleetShellEnd>fleetShellStart&&garageShellStart>=0&&garageShellEnd>garageShellStart,
+  "Section 3 Fleet shell or existing Garage functions missing");
+assert.ok(html.includes('id="ctr-fleet-shell-section-03"')&&js.includes("function renderFleetFilters(){"),
+  "Section 3 scoped styles and existing filter controls must ship offline");
+assert.equal((js.match(/data-role="garage-status"/g)||[]).length,1,
+  "Status filtering must exist only once, inside Fleet tab shell");
+for(const role of ["garage-search","garage-status","garage-branch","garage-sort"])
+ assert.ok(js.includes('data-role="'+role+'"'),"Missing Fleet search/filter control: "+role);
+const garageMarkup=js.slice(garageShellStart,garageShellEnd);
+assert.ok(!garageMarkup.includes('class="fleet-overview"')&&!garageMarkup.includes('class="garage-filters"'),
+  "Garage must not duplicate the shared shell KPIs or filtering");
+const fleetTestState={fleet:[
+ {id:"test-1",type:"hatch",status:"available",tune:0},
+ {id:"test-2",type:"limo",status:"rented",tune:1}
+],rep:5};
+const fleetContext={
+ state:fleetTestState,selectedCar:"test-1",activeSub:{fleet:"garage"},
+ CAR_IMAGES:{hatch:"assets/city-hatch-side.png",limo:"assets/limo-side.webp"},
+ TYPES:[{id:"hatch",unlock:1},{id:"limo",unlock:4}],
+ typeOf:id=>({id}),available:()=>[fleetTestState.fleet[0]],
+ garageCapacity:()=>10,getResale:()=>125000,vehicleNeedsAttention:()=>false,
+ renderHeroArt:()=>"<svg></svg>",arcadeIcon:icon=>'<svg data-icon="'+icon+'"></svg>',
+ compact:amount=>String(amount),
+ btn:(action,label,cls,attrs)=>'<button data-action="'+action+'" '+(attrs||'')+'>'+label+'</button>',
+ renderFleetFilters:()=>'<input data-role="garage-search"><select data-role="garage-status"></select><select data-role="garage-branch"></select><select data-role="garage-sort"></select>',
+ renderGarage:()=>"<p>EXISTING GARAGE CONTENT</p>",
+ renderDealership:()=>"<p>EXISTING DEALERSHIP CONTENT</p>",
+ renderCare:()=>"<p>EXISTING WORKSHOP CONTENT</p>",
+ renderTuning:()=>"<p>EXISTING PERFORMANCE CONTENT</p>"
+};
+const fleetFn=vm.runInNewContext(js.slice(fleetShellStart,fleetShellEnd)+"\nrenderFleet",fleetContext);
+const fleetSnapshot=JSON.stringify(fleetTestState.fleet);
+const garageShell=fleetFn();
+assert.ok(garageShell.includes('src="assets/city-hatch-side.png"'),
+  "Fleet header must reuse the selected vehicle artwork");
+assert.equal((garageShell.match(/class="fleet-command-tab /g)||[]).length,4,
+  "Fleet shell must have exactly four section tabs");
+for(const section of ["garage","dealership","care","tuning"])
+ assert.ok(garageShell.includes('data-group="fleet" data-id="'+section+'"'),
+   "Fleet tab routing missing: "+section);
+for(const cls of ["fleet-command-banner","fleet-command-kpis","fleet-command-filters","fleet-command-content"])
+ assert.ok(garageShell.includes(cls),"Fleet shell component missing: "+cls);
+assert.ok(garageShell.includes("EXISTING GARAGE CONTENT")&&garageShell.includes('data-role="garage-sort"'),
+ "Garage body and live sorting must be retained in shell");
+for(const [section,label] of [["dealership","DEALERSHIP"],["care","WORKSHOP"],["tuning","PERFORMANCE"]]){
+ fleetContext.activeSub.fleet=section;
+ const markup=fleetFn();
+ assert.ok(markup.includes("EXISTING "+label+" CONTENT"),"Sub-tab failed to render "+section);
+ assert.ok(!markup.includes('data-role="garage-search"'),"Garage filters should only appear on Garage");
+}
+assert.equal(JSON.stringify(fleetTestState.fleet),fleetSnapshot,
+ "Fleet shell must never mutate or sort the saved fleet");
+console.log("PASS: Section 3 Fleet shell, tab navigation, shared filters, active stats and save-safe rendering.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
