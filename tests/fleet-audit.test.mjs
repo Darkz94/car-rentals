@@ -277,7 +277,7 @@ const unsortedCars=[{type:"hyper",id:"h"},{type:"limo",id:"l"},{type:"muscle",id
 assert.deepEqual(Array.from(orderFleet(unsortedCars),x=>x.type),["hatch","sedan","bakkie","bakkie","jeep","donk","limo","muscle","partybus","bus","hyper"],"Vehicle tabs must follow Garage class order");
 assert.deepEqual(Array.from(unsortedCars,x=>x.id),["h","l","m","p","t","d","b1","a","s","b2","j"],"Ordering must not mutate saved fleet data");
 assert.ok(js.includes("return garageClassOrder(a,b);"),"Garage must share class ordering");
-assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(x=>smallCar(x,{action:'care'}))"),"Workshop ordering mismatch");
+assert.ok(js.includes("const ordered=fleetInGarageOrder(state.fleet);")&&js.includes("shown.map(renderWorkshopVehicle)"),"Workshop must preserve class-order display without mutating the fleet");
 assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(c=>{let t=typeOf(c.type),cost="),"Performance ordering mismatch");
 assert.ok(js.includes("fleetInGarageOrder(free).map(c=>"),"Branch transfer ordering mismatch");
 assert.ok(js.includes("fleetInGarageOrder(state.fleet.filter(canListPlayerAuctionCar))"),"Owned auction ordering mismatch");
@@ -515,5 +515,92 @@ assert.ok(incidentView.includes("RECOVERY NEEDED")&&incidentView.includes("Roads
 assert.ok(js.includes("let ordered=fleetInGarageOrder(state.fleet);if(!ordered.length)return;"),
  "Inspection arrow navigation must use the class-ordered nonmutating fleet view");
 console.log("PASS: Section 5 vehicle artwork, real specs, 12 controls, rental restrictions and save-safe class navigation.");
+
+
+// Section 6: the Workshop UI must render real service prices and reuse the existing
+// service, fuel, wash, bodywork, upgrade, roadside and auto-care mechanics.
+assert.ok(html.includes('id="ctr-workshop-section-06"'),"Workshop styles must be bundled for offline Android");
+const v6WorkshopStart=js.indexOf("function renderWorkshopVehicle(c){");
+const v6WorkshopEnd=js.indexOf("\nfunction renderCare(){",v6WorkshopStart);
+const v6CareEnd=js.indexOf("\nfunction renderTuning(){",v6WorkshopEnd);
+assert.ok(v6WorkshopStart>=0&&v6WorkshopEnd>v6WorkshopStart&&v6CareEnd>v6WorkshopEnd,"Section 6 renderers missing");
+const v6WorkshopCode=js.slice(v6WorkshopStart,v6WorkshopEnd);
+const v6CareCode=js.slice(v6WorkshopEnd,v6CareEnd);
+for(const word of ["carePrices(c)","bodyRepairCost(c)","listBtn('fuel'","listBtn('wash'","listBtn('service'","listBtn('bodyrepair'","listBtn('care'","listBtn('selectcar'","listBtn('resolve'"]){
+ assert.ok(v6WorkshopCode.includes(word),"Workshop lost existing maintenance action: "+word);
+}
+for(const word of ["workshop-hero","workshop-kpis","workshop-upgrade-grid","workshop-service-desk","workshop-fuel-badge","workshop-filterbar","autoCareControl()","const ordered=fleetInGarageOrder(state.fleet)","shown.map(renderWorkshopVehicle)"]){
+ assert.ok(v6CareCode.includes(word),"Workshop feature missing: "+word);
+}
+assert.ok(js.includes("if(action==='workshopfilter')")&&js.includes("workshopFilter='all'"),
+ "Workshop status filters must be wired without changing saved state");
+
+const workshopCar={id:"limo-6",type:"limo",status:"available",plate:"CA 600",branch:"hq",fuel:45,condition:68,clean:51,body:81,paint:"silver"};
+const workshopRented={...workshopCar,id:"on-road",status:"rented",plate:"CA 900"};
+const workshopIncident={...workshopCar,id:"incident-6",status:"incident",plate:"CA 700"};
+const workshopGameState={fleet:[workshopCar,workshopRented,workshopIncident],incidents:[{id:"recovery-1",carId:"incident-6"}]};
+const mockPrices={service:2380,wash:180,fuel:750};
+const workshopCtx={
+ state:workshopGameState,selectedCar:"limo-6",
+ typeOf:()=>({id:"limo",name:"Limo",category:"Limo",rate:2450,tank:69}),
+ carePrices:()=>({...mockPrices}),careNeeded:c=>c.fuel<99.9||c.condition<99.9||c.clean<99.9,
+ bodyRepairCost:()=>400,paintFilter:()=>"none",
+ CAR_IMAGES:{limo:"assets/limo-side.webp"},DEST:{hq:{name:"Cape Town HQ"}},
+ round:Math.round,clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
+ money:n=>"R"+Math.round(n||0).toLocaleString("en-ZA"),esc:v=>String(v).replace(/"/g,"&quot;"),
+ up:()=>false,listBtn:(action,id,label,classes,extra="")=>'<button data-action="'+action+'" data-id="'+id+'" '+extra+'>'+label+"</button>"
+};
+const renderWorkshopCar=vm.runInNewContext(v6WorkshopCode+"\nrenderWorkshopVehicle",workshopCtx);
+const beforeV6=JSON.stringify(workshopGameState.fleet);
+const workshopCard=renderWorkshopCar(workshopCar);
+assert.ok(workshopCard.includes('src="assets/limo-side.webp"'),"Workshop must use the original Limo artwork");
+assert.ok(workshopCard.includes("R2")&&workshopCard.includes("R180")&&workshopCard.includes("R750"),
+ "Workshop per-service buttons must use live care prices");
+for(const action of ["fuel","wash","service","bodyrepair","care","selectcar"]){
+ assert.ok(workshopCard.includes('data-action="'+action+'"'),"Workshop missing button "+action);
+}
+assert.ok(workshopCard.includes("FUEL")&&workshopCard.includes("MECHANICAL")&&workshopCard.includes("BODY"),
+ "Workshop must display accurate vehicle health");
+const rentalCardV6=renderWorkshopCar(workshopRented);
+assert.ok(rentalCardV6.includes("ON HIRE"),"Workshop must distinguish a rented car");
+assert.ok((rentalCardV6.match(/disabled/g)||[]).length>=5,
+ "On-hire vehicles must not offer maintenance");
+const incidentCardV6=renderWorkshopCar(workshopIncident);
+assert.ok(incidentCardV6.includes('data-action="resolve"')&&incidentCardV6.includes('data-id="recovery-1"'),
+ "Incident recovery must connect to the actual incident ID");
+assert.equal(JSON.stringify(workshopGameState.fleet),beforeV6,
+ "Workshop card rendering must never mutate saved fleet data");
+
+const mkUpgrade=(id,price)=>({id,price});
+const upgradeList=[mkUpgrade("workshop",175000),mkUpgrade("carwash",75000)];
+const careContext={
+ ...workshopCtx,UPGRADES:upgradeList,
+ workshopFilter:"all",activeSub:{fleet:"care"},fuelPrice:()=>23.7,
+ arcadeIcon:id=>'<svg data-icon="'+id+'"></svg>',
+ renderHeroArt:()=>"<svg></svg>",
+ available:()=>[workshopCar],
+ freeCash:()=>500000,
+ fleetInGarageOrder:cars=>[...cars].sort((a,b)=>a.id.localeCompare(b.id)),
+ renderWorkshopVehicle:renderWorkshopCar,autoCareControl:()=>"<section>AUTO CARE CONTROLS</section>",
+ btn:(action,label,classes,extra)=>'<button data-action="'+action+'" '+extra+'>'+label+"</button>"
+};
+const renderWorkshop=vm.runInNewContext(v6CareCode+"\nrenderCare",careContext);
+const workshopAll=renderWorkshop();
+for(const target of ["workshop-hero","workshop-upgrade-grid","workshop-service-desk","AUTO CARE CONTROLS","data-action=\"upgrade\"","data-action=\"workshopfilter\""]){
+ assert.ok(workshopAll.includes(target),"Workshop main view lost "+target);
+}
+for(const category of ["all","needs","parked","road","incident"]){
+ assert.ok(workshopAll.includes('data-id="'+category+'"'),"Workshop filter missing "+category);
+}
+careContext.workshopFilter="incident";
+const justIncident=renderWorkshop();
+assert.ok(justIncident.includes('data-id="recovery-1"')&&!justIncident.includes('data-workshop-car="limo-6"'),
+ "Incident filter should show affected vehicle only");
+careContext.workshopFilter="needs";
+const justCare=renderWorkshop();
+assert.ok(justCare.includes('data-workshop-car="limo-6"')&&!justCare.includes('data-workshop-car="on-road"'),
+ "Needs-care filter must exclude rentals in progress");
+assert.equal(JSON.stringify(workshopGameState.fleet),beforeV6,"Workshop filters must not sort/mutate the saved fleet");
+console.log("PASS: Section 6 Workshop service prices, ownership upgrades, statuses, 5 filters, roadside recovery and offline-safe rendering.");
 
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
