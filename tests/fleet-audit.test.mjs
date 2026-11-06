@@ -1028,7 +1028,7 @@ assert.ok(js.includes("function hire(id){let x=STAFF.find(v=>v.id===id);if(!x||s
  js.includes("function staffOverhead(){return round(STAFF.filter")&&
  js.includes("const total=staffOverhead()+branchOverhead();")&&
  js.includes("if(modal==='staffhire')")&&
- js.includes("if(action==='confirmhire'){modal=null;hire(id);afterAction();return;}")&&
+ js.includes("if(action==='confirmhire'){if(modal!=='staffhire'||id!==modalCar)return;modal=null;hire(id);afterAction();return;}")&&
  js.includes("s.version!==3"),"Staff transaction, payroll or save rules changed");
 console.log("PASS: Section 15 employee roster, hiring confirmation, real wages/effects and save-safe display.");
 
