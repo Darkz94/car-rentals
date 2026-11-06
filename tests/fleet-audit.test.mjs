@@ -24,10 +24,10 @@ const customerList = vm.runInNewContext(customerSource + "\nCUSTOMER_TYPES");
 const contractIds = vm.runInNewContext(decl("CONTRACT_CUSTOMER_IDS", "};") + "\nCONTRACT_CUSTOMER_IDS");
 const equivalence = vm.runInNewContext(decl("CATEGORY_EQUIVALENTS", "};") + "\nCATEGORY_EQUIVALENTS");
 const byId = new Map(typeList.map(t => [t.id, t]));
-assert.equal(typeList.length, 16);
-assert.equal(byId.size, 16);
-assert.equal(customerList.length, 25);
-assert.equal(new Set(customerList.map(x => x.id)).size, 25);
+assert.equal(typeList.length, 17);
+assert.equal(byId.size, 17);
+assert.equal(customerList.length, 28);
+assert.equal(new Set(customerList.map(x => x.id)).size, 28);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
@@ -72,7 +72,7 @@ assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 520
 assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
 assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
 assert.ok(js.includes("type==='truck'||type==='tow'"), "Tow Truck roof sprite must face correctly on the map");
-assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Bus']"), "Tow Truck must appear in the Commercial dealership view");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
 const donk = byId.get("donk");
 assert.ok(donk, "Missing Donk");
 assert.equal(typeList.findIndex(t => t.id === "donk"), typeList.findIndex(t => t.id === "limo")-1, "Donk belongs immediately before Limo");
@@ -106,6 +106,25 @@ assert.ok(!("Limo" in equivalence),"Limo customers must use exact category match
 assert.ok(js.includes("['Hatch','Sedan','Coupe','Classic','Limo'].includes(t.category)"),"Limo must appear in executive dealership category");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Generic auction lots must include the new Limo at level 4");
 
+const partyBus=byId.get("partybus");
+assert.ok(partyBus,"Party Bus vehicle must exist");
+assert.equal(typeList.findIndex(t=>t.id==="partybus"),typeList.findIndex(t=>t.id==="muscle")+1,"Party Bus follows Muscle");
+assert.equal(typeList.findIndex(t=>t.id==="partybus"),typeList.findIndex(t=>t.id==="bus")-1,"Party Bus must immediately precede Tour Bus");
+assert.equal(partyBus.category,"Party Bus");
+assert.equal(partyBus.price,495000);
+assert.equal(partyBus.rate,2850);
+assert.equal(partyBus.tank,115);
+assert.equal(partyBus.unlock,5);
+assert.equal(horsepower.partybus,300);
+assert.ok(partyBus.price>byId.get("muscle").price&&partyBus.price<byId.get("bus").price,"Party Bus purchase price should fall between Muscle and Tour Bus");
+assert.ok(partyBus.rate>byId.get("bus").rate&&partyBus.rate<byId.get("sport").rate,"Party Bus rate should fall between Tour Bus and Sports");
+assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Party Bus").map(c=>c.id).sort()),
+  ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle"],"Three dedicated Party Bus requests must exist");
+assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching");
+assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
+assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Random auction must include unlocked Party Bus models");
+
 for (const customer of customerList) {
   const vehicle = typeList.find(t => t.category === customer.need);
   assert.ok(vehicle, "Unmapped demand " + customer.need);
@@ -131,6 +150,8 @@ assert.ok(canServe("Tow", "Tow"), "Tow customer matching works");
 assert.ok(!canServe("Tow", "Truck"), "No unapproved Tow cross-class substitutions");
 assert.ok(canServe("Donk", "Donk"), "Donk customer matching works");
 assert.ok(!canServe("Donk", "Muscle"), "No unapproved Donk substitutions");
+assert.ok(canServe("Party Bus","Party Bus"),"Party Bus customers can hire Party Bus");
+assert.ok(!canServe("Party Bus","Bus")&&!canServe("Party Bus","Limo"),"Party Bus bookings must not dispatch Tour Bus or Limo");
 assert.ok(canServe("Limo","Limo"), "Dedicated Limo requests accept the Limo");
 assert.ok(!canServe("Limo","Sedan") && !canServe("Limo","Donk"), "Limo requests must not dispatch ordinary classes");
 
@@ -172,7 +193,7 @@ const testScript = [
 const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
-assert.equal(successful, 66, "Failed auction bidding, owned-sale or protection scenarios");
+assert.equal(successful, 70, "Failed auction bidding, owned-sale or protection scenarios");
 // Protect the Premium Upgrade catalogue, 100-level cap, prices and garage capacity.
 const premiumPerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
 assert.equal(premiumPerks.length,10,"There must be 10 Premium Upgrade categories");
@@ -252,9 +273,9 @@ const garageClassOrderSource=js.match(/function garageClassOrder\(a,b\)\{[^\n]*\
 const fleetInGarageOrderSource=js.match(/function fleetInGarageOrder\(cars\)\{[^\n]*\}/)?.[0];
 assert.ok(garageClassOrderSource&&fleetInGarageOrderSource,"Garage class-order helpers missing");
 const orderFleet=vm.runInNewContext(typeSource+"\n"+garageClassOrderSource+"\n"+fleetInGarageOrderSource+"\nfleetInGarageOrder");
-const unsortedCars=[{type:"hyper",id:"h"},{type:"limo",id:"l"},{type:"muscle",id:"m"},{type:"donk",id:"d"},{type:"bakkie",id:"b1"},{type:"hatch",id:"a"},{type:"sedan",id:"s"},{type:"bakkie",id:"b2"},{type:"jeep",id:"j"}];
-assert.deepEqual(Array.from(orderFleet(unsortedCars),x=>x.type),["hatch","sedan","bakkie","bakkie","jeep","donk","limo","muscle","hyper"],"Vehicle tabs must follow Garage class order");
-assert.deepEqual(Array.from(unsortedCars,x=>x.id),["h","l","m","d","b1","a","s","b2","j"],"Ordering must not mutate saved fleet data");
+const unsortedCars=[{type:"hyper",id:"h"},{type:"limo",id:"l"},{type:"muscle",id:"m"},{type:"partybus",id:"p"},{type:"bus",id:"t"},{type:"donk",id:"d"},{type:"bakkie",id:"b1"},{type:"hatch",id:"a"},{type:"sedan",id:"s"},{type:"bakkie",id:"b2"},{type:"jeep",id:"j"}];
+assert.deepEqual(Array.from(orderFleet(unsortedCars),x=>x.type),["hatch","sedan","bakkie","bakkie","jeep","donk","limo","muscle","partybus","bus","hyper"],"Vehicle tabs must follow Garage class order");
+assert.deepEqual(Array.from(unsortedCars,x=>x.id),["h","l","m","p","t","d","b1","a","s","b2","j"],"Ordering must not mutate saved fleet data");
 assert.ok(js.includes("return garageClassOrder(a,b);"),"Garage must share class ordering");
 assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(x=>smallCar(x,{action:'care'}))"),"Workshop ordering mismatch");
 assert.ok(js.includes("fleetInGarageOrder(state.fleet).map(c=>{let t=typeOf(c.type),cost="),"Performance ordering mismatch");
@@ -264,4 +285,4 @@ assert.ok(js.includes('data-compact-info="garage-bulk-actions"')&&js.includes('d
 assert.ok(js.includes('data-compact-info="map-details"'),"Map details must remain reachable");
 assert.ok(html.includes('id="ctr-responsive-compact-v2"'),"Compact CSS missing");
 console.log("PASS: Garage vehicle ordering and responsive Info sections.");
-console.log("PASS: JavaScript syntax, 16 vehicle classes, 25 customers, all assets and 66 auction scenarios.");
+console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
