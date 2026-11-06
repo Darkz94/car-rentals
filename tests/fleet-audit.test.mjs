@@ -882,3 +882,50 @@ assert.ok(js.includes("dealerSearch.trim().toLowerCase()"),"Dealer search must f
 assert.equal(typeList.length,17,"All 17 vehicle classes remain available");
 assert.ok(js.includes("s.version!==3")&&js.includes("function saveToSlot(n)"),"Existing save model must remain");
 console.log("PASS: Section 12 dealership visuals, 17 vehicles, category/search, comparison, purchase confirmation and save safety.");
+
+
+// Section 13 Auction House visual integrity; preserve both auction engines.
+assert.ok(html.includes('id="ctr-auctions-section-13"'),"Section 13 stylesheet missing");
+const a13s=js.indexOf("function renderAuctions(){"),a13e=js.indexOf("\nfunction renderIncidents(){",a13s);
+assert.ok(a13s>=0&&a13e>a13s,"Section 13 auction renderers missing");
+const a13=js.slice(a13s,a13e);
+for(const token of ["auctions-v13","auction-v13-intro","auction-v13-kpis","auction-v13-lot",
+"auction-v13-art","auction-v13-desk","auction-v13-lead","auction-v13-bid-values",
+"auction-v13-owned-card","auction-v13-owned-art","auction-v13-result",
+"auction-v13-clock","data-countdown-auction","data-countdown-owned-auction",
+"data-role=\"auction-owned-car\"","CAR_IMAGES[t.id]","CAR_IMAGES[a.type]",
+"btn('bid'","btn('buynow'","btn('listauction'","renderHeroArt()","renderPlayerAuctions()"]){
+ assert.ok(a13.includes(token),"Section 13 auction UI missing "+token);
+}
+assert.ok(js.includes("let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.035));")&&
+ js.includes("ends:now()+75000")&&
+ js.includes("ends:start+75000,nextBidAt:start+5000")&&
+ js.includes("const reserve=round(getResale(car)*.85)")&&
+ js.includes("if(addCar(a.type,price,true))")&&
+ js.includes("a.status='sold';a.salePrice=amount"),
+ "Original bid increments, auction durations, reserve prices and settlements must remain");
+const a13snapshot={cash:450000,rep:5,fleet:[{id:"car1",type:"hatch",status:"available",plate:"CA 123"},{id:"car2",type:"sedan",status:"auction",plate:"CA 456"}],
+ auction:{id:"lot1",type:"limo",base:95000,highest:101000,bidder:"You",playerBid:101000,ends:75000},
+ playerAuctions:[{id:"a1",type:"sedan",plate:"CA 456",carId:"car2",status:"active",ends:75000,highest:70000,reserve:65000,bidCount:2,bidder:"Collector"},
+ {id:"a2",type:"hatch",plate:"CA 111",status:"sold",bidder:"Dealer",salePrice:90000}]};
+const a13copy=JSON.stringify(a13snapshot);
+const a13ctx={state:a13snapshot,CAR_IMAGES:{limo:"assets/limo-side.webp",sedan:"assets/executive-sedan-side.webp",hatch:"assets/city-hatch-side.png"},
+ typeOf:id=>({id,name:id,price:200000,rate:2500}),auctionBuyNowPrice:()=>145000,round:Math.round,
+ bidReserve:()=>101000,freeCash:()=>349000,garageCapacity:()=>10,relativeTime:()=>"45s",
+ esc:x=>String(x),money:x=>"R"+Math.round(x).toLocaleString("en-ZA"),renderHeroArt:()=>'<svg class="hero-art"></svg>',
+ paneHeading:title=>"<h3>"+title+"</h3>",fleetInGarageOrder:cars=>cars,
+ canListPlayerAuctionCar:car=>car.status==='available',getResale:()=>80000,
+ btn:(action,label,cls,attrs="")=>'<button data-action="'+action+'" '+attrs+'>'+label+'</button>'};
+const auction13fn=vm.runInNewContext(a13+"\nrenderAuctions",a13ctx);
+const auction13markup=auction13fn();
+for(const imagePath of ["assets/limo-side.webp","assets/executive-sedan-side.webp","assets/city-hatch-side.png"]){
+ assert.ok(auction13markup.includes('src="'+imagePath+'"'),"Auction UI missing correct image "+imagePath);
+}
+for(const control of ['data-countdown-auction="1"','data-countdown-owned-auction="a1"','data-role="auction-owned-car"','data-action="bid"','data-action="buynow"','data-action="listauction"']){
+ assert.ok(auction13markup.includes(control),"Auction control missing "+control);
+}
+assert.ok(auction13markup.includes("R101,000")&&auction13markup.includes("R145,000")&&
+ auction13markup.includes("R65,000")&&auction13markup.includes("R90,000"),"Displayed auction financial values incorrect");
+assert.ok(auction13markup.includes("You are leading")&&auction13markup.includes("Collector")&&auction13markup.includes("Sold to Dealer"),"Auction status is incomplete");
+assert.equal(JSON.stringify(a13snapshot),a13copy,"Auction screen must not mutate saved data");
+console.log("PASS: Section 13 premium auction visuals, bidding, live timers, own listings, historic results and save safety.");
