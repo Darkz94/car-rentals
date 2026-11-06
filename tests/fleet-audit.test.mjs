@@ -1031,3 +1031,22 @@ assert.ok(js.includes("function hire(id){let x=STAFF.find(v=>v.id===id);if(!x||s
  js.includes("if(action==='confirmhire'){modal=null;hire(id);afterAction();return;}")&&
  js.includes("s.version!==3"),"Staff transaction, payroll or save rules changed");
 console.log("PASS: Section 15 employee roster, hiring confirmation, real wages/effects and save-safe display.");
+
+
+// Section 16 — verify both redesigned upgrade screens and untouched upgrade engines.
+assert.ok(html.includes('id="ctr-upgrades-section-16"'),"Section 16 styling missing from offline HTML");
+const standard16Start=js.indexOf("function renderUpgrades(){"),standard16End=js.indexOf("\nfunction renderBranches(){",standard16Start);
+const premium16Start=js.indexOf("function renderPremiumUpgrades(){"),premium16End=js.indexOf("\nfunction renderStats(){",premium16Start);
+assert.ok(standard16Start>=0&&standard16End>standard16Start&&premium16Start>=0&&premium16End>premium16Start,"Upgrade renderers missing");
+const standard16=js.slice(standard16Start,standard16End),premium16=js.slice(premium16Start,premium16End);
+for(const token of ["upgrade16-shell","upgrade16-hero","upgrade16-kpis","upgrade16-grid","upgrade16-card","upgrade16-price","autoDeskControl()","autoCareControl()","listBtn('upgrade'","money(x.price)","freeCash()","renderHeroArt()","data-sub=\"premium\""])
+ assert.ok(standard16.includes(token),"Section 16 standard UI missing "+token);
+for(const token of ["premium16-shell","premium16-grid","premium16-card","premium16-track","premium16-values","premium16-buyrow","premium16-max","PRESTIGE_PERKS.map","[1,5,10]","premiumTotalCost(level+creditUsed,n-creditUsed)","premiumLabel(id,level)","listBtn('premium'","data-qty"])
+ assert.ok(premium16.includes(token),"Section 16 premium UI missing "+token);
+assert.ok(js.includes("function buyUpgrade(id){let x=UPGRADES.find")&&
+ js.includes("function premiumCost(level){return 10000+640*level+80*level*level;}")&&
+ js.includes("function premiumTotalCost(level,qty){let total=0;")&&
+ js.includes("let credits=Math.min(qty,Math.max(0,Math.floor(Number(state.premiumCredits)||0)));")&&
+ js.includes("state.perks[id]=level+qty;")&&js.includes("s.version!==3"),
+ "Section 16 must preserve upgrade prices, batch formulas, credits and saves");
+console.log("PASS: Section 16 both upgrade screens, 1/5/10 controls, 100-level caps, existing automation and safe economy.");

@@ -3131,6 +3131,81 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 @media(max-width:640px){.staff-v15{gap:10px}.staff-v15-hero{grid-template-columns:minmax(0,1fr) 64px;padding:12px;min-height:135px;border-radius:16px}.staff-v15-hero h2{font-size:23px}.staff-v15-hero-emoji{width:62px;height:65px;font-size:34px;border-radius:17px}.staff-v15-hero p{font-size:10px}.staff-v15-progress{font-size:9px}.staff-v15-kpi{gap:6px;padding:9px;min-height:76px}.staff-v15-kpi>span{font-size:20px}.staff-v15-kpi strong{font-size:16px}.staff-v15-kpi small{font-size:8px}.staff-v15-roster,.staff-v15-payroll,.staff-v15-active{padding:12px}.staff-v15-grid{grid-template-columns:1fr}.staff-v15-portrait{height:142px}.staff-v15-avatar{width:91px;height:93px;font-size:50px}.staff-v15-body{padding:11px}}
 @media(max-width:360px){.staff-v15-kpi{gap:4px;padding:8px}.staff-v15-kpi>span{font-size:16px}.staff-v15-kpi strong{font-size:13px}}
 </style>
+
+<style id="ctr-upgrades-section-16">
+/* Section 16: arcade-blue and gold only, no changes to upgrade economy. */
+.upgrade16-shell,.premium16-shell{display:grid;gap:13px;min-width:0}
+.upgrade16-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:165px;padding:19px 22px;background:linear-gradient(120deg,#073e75,#0a5890 58%,#152b64);border:1px solid #55c6ff;border-radius:22px;box-shadow:inset 0 1px #ddfaff55,0 15px 28px #0009}
+.premium16-shell .upgrade16-hero{background:linear-gradient(115deg,#142e61,#473476 60%,#0c2d60);border-color:#f1cf72}
+.upgrade16-hero-sky{position:absolute;inset:0;opacity:.26;pointer-events:none}.upgrade16-hero-sky .hero-art{width:100%;height:100%;object-fit:cover}
+.upgrade16-hero-content{position:relative;z-index:1;min-width:0}
+.upgrade16-kicker{display:block;font-size:10px;font-weight:950;letter-spacing:1.4px;color:#ffdf7b}
+.upgrade16-hero h2{font:950 clamp(23px,2.9vw,36px)/1.12 'Trebuchet MS','Segoe UI',sans-serif;color:#fff;text-shadow:0 3px 6px #061c3b;margin:5px 0}
+.upgrade16-hero p{font-size:12px;color:#d2eaff;max-width:680px;line-height:1.45;margin:0}
+.upgrade16-hero-icon{position:relative;z-index:1;width:105px;height:105px;flex:0 0 105px;display:grid;place-items:center;font-size:57px;border:2px solid #ffde79;border-radius:25px;background:radial-gradient(circle,#6fdbfaaa,#153869 72%);box-shadow:0 8px 19px #0008,inset 0 2px #fff4d779}
+.upgrade16-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.upgrade16-kpi{min-width:0;display:flex;align-items:center;gap:8px;border-radius:15px;border:1px solid #3a97c6;background:linear-gradient(145deg,#114b7b,#0b2348);box-shadow:inset 0 1px #e8faff35,0 6px 16px #0007;padding:11px}
+.upgrade16-kpi:nth-child(2){border-color:#edbd58;background:linear-gradient(135deg,#564021,#14325a)}
+.upgrade16-kpi:nth-child(3){border-color:#3ed4b4;background:linear-gradient(135deg,#0d5d5b,#0d2c52)}
+.upgrade16-kpi:nth-child(4){border-color:#a57ce4;background:linear-gradient(135deg,#453877,#112952)}
+.upgrade16-kpi>span{font-size:26px}.upgrade16-kpi small{font-size:9px;text-transform:uppercase;font-weight:900;color:#bddff0;display:block}
+.upgrade16-kpi strong{display:block;color:#ffdf83;font-size:clamp(15px,1.85vw,23px);font-weight:950;line-height:1.12;overflow-wrap:anywhere;margin:4px 0}
+.upgrade16-kpi em{display:block;font-size:9px;font-style:normal;color:#bfdce9}
+.upgrade16-panel{min-width:0;border-radius:20px;padding:16px;border:1px solid #468fbd;background:linear-gradient(145deg,#12375f,#091f3e 82%);box-shadow:0 14px 26px #0008}
+.upgrade16-panel-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.upgrade16-panel-head h3{font:950 clamp(21px,2.5vw,30px)/1.1 'Trebuchet MS','Segoe UI',sans-serif;color:white;margin:5px 0}
+.upgrade16-panel-head p{color:#c3dbeb;font-size:11px;line-height:1.5;margin:5px 0 0}
+.upgrade16-panel-head .btn{min-height:43px}
+.upgrade16-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.upgrade16-card{min-width:0;display:flex;flex-direction:column;gap:10px;padding:0;overflow:hidden;border:1px solid #4388bb;border-radius:18px;background:linear-gradient(155deg,#12416c,#092446);box-shadow:0 9px 21px #0008}
+.upgrade16-card.owned{border-color:#3ed3aa;background:linear-gradient(155deg,#0e5559,#092947)}
+.upgrade16-card-head{display:flex;align-items:center;gap:10px;padding:13px;min-height:95px;background:linear-gradient(115deg,#125886,#103257);border-bottom:1px solid #4085b6}
+.upgrade16-card.owned .upgrade16-card-head{background:linear-gradient(115deg,#0d6e62,#11415e)}
+.upgrade16-avatar{width:65px;height:65px;flex:0 0 65px;display:grid;place-items:center;font-size:37px;border:2px solid #8ad9ff;border-radius:17px;background:radial-gradient(circle at 35% 25%,#75ddff88,#174e79 70%);box-shadow:0 8px 16px #0009}
+.upgrade16-card.owned .upgrade16-avatar{border-color:#ffe083}
+.upgrade16-card-title{min-width:0;flex:1}.upgrade16-card-title h4{font:950 clamp(15px,1.65vw,20px)/1.2 'Trebuchet MS','Segoe UI',sans-serif;color:#fff;margin:5px 0}
+.upgrade16-card-title small{display:block;color:#ffdc81;font-size:9px;line-height:1.35;font-weight:900}
+.upgrade16-card-body{display:flex;flex-direction:column;flex:1;gap:10px;padding:0 13px 13px}
+.upgrade16-card-body p{font-size:11px;color:#c6deec;line-height:1.45;flex:1;margin:0}
+.upgrade16-price{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #337fa8;border-radius:11px;background:#0a284b;padding:10px;font-size:10px;color:#c6dfec}
+.upgrade16-price b{color:#ffdf7f;font-size:18px;font-weight:950;overflow-wrap:anywhere}
+.upgrade16-card-body .btn{min-height:44px;width:100%;font-weight:950;white-space:normal;font-size:12px}
+.upgrade16-shell .upgrade16-card-body .btn.primary:not(:disabled),.premium16-shell .premium16-buyrow .btn.primary:not(:disabled){background:linear-gradient(#fff4a7,#ffd03a 53%,#eaa00b);border:1px solid #ffe287;color:#281900;text-shadow:none;box-shadow:inset 0 1px #fff8c9,0 4px 0 #875300,0 7px 16px #0008}
+.upgrade16-card-body .btn:disabled{opacity:.66;box-shadow:none}
+.upgrade16-automation{display:grid;gap:11px}
+.upgrade16-automation>.card{border:1px solid #377dab}
+.upgrade16-next{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px;border:1px solid #e3c46a;border-radius:15px;background:linear-gradient(115deg,#463c27,#11385c)}
+.upgrade16-next b{color:#fff}.upgrade16-next small{display:block;font-size:11px;color:#d3deec;margin-top:5px}
+.upgrade16-next .btn{min-height:43px;white-space:normal}
+.premium16-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.premium16-card{display:flex;flex-direction:column;min-width:0;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#123b68,#0b2246);border:1px solid #5d85c5;box-shadow:0 9px 22px #0008}
+.premium16-card.max{border-color:#47dcae;background:linear-gradient(145deg,#0e5454,#0a2d48)}
+.premium16-card-head{display:flex;gap:10px;align-items:center;min-height:88px;background:linear-gradient(120deg,#174474,#203564);padding:13px;border-bottom:1px solid #477bad}
+.premium16-card.max .premium16-card-head{background:linear-gradient(120deg,#14645b,#17475f)}
+.premium16-avatar{width:61px;height:61px;flex:0 0 61px;display:grid;place-items:center;font-size:34px;border:2px solid #aea1f3;border-radius:16px;background:radial-gradient(circle,#bbabf693,#244778);box-shadow:0 7px 16px #0009}
+.premium16-name{min-width:0;flex:1;color:#fff;font:950 clamp(16px,1.7vw,21px)/1.18 'Trebuchet MS','Segoe UI',sans-serif}
+.premium16-level{padding:7px 9px;border:1px solid #f8d273;border-radius:11px;background:#5e4525;color:#ffe58e;font-size:12px;font-weight:950;white-space:nowrap}
+.premium16-body{display:flex;flex:1;flex-direction:column;gap:12px;padding:13px}
+.premium16-body>p{color:#c8deee;font-size:11px;line-height:1.45;margin:0}
+.premium16-track{height:12px;background:#071b39;border-radius:99px;overflow:hidden;border:1px solid #4a86b7}
+.premium16-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#59c9ee,#ffd05d);box-shadow:0 0 9px #a4e4ff88}
+.premium16-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.premium16-value{padding:11px;min-width:0;border:1px solid #407cad;background:#0a2a4c;border-radius:12px}
+.premium16-value small{color:#bcd6e8;font-size:9px;font-weight:900;display:block}
+.premium16-value b{display:block;margin-top:7px;color:#fff;font-size:clamp(15px,1.7vw,20px);font-weight:950}
+.premium16-value.next b{color:#ffdc79}
+.premium16-buy{display:grid;gap:8px;margin-top:auto}
+.premium16-buyrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.94fr);align-items:center;gap:9px;padding:9px;border:1px solid #3a78a8;background:#092447;border-radius:11px}
+.premium16-buyrow .btn{min-height:41px;font-size:11px;font-weight:950;white-space:normal}
+.premium16-cost{color:#c2dceb;font-size:10px;line-height:1.35;overflow-wrap:anywhere}
+.premium16-cost b{display:block;color:#ffda78;font-size:13px;margin-top:4px}
+.premium16-max{border:1px solid #4cdaa8;color:#d0ffeb;background:#0b574d;padding:14px;border-radius:11px;text-align:center;font-weight:950}
+.premium16-help{border:1px solid #4389b6;border-radius:14px;background:#0b2d4f;color:#c7dff0;font-size:11px;line-height:1.5;padding:14px}
+@media(max-width:1100px){.upgrade16-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.upgrade16-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.premium16-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.upgrade16-shell,.premium16-shell{gap:10px}.upgrade16-hero{padding:12px;min-height:135px;border-radius:16px}.upgrade16-hero h2{font-size:23px}.upgrade16-hero p{font-size:10px}.upgrade16-hero-icon{width:63px;height:65px;flex-basis:63px;font-size:37px;border-radius:16px}.upgrade16-kpi{padding:9px;gap:6px;min-height:73px}.upgrade16-kpi>span{font-size:20px}.upgrade16-kpi strong{font-size:16px}.upgrade16-kpi small{font-size:8px}.upgrade16-panel{padding:11px}.upgrade16-grid{grid-template-columns:1fr}.upgrade16-card-head{min-height:84px}.upgrade16-avatar{width:56px;height:56px;flex-basis:56px;font-size:31px}.upgrade16-next{flex-direction:column;align-items:stretch}.upgrade16-next .btn{width:100%}}
+@media(max-width:360px){.upgrade16-kpi{padding:7px;gap:4px}.upgrade16-kpi>span{font-size:16px}.upgrade16-kpi strong{font-size:13px}.premium16-buyrow{grid-template-columns:1fr}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -4350,10 +4425,27 @@ function renderBusiness(){
  return `<div class="fadein business-shell-v11"><div class="business-v11-nav">${renderTabs('business',tabs)}</div>${view}</div>`;
 }
 function renderUpgrades(){
- const savings=(up('workshop')?state.stats.services*2200:0)+(up('carwash')?state.stats.washes*180:0);
- return `${compactInfoPanel("lead-one-time-investments","🔧 Build a smarter rental business.","Upgrade once and keep the benefit for the rest of this company run. Your own Workshop makes <b>service and maintenance R0</b>; the Car Wash makes washing <b>R0</b>. Fuel always costs money.")}
- <div class="biz-strip"><span>🔧 Workshop: <b>${up('workshop')?'FREE SERVICE':'Not owned'}</b></span><span>🫧 Car Wash: <b>${up('carwash')?'FREE WASHES':'Not owned'}</b></span><span>⛽ Fuel: <b>${up('fuelcard')?'25% discounted':'Regular cost'}</b></span></div>
- ${autoDeskControl()}${autoCareControl()}<div class="biz-grid3">${UPGRADES.map(x=>`<article class="biz-card upgrade-card ${up(x.id)?'owned':''}"><div class="biz-card-head"><span class="biz-round">${x.icon}</span><span class="pill ${up(x.id)?'green':'blue'}">${up(x.id)?'OWNED':'ONE-TIME'}</span></div><div class="biz-eyebrow">${esc(x.subtitle)}</div><h3>${esc(x.name)}</h3><p class="biz-desc">${esc(x.desc)}</p><div class="biz-divider"></div><div class="biz-data-line"><span>${up(x.id)?'Investment completed':'Purchase price'}</span><b class="money">${money(x.price)}</b></div>${listBtn('upgrade',x.id,up(x.id)?'✓ Upgrade active':`Purchase for ${money(x.price)}`,'btn block mt-16 '+(up(x.id)?'ghost':'primary'),up(x.id)||freeCash()<x.price?'disabled':'')}</article>`).join('')}</div>`;
+ const ownedCount=UPGRADES.filter(x=>up(x.id)).length;
+ const paid=UPGRADES.filter(x=>up(x.id)).reduce((s,x)=>s+x.price,0);
+ const available=freeCash(),garage=UPGRADES.length;
+ return `<div class="upgrade16-shell">
+  <section class="upgrade16-hero"><div class="upgrade16-hero-sky" aria-hidden="true">${renderHeroArt()}</div><div class="upgrade16-hero-content"><span class="upgrade16-kicker">✦ CAPE TOWN RENTALS · BUSINESS UPGRADES</span><h2>Power up your rental empire</h2><p>Unlock permanent company improvements. Upgrade costs and business effects use your existing gameplay rules.</p></div><div class="upgrade16-hero-icon" aria-hidden="true">⚙️</div></section>
+  <div class="upgrade16-kpis"><div class="upgrade16-kpi"><span>🏆</span><div><small>Owned</small><strong>${ownedCount}/${garage}</strong><em>One-time upgrades</em></div></div>
+  <div class="upgrade16-kpi"><span>💰</span><div><small>Available cash</small><strong>${money(available)}</strong><em>Reserves excluded</em></div></div>
+  <div class="upgrade16-kpi"><span>📈</span><div><small>Investment value</small><strong>${money(paid)}</strong><em>Owned upgrade prices</em></div></div>
+  <div class="upgrade16-kpi"><span>✨</span><div><small>Fleet care</small><strong>${up('workshop')?'FREE SERVICE':'STANDARD'}</strong><em>Washes ${up('carwash')?'R0':'at regular cost'}</em></div></div></div>
+  <section class="upgrade16-panel"><div class="upgrade16-panel-head"><div><span class="upgrade16-kicker">PERMANENT COMPANY INVESTMENTS</span><h3>Business upgrade collection</h3><p>Browse every original upgrade, view its real benefit and see which investments are already active.</p></div><span class="pill green">${ownedCount} OWNED</span></div>
+    <div class="upgrade16-grid">${UPGRADES.map(x=>{
+      const isOwned=up(x.id),affordable=available>=x.price;
+      return `<article class="upgrade16-card ${isOwned?'owned':''}" aria-label="${esc(x.name)} upgrade"><div class="upgrade16-card-head"><span class="upgrade16-avatar" aria-hidden="true">${x.icon}</span><div class="upgrade16-card-title"><small>${esc(x.subtitle)}</small><h4>${esc(x.name)}</h4></div><span class="pill ${isOwned?'green':'blue'}">${isOwned?'OWNED':'AVAILABLE'}</span></div>
+      <div class="upgrade16-card-body"><p>${esc(x.desc)}</p><div class="upgrade16-price"><span>${isOwned?'Investment complete':'One-time purchase'}</span><b>${money(x.price)}</b></div>${listBtn('upgrade',x.id,isOwned?'✓ Upgrade active':affordable?'Buy Upgrade · '+money(x.price):'Not enough cash','btn '+(isOwned?'ghost':'primary'),isOwned||!affordable?'disabled':'')}</div></article>`;
+    }).join('')}</div>
+  </section>
+  <section class="upgrade16-panel"><div class="upgrade16-panel-head"><div><span class="upgrade16-kicker">AUTOMATED OPERATIONS</span><h3>Fleet automation controls</h3><p>Your existing Auto-Dispatch and care toggles remain on this screen, with their original rules.</p></div></div>
+    <div class="upgrade16-automation">${autoDeskControl()}${autoCareControl()}</div>
+  </section>
+  <aside class="upgrade16-next"><div><b>🌟 Premium upgrades</b><small>Ten additional categories, up to 100 levels each.</small></div>${btn('dashshortcut','Explore Premium →','btn primary','data-id="progress" data-sub="premium"')}</aside>
+ </div>`;
 }
 function renderBranches(){
  const openBranches=BRANCHES.filter(b=>owned(b.id)),transfers=state.fleet.filter(c=>c.status==='transfer'&&c.transferDue);
@@ -4498,13 +4590,26 @@ function renderRoadmap(){let entries=[
 function renderProgress(){let tabs=[['milestones','🏆 Achievements'],['premium','🌟 Premium Upgrades'],['stats','📊 Statistics'],['roadmap','🗺️ Career roadmap'],['settings','⚙️ Save & settings']];return `<div class="fadein">${featureHeading('🏆','The making of an icon','Celebrate your milestones, measure your company and protect your progress.')}<div class="mt-16">${renderTabs('progress',tabs)}${activeSub.progress==='milestones'?renderMilestones():activeSub.progress==='premium'?renderPremiumUpgrades():activeSub.progress==='stats'?renderStats():activeSub.progress==='roadmap'?renderRoadmap():renderSettings()}</div></div>`;}
 function renderMilestones(){return `<div class="grid grid-3 mb-16">${stat('📊','Reputation XP',`${Math.floor(state.xp)} / ${repNeeded(state.rep)}`,'Next reputation level','')}${stat('🏅','Reputation',`Level ${state.rep}`,'Unlocks premium vehicles and contracts','')}${stat('🌟','Premium levels',`${PRESTIGE_PERKS.reduce((n,p)=>n+perkLevel(p[0]),0)} / 1000`,'Permanent business upgrades','')}${stat('🏆','Achievements',`${state.achievements.length} / ${ACHIEVEMENTS.length}`,'Rewarded automatically','')}</div><div class="card pad">${paneHeading('Achievements','Reach milestones to collect one-time cash rewards automatically.')}<div class="grid grid-2">${ACHIEVEMENTS.map(a=>{let unlocked=state.achievements.includes(a.id),v=achievementsProgress(a);return `<div class="listing"><div class="flex between center"><b>${unlocked?'🏆':'🎯'} ${a.name}</b><span class="pill ${unlocked?'green':'blue'}">${unlocked?'COMPLETE':'IN PROGRESS'}</span></div><div class="small muted mt-12">${Math.min(a.target,v).toLocaleString('en-ZA')} / ${a.target.toLocaleString('en-ZA')} · Reward ${money(a.reward)}</div><div class="mini-progress"><span style="width:${clamp(v/a.target*100)}%"></span></div></div>`;}).join('')}</div></div>`;}
 function renderPremiumUpgrades(){
- return `<div class="card pad">${paneHeading('🌟 Premium Upgrades','Permanent business improvements · 100 levels each · Paid in Rands')}
- ${compactInfoPanel('premium-help','ⓘ How Premium Upgrades work','Purchase one, five or ten levels using business cash. Each level costs more. Existing perk levels are preserved, and unused Prestige points become one-time free upgrade credits. No company reset.')}
- <div class="flex between center gap-12 mb-16"><span class="chip cash">💰 ${money(state.cash)}</span>${state.premiumCredits>0?`<span class="pill green">🎁 ${state.premiumCredits} legacy upgrade credits</span>`:''}</div>
- <div class="grid grid-2">${PRESTIGE_PERKS.map(([id,icon,name,desc])=>{let level=perkLevel(id),remaining=100-level;
- let actions=remaining?[1,5,10].filter(n=>n<=remaining).map(n=>{let credits=Math.min(n,Math.max(0,Math.floor(Number(state.premiumCredits)||0))),cost=premiumTotalCost(level+credits,n-credits);return `<div class="flex center gap-12">${listBtn('premium',id,n===1?'Buy Upgrade':'Buy '+n,'btn sm'+(n===1?' primary':''),`data-qty="${n}" ${state.cash<cost?'disabled':''}`)}<span class="small muted">${credits?credits+' credit'+(credits===1?'':'s')+(cost?' + ':''):''}${cost?money(cost):'FREE'}</span></div>`;}).join(''):'<span class="pill green">✓ MAX LEVEL</span>';
- return `<div class="listing premium-upgrade-card"><div class="flex between center gap-12"><div class="flex center gap-12"><div class="icon-avatar">${icon}</div><b>${name}</b></div><span class="pill ${remaining?'blue':'green'}">Lv ${level}/100</span></div><div class="mini-progress"><span style="width:${level}%"></span></div>
- <div class="grid grid-2 mt-12"><div><div class="small muted">Current benefit</div><b class="positive">${premiumLabel(id,level)}</b></div><div><div class="small muted">${remaining?'Next level':'Completed'}</div><b>${premiumLabel(id,Math.min(100,level+1))}</b></div></div><div class="mt-16">${actions}</div><details class="mt-12"><summary class="small muted">ⓘ Info</summary><div class="small muted mt-12">${desc}</div></details></div>`;}).join('')}</div></div>`;
+ const levels=PRESTIGE_PERKS.reduce((s,p)=>s+perkLevel(p[0]),0),maxed=PRESTIGE_PERKS.filter(p=>perkLevel(p[0])>=PREMIUM_MAX_LEVEL).length;
+ const credits=Math.max(0,Math.floor(Number(state.premiumCredits)||0)),available=freeCash();
+ return `<div class="premium16-shell">
+ <section class="upgrade16-hero"><div class="upgrade16-hero-sky" aria-hidden="true">${renderHeroArt()}</div><div class="upgrade16-hero-content"><span class="upgrade16-kicker">✦ CAPE TOWN RENTALS · PREMIUM UPGRADES</span><h2>Unlock premium power</h2><p>Improve your company across all ten permanent premium categories. Each level keeps the game's original rising cost and benefit calculations.</p></div><div class="upgrade16-hero-icon" aria-hidden="true">🌟</div></section>
+ <div class="upgrade16-kpis"><div class="upgrade16-kpi"><span>👑</span><div><small>Premium progress</small><strong>${levels}/${PRESTIGE_PERKS.length*PREMIUM_MAX_LEVEL}</strong><em>Total owned levels</em></div></div>
+ <div class="upgrade16-kpi"><span>💰</span><div><small>Available cash</small><strong>${money(available)}</strong><em>Reserves excluded</em></div></div>
+ <div class="upgrade16-kpi"><span>🎁</span><div><small>Legacy credits</small><strong>${credits}</strong><em>Free upgrade levels</em></div></div>
+ <div class="upgrade16-kpi"><span>🏆</span><div><small>Maxed categories</small><strong>${maxed}/${PRESTIGE_PERKS.length}</strong><em>Level ${PREMIUM_MAX_LEVEL} cap</em></div></div></div>
+ <section class="upgrade16-panel"><div class="upgrade16-panel-head"><div><span class="upgrade16-kicker">PERMANENT PREMIUM PERKS</span><h3>Build your ultimate business</h3><p>Compare current and next-level benefits, then buy one, five or ten levels using actual game prices.</p></div>${btn('dashshortcut','Standard Upgrades →','btn sm ghost','data-id="business" data-sub="upgrades"')}</div>
+ <div class="premium16-grid">${PRESTIGE_PERKS.map(([id,icon,name,desc])=>{
+    const level=perkLevel(id),remaining=PREMIUM_MAX_LEVEL-level;
+    const actions=remaining?[1,5,10].filter(n=>n<=remaining).map(n=>{
+      const creditUsed=Math.min(n,credits),cost=premiumTotalCost(level+creditUsed,n-creditUsed);
+      return `<div class="premium16-buyrow">${listBtn('premium',id,n===1?'Buy Upgrade':'Buy '+n,'btn '+(n===1?'primary':'ghost'),`data-qty="${n}" ${available<cost?'disabled':''}`)}<span class="premium16-cost">${creditUsed?creditUsed+' credit'+(creditUsed===1?'':'s'):'Cash price'}<b>${cost?money(cost):'FREE'}</b></span></div>`;
+    }).join(''):'<div class="premium16-max">🏆 MAX LEVEL · COMPLETED</div>';
+    return `<article class="premium16-card ${remaining?'':'max'}" aria-label="${esc(name)} premium upgrade"><div class="premium16-card-head"><span class="premium16-avatar" aria-hidden="true">${icon}</span><div class="premium16-name">${esc(name)}</div><span class="premium16-level">LV ${level}/${PREMIUM_MAX_LEVEL}</span></div>
+     <div class="premium16-body"><p>${esc(desc)}</p><div class="premium16-track" role="progressbar" aria-label="${esc(name)} level" aria-valuemin="0" aria-valuemax="${PREMIUM_MAX_LEVEL}" aria-valuenow="${level}"><i style="width:${100*level/PREMIUM_MAX_LEVEL}%"></i></div><div class="premium16-values"><div class="premium16-value"><small>CURRENT BENEFIT</small><b>${premiumLabel(id,level)}</b></div><div class="premium16-value next"><small>${remaining?'NEXT LEVEL':'COMPLETED'}</small><b>${premiumLabel(id,Math.min(PREMIUM_MAX_LEVEL,level+1))}</b></div></div><div class="premium16-buy">${actions}</div></div></article>`;
+ }).join('')}</div></section>
+ <aside class="premium16-help"><b>ⓘ Premium upgrade pricing:</b> A Buy 5 or Buy 10 purchase totals the original cost of each consecutive level. Legacy credits are applied first and reduce the cash price. No prestige reset or change to saved upgrade levels.</aside>
+ </div>`;
 }
 function renderStats(){let net=state.stats.earned-state.stats.spent,avg=state.stats.returned?round(state.stats.earned/state.stats.returned):0;return `<div class="grid grid-4 mb-16">${stat('🚘','Rentals returned',state.stats.returned,'Successfully completed','')}${stat('💰','Average revenue',money(avg),'Revenue per completed hire','')}${stat('🏁','Biggest payout',money(state.stats.best),'One-time payment record','')}${stat('📉','Lifetime net',money(net),'All earnings minus all costs',net>=0?'positive':'negative')}</div><div class="grid two-thirds"><section class="card pad">${paneHeading('Revenue trend','Latest rental returns and rewards.')}<div class="mini-graph" style="height:170px">${(state.history.length?state.history:Array(12).fill(0)).map(v=>`<div style="height:${Math.max(7,Math.round(v/Math.max(...state.history,1)*100))}%" title="${money(v)}"></div>`).join('')}</div><div class="divider"></div><div class="grid grid-2"><div class="notice">🔧 ${state.stats.services} services completed</div><div class="notice">🫧 ${state.stats.washes} washes completed</div><div class="notice">⛽ ${state.stats.filled} refuels</div><div class="notice">🏢 ${state.branches.length} active branches</div></div></section><section class="card pad">${paneHeading('Recent company history','The last actions in your empire.')}<div style="max-height:470px;overflow:auto">${renderLog(25)}</div></section></div>`;}
 function renderSettings(){return `<div class="grid two-thirds"><section class="card pad">${paneHeading('Save your company','Your game autosaves locally every few seconds and when you change anything.')}<div class="notice success">✅ Autosave ON · Saved on this browser/device. Rental return timestamps are saved too.</div><div class="settings-row"><div><b>Download backup</b><div class="small muted mt-12">Export your business to a JSON file for safekeeping.</div></div>${btn('export','⬇ Save JSON','btn primary')}</div><div class="settings-row"><div><b>Restore a backup</b><div class="small muted mt-12">Import a save exported from this redesigned edition.</div></div><label class="btn" style="cursor:pointer">⬆ Import JSON<input id="import-save" type="file" accept=".json,application/json" style="display:none" /></label></div><div class="settings-row"><div><b>New company</b><div class="small muted mt-12">Permanently erase your local save and restart the game.</div></div>${btn('reset','Reset game','btn danger')}</div></section><section class="card pad">${paneHeading('Company & difficulty','Change the challenge without erasing your fleet. Changes apply only to future rentals and costs.')}
