@@ -1949,7 +1949,9 @@ const PRESTIGE_MAX_LEVEL=100;
 function perkLevel(id){return Math.min(PRESTIGE_MAX_LEVEL,Math.max(0,Number(state.perks?.[id])||0));}
 function perkEffect(id,max){return max*(1-Math.exp(-perkLevel(id)/25));}
 function prestigeReward(rank){return Math.min(25,5+Math.floor((rank-1)/3));}
-function repNeeded(level){return Math.round(10*(7+3.4*Math.max(0,level-2)));}
+// Level 2→10 requires exactly 3,000 XP (300 normal rentals at 10 XP each).
+// Successive levels take 20, 25, 30, 35, 40, 45, 50 and 55 returns.
+function repNeeded(level){return 10*(20+5*Math.max(0,level-2));}
 function awardRepXP(amount){state.xp=Math.max(0,(Number(state.xp)||0)+Math.max(0,amount));while(state.xp>=repNeeded(state.rep)){state.xp-=repNeeded(state.rep);state.rep++;note('Reputation level '+state.rep+' reached!');}}
 function buyPerk(id){if(!PRESTIGE_PERKS.some(p=>p[0]===id))return;if(state.prestigePoints<1)return notify('Earn prestige points to unlock permanent perks.','bad');if(perkLevel(id)>=PRESTIGE_MAX_LEVEL)return notify('Perk at maximum rank.');state.prestigePoints--;state.perks[id]=perkLevel(id)+1;note(id+' prestige perk upgraded.');notify('Permanent perk upgraded.');}
 function prestigeRun(){let allowed=state.stats.earned>=2000000&&state.stats.returned>=30&&state.rep>=10;if(!allowed){notify('Requires R2m lifetime revenue, 30 returned rentals and reputation level 10.','bad');return;}
