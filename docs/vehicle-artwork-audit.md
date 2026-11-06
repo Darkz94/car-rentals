@@ -34,3 +34,11 @@ Approved design: glossy deep-navy, electric-blue and gold arcade presentation. T
 **Validation:** Run `node tests/vehicle-art-section19.test.mjs`, `node tests/fleet-audit.test.mjs`, `python3 rebuild.py`, and `python3 tests/standalone-build.test.py`; the normal GitHub Actions debug Android workflow also packages and checks the actual assets.
 
 **Limitations:** Automated asset checks verify files, mappings and transparency filters, but not how every SVG renders on all Android WebView versions. Visual approval requires the user's device inspection. Source bitmaps are preserved, not re-illustrated, so the retained images are still stylistically varied.
+
+## Updated after approved lineup — 6 November 2026
+
+The player approved a separate 17-vehicle lineup poster and explicitly requested **each of the 17 vehicle side views be replaced, one by one**. That approval supersedes the original side-view selection described above.
+
+All 17 side images now point to `assets/lineup-<class-id>-side.webp`. They were individually extracted from the approved image, preserving its exact vehicle design and colours (white hatchback, black sedan, blue coupe, silver pickup, orange Jeep, turquoise classic, yellow tow truck, purple Donk, etc.). They use transparency and remain unique by class. The existing 17 map overhead images are retained because the poster contains side views only. Original art files are kept in the repository as non-destructive source references. No vehicle data, economy, save keys or gameplay identities changed.
+
+**Image-source limitation:** The original poster is a composite, not separate full-resolution renders. Therefore the individual cutouts inherit its pixel detail and may have small matte/edge imperfections. Review on Android before approving production publishing.
