@@ -2211,6 +2211,120 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 @media(prefers-reduced-motion:reduce){.fleet-command-tab{transition:none!important}}
 </style>
+<style id="ctr-garage-section-04">
+/* SECTION 4: Garage collection visuals and non-persistent display mode.
+   Never alter state.fleet order, rental, cash, capacity or save mechanics. */
+.fleet-shell-v3 .garage-v4{margin:0 0 15px;padding:16px;border:1.5px solid #56b9f0;border-radius:19px;background:linear-gradient(158deg,#153b64 0%,#0a2549 40%,#071a38 100%);box-shadow:0 12px 26px #0008,inset 0 1px 0 #b6e9ff34}
+.garage-heading-v4{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.garage-heading-title{min-width:0;flex:1}
+.garage-overline{display:block;font-size:10px;line-height:1.2;letter-spacing:1.2px;font-weight:950;color:#80dfff}
+.garage-heading-title h2{font-size:clamp(23px,3.2vw,32px);margin:3px 0 3px;color:#ffdc74;font-style:italic;font-weight:1000;letter-spacing:-.65px;line-height:1.1}
+.garage-heading-title p{font-size:12px;color:#d4eaf8;line-height:1.28;margin:0}
+.garage-heading-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.garage-heading-actions .btn{font-size:12px;min-height:39px}
+.garage-count-pill{font-size:10px;line-height:1.2;font-weight:900;color:#e5f3ff;border:1px solid #74b4dc;border-radius:10px;background:#0b3056;padding:8px 10px;white-space:nowrap}
+.garage-capacity-line{padding:10px 12px;margin:0 0 12px;border:1px solid #408ab9;border-radius:13px;background:linear-gradient(100deg,#0c3359,#081c3d)}
+.garage-capacity-line>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#eaf7ff;font-size:12px}
+.garage-capacity-line b{font-weight:900}
+.garage-capacity-line span{font-variant-numeric:tabular-nums;color:#ffe5a0;font-weight:900}
+.garage-capacity-track{height:8px;margin-top:8px;overflow:hidden;border-radius:9px;background:#071628;border:1px solid #306792}
+.garage-capacity-track i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#38bde7 0%,#4beab9 65%,#fff19c 100%);box-shadow:0 0 10px #67f4ba60}
+.garage-collection-actions{display:flex;justify-content:space-between;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:11px}
+.garage-view-tabs-v4{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.garage-view-choice{cursor:pointer;padding:8px 11px;border-radius:11px;border:1px solid #5288b5;background:linear-gradient(150deg,#144372,#0a2547);box-shadow:inset 0 1px 0 #b6e8ff24;color:#d7eafa;font:inherit;font-size:12px;font-weight:850;min-height:36px}
+.garage-view-choice.active{color:#102844;background:linear-gradient(120deg,#fff3ac,#ffcd53 65%,#f1a843);border-color:#ffe996;box-shadow:0 3px 0 #9f691e,0 5px 12px #ffce5b37}
+.garage-scope-caption{font-size:10px;color:#bbd7ed}
+.garage-quick-filters{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.garage-filter-chip{display:inline-flex;align-items:center;gap:7px;min-height:33px;cursor:pointer;font:inherit;font-size:11px;font-weight:850;color:#d6ecf8;border:1px solid #4987b8;border-radius:999px;padding:6px 10px;background:linear-gradient(135deg,#153e68,#0a2647)}
+.garage-filter-chip b{padding:2px 6px;min-width:18px;border-radius:999px;background:#071a35;border:1px solid #376891;color:#fff;font-variant-numeric:tabular-nums;font-size:10px;text-align:center}
+.garage-filter-chip.active{background:linear-gradient(120deg,#ffe999,#ffc748);color:#17263b;border-color:#fff3bb;box-shadow:0 3px 12px #ffc45b38}
+.garage-filter-chip.active b{background:#aa6d22;border-color:#c58522;color:#fff}
+.garage-view-choice:focus-visible,.garage-filter-chip:focus-visible{outline:3px solid #ffde76;outline-offset:2px}
+.fleet-shell-v3 .garage-bay-grid-v4{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.fleet-shell-v3 .garage-bay-v4{border:1.4px solid #48aee8;border-radius:17px;background:linear-gradient(155deg,#1b5d8d,#0d345e 30%,#091b3b 100%);box-shadow:0 4px 0 #062448,0 10px 19px #0208179c,inset 0 1px 0 #d5f6ff30}
+.fleet-shell-v3 .garage-bay-v4.selected{border-color:#ffe282;box-shadow:0 4px 0 #ab8038,0 0 0 1px #fff3a6,0 0 18px #ffc9596a}
+.fleet-shell-v3 .garage-bay-v4:hover{border-color:#b4e8ff;transform:translateY(-2px)}
+.garage-bay-v4 .parking-roof{height:36px;padding:0 10px;background:linear-gradient(120deg,#267bb0,#13456c 60%,#0b2b50);border-bottom-color:#55b1e3;gap:7px}
+.garage-bay-v4 .slot-number{font-size:10px;color:#ffe59a;letter-spacing:1.2px}
+.garage-bay-roof-mark{font-size:8px;font-weight:850;letter-spacing:.8px;color:#d8f4ff;opacity:.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.garage-bay-v4 .slot-light{margin-left:auto;flex:none}
+.garage-bay-v4 .parking-scene{height:162px;background:radial-gradient(ellipse at 50% 50%,#3480ad 0%,#1e4b76 39%,#112e52 76%)}
+.garage-bay-v4 .parking-scene:before{background:linear-gradient(90deg,#0a3262 0%,#b5ecff19 6%,#26577a 8%,#26577a 92%,#b5ecff19 94%,#0a3262 100%),linear-gradient(180deg,#2c6c98,#124468)}
+.garage-bay-v4 .parking-scene:after{background:#b9fbff;box-shadow:0 0 13px #7de4ff,0 0 29px #7ee2ff65}
+.garage-bay-v4 .parking-floor{background:repeating-linear-gradient(90deg,#7bc3d730 0 2px,transparent 2px 80px),repeating-linear-gradient(0deg,#7bc3d72b 0 2px,transparent 2px 65px),linear-gradient(180deg,#1d5b80,#103458)}
+.garage-bay-v4 .parking-backwall{font-size:8px;letter-spacing:1.3px;color:#cbefff91}
+.garage-bay-v4 .parking-car{z-index:2;max-width:91%;max-height:126px;object-fit:contain}
+.garage-bay-status{position:absolute;z-index:5;left:9px;top:9px;max-width:calc(100% - 18px);padding:5px 8px;font-size:9px;line-height:1.1;font-weight:950;letter-spacing:.3px;border:1px solid #55a4d7;border-radius:8px;color:#fff;background:#0c305be9;box-shadow:0 3px 8px #06132777}
+.garage-bay-status--ready{color:#a7ffe0;border-color:#31d4a2;background:#06534bd9}
+.garage-bay-status--care{color:#ffe7ad;border-color:#f4b351;background:#70441cde}
+.garage-bay-status--danger{color:#ffe0e8;border-color:#f77999;background:#78304be8}
+.garage-bay-status--road{color:#d9efff;border-color:#73b4fa;background:#21487adf}
+.garage-bay-v4 .bay-out-tag{z-index:4;top:62%;max-width:95%;font-size:9px;letter-spacing:.25px;text-align:center;white-space:normal;padding:7px 8px}
+.garage-bay-v4.bay-empty .parking-car{opacity:.22}
+.garage-bay-v4 .parking-info{padding:12px 11px 11px}
+.garage-bay-ident{display:flex;align-items:start;justify-content:space-between;gap:7px;min-width:0}
+.garage-bay-ident>div{min-width:0}
+.garage-bay-category{display:block;font-size:9px;line-height:1.15;text-transform:uppercase;font-weight:900;letter-spacing:.8px;color:#8bd8ff}
+.garage-bay-ident h3{font-size:15px;line-height:1.12;font-weight:950;margin:3px 0 4px;color:#fff}
+.garage-bay-ident .car-plate{font-size:10px}
+.garage-bay-branch{align-self:start;font-size:9px;color:#c5e5f8;text-align:right;max-width:48%;overflow-wrap:anywhere}
+.garage-bay-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:11px 0}
+.garage-bay-health{min-width:0;background:#081e40;border:1px solid #315f88;border-radius:8px;padding:6px 5px}
+.garage-bay-health>div{display:flex;justify-content:space-between;gap:3px;font-size:9px;font-weight:750;color:#d7ebfa;min-width:0;align-items:center}
+.garage-bay-health>div>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.garage-bay-health b{color:#ffe4a0;font-size:9px;flex:none}
+.garage-bay-health-track{display:block;height:5px;overflow:hidden;margin-top:5px;border-radius:6px;background:#0a1329}
+.garage-bay-health-track i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#44d3e6,#6ef4c5)}
+.garage-bay-health-track i.mid{background:linear-gradient(90deg,#e8a93d,#f9dd77)}
+.garage-bay-health-track i.low{background:linear-gradient(90deg,#f36d81,#ffab72)}
+.garage-bay-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:9px;border-top:1px solid #5a91b34d}
+.garage-bay-bottom small{display:block;font-size:9px;font-weight:850;color:#b7d7e9}
+.garage-bay-bottom strong{display:block;font-size:15px;line-height:1.2;font-weight:950;color:#ffd67b;font-variant-numeric:tabular-nums}
+.garage-bay-bottom .btn{font-size:11px;min-height:35px;padding:6px 10px;white-space:nowrap}
+.fleet-shell-v3 .garage-empty-bay-v4{background:linear-gradient(140deg,#183755,#0b2547 80%);border:2px dashed #589bcb;border-radius:17px}
+.garage-empty-bay-v4 .parking-roof{height:36px;background:#15385f;border-color:#537ea1}
+.garage-empty-bay-v4 .parking-scene{height:162px;background:linear-gradient(135deg,#144775,#102a4d)}
+.garage-empty-bay-v4 .parking-info{padding:12px}
+.garage-empty-bay-v4 .parking-info h3{color:#ffe398}
+.garage-empty-bay-v4 .parking-info .btn{margin-top:10px;min-height:37px;font-size:11px}
+.fleet-shell-v3 .garage-compact-list-v4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fleet-shell-v3 .garage-compact-list-v4 .fleet-tile{background:linear-gradient(150deg,#164d7a,#0e2d53 66%,#081a3b);border-color:#4caff0;box-shadow:0 4px 0 #041d3e,0 9px 17px #0008}
+.fleet-shell-v3 .garage-compact-list-v4 .fleet-tile.selected{border:2px solid #ffe28c;box-shadow:0 3px 0 #bd8731,0 0 15px #ffcd6780}
+.fleet-shell-v3 .garage-compact-list-v4 .fleet-tile .btn{min-height:36px}
+.garage-results-caption{margin:10px 0 0;font-size:10px;line-height:1.4;color:#bcd8ed}
+.garage-inspection-v4{scroll-margin-top:15px}
+.garage-inspection-v4>.card,.garage-inspection-v4 .card{border-color:#5aa2d9}
+.fleet-shell-v3 .garage-v4 .garage-bulk-details{border-color:#4c8fc0;background:linear-gradient(130deg,#102d50,#0b213e);border-radius:12px;margin:0 0 12px}
+.fleet-shell-v3 .garage-v4 .garage-bulk-details>summary{color:#eaf7ff}
+@media(max-width:1100px){
+ .fleet-shell-v3 .garage-bay-grid-v4{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .garage-bay-v4 .parking-scene{height:168px}
+}
+@media(max-width:720px){
+ .fleet-shell-v3 .garage-v4{padding:10px;border-radius:14px;margin:0 0 10px}
+ .garage-heading-v4{align-items:start;gap:8px;margin-bottom:10px}
+ .garage-heading-title h2{font-size:24px}
+ .garage-heading-title p{font-size:10px}
+ .garage-heading-actions .btn{min-height:35px;font-size:11px;padding:6px 10px}
+ .garage-count-pill{font-size:9px;padding:7px 8px}
+ .garage-capacity-line{padding:9px;margin-bottom:9px}
+ .garage-collection-actions{gap:6px;margin-bottom:8px}
+ .garage-view-choice{font-size:10px;min-height:34px;padding:7px 8px}
+ .garage-scope-caption{font-size:9px}
+ .garage-quick-filters{gap:5px;margin-bottom:9px}
+ .garage-filter-chip{padding:5px 8px;font-size:10px;min-height:31px}
+ .fleet-shell-v3 .garage-bay-grid-v4,.fleet-shell-v3 .garage-compact-list-v4{grid-template-columns:1fr;gap:9px}
+ .garage-bay-v4 .parking-scene{height:163px}
+ .garage-bay-v4 .parking-info{padding:11px}
+ .garage-bay-health-grid{gap:7px}
+ .garage-bay-health{padding:6px}
+ .garage-bay-health>div{font-size:10px}
+ .garage-bay-health b{font-size:10px}
+ .garage-empty-bay-v4 .parking-scene{height:140px}
+}
+@media(min-width:1550px){.fleet-shell-v3 .garage-bay-grid-v4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.garage-bay-v4,.garage-view-choice{transition:none!important}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -2414,7 +2528,7 @@ function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empt
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
-let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
+let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
 function note(msg,kind='good'){if(offlineSimulation)return;state.log.unshift({id:uid('log'),at:now(),text:msg,kind});state.log=state.log.slice(0,35);}
 function arcadeFx(label,value='',unlock=false){
@@ -3016,28 +3130,52 @@ const openInfoPanels=new Set();
 function compactInfoPanel(id,title,desc){return `<section class="compact-info-panel"><details data-compact-info="${esc(id)}" ${openInfoPanels.has(id)?'open':''}><summary><strong>${title}</strong><span class="compact-info-toggle">ⓘ Info <span aria-hidden="true">⌄</span></span></summary><div class="compact-info-description">${desc}</div></details></section>`;}
 function featureHeading(icon,title,desc){return compactInfoPanel("feature-"+title,icon+" "+title,desc);}
 function garageBayCard(c,index){
- let t=typeOf(c.type),chosen=c.id===selectedCar,ready=carReady(c),onRoad=['rented','transfer'].includes(c.status),broken=c.status==='incident',listed=c.status==='auction';
- let status=listed?'AT AUCTION':onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
- let statusClass=broken?'red':onRoad||listed?'blue':ready?'green':'orange';
- return `<article class="parking-slot ${chosen?'selected':''} ${onRoad?'bay-empty':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}">
- <div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light ${onRoad?'off':broken?'warning':'on'}"></span><span class="slot-branch">${esc(DEST[c.branch]?.name||c.branch)}</span></div>
- <div class="parking-scene"><div class="parking-backwall"><span>COASTLINE FLEET</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-number">${String(index+1).padStart(2,'0')}</div><img class="parking-car" style="filter:${paintFilter(c)} drop-shadow(0 19px 18px #0009)" src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}" />${onRoad?'<div class="bay-out-tag">↗ VEHICLE OUT ON THE ROAD</div>':''}</div>
- <div class="parking-info"><div class="flex between center gap-8"><div><h3>${esc(t.name)}</h3><div class="car-plate">${esc(c.plate)}</div></div><span class="pill ${statusClass}">${status}</span></div>
- <div class="parking-stats"><span>⛽ <b>${round(c.fuel)}%</b></span><span>🔧 <b>${round(c.condition)}%</b></span><span>🫧 <b>${round(c.clean)}%</b></span></div>
- <div class="parking-bottom"><span class="money">${money(round(t.rate*(1+(c.tune||0)*.13)))}/hire</span>${listBtn('selectcar',c.id,chosen?'✓ Inspecting':'Inspect →',`btn sm ${chosen?'primary':'ghost'}`)}</div></div></article>`;
+ const t=typeOf(c.type),chosen=c.id===selectedCar,ready=carReady(c),onRoad=['rented','transfer'].includes(c.status),broken=c.status==='incident',listed=c.status==='auction';
+ const status=listed?'AT AUCTION':onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
+ const tone=broken?'danger':onRoad||listed?'road':ready?'ready':'care';
+ const category=esc(t.category||'Vehicle'),where=esc(DEST[c.branch]?.name||c.branch);
+ const image=CAR_IMAGES[t.id],search=esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase());
+ const health=[['⛽','Fuel',c.fuel],['🔧','Condition',c.condition],['🫧','Clean',c.clean]].map(([icon,label,value])=>`<div class="garage-bay-health"><div><span>${icon} ${label}</span><b>${round(value)}%</b></div><span class="garage-bay-health-track"><i class="${value<30?'low':value<60?'mid':'good'}" style="width:${Math.max(0,Math.min(100,value))}%"></i></span></div>`).join('');
+ return `<article class="parking-slot garage-bay-v4 garage-bay--${tone} ${chosen?'selected':''} ${onRoad?'bay-empty':''}" data-fleet-search="${search}">
+  <div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="garage-bay-roof-mark">COASTLINE GARAGE</span><span class="slot-light ${onRoad?'off':broken?'warning':'on'}"></span></div>
+  <div class="parking-scene">
+    <div class="parking-backwall"><span>${category.toUpperCase()} · ${where.toUpperCase()}</span></div>
+    <div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-number">${String(index+1).padStart(2,'0')}</div>
+    <span class="garage-bay-status garage-bay-status--${tone}">${status}</span>
+    <img class="parking-car" style="filter:${paintFilter(c)} drop-shadow(0 19px 18px #0009)" src="${image}" alt="${esc(t.name)}" loading="lazy">
+    ${onRoad?'<div class="bay-out-tag">VEHICLE CURRENTLY AWAY</div>':''}
+  </div>
+  <div class="parking-info"><div class="garage-bay-ident"><div><span class="garage-bay-category">${category}</span><h3>${esc(t.name)}</h3><span class="car-plate">${esc(c.plate)}</span></div><span class="garage-bay-branch">📍 ${where}</span></div>
+   <div class="garage-bay-health-grid">${health}</div>
+   <div class="garage-bay-bottom"><div><small>BASE RENTAL</small><strong>${money(round(t.rate*(1+(c.tune||0)*.13)))}</strong></div>${listBtn('selectcar',c.id,chosen?'✓ Inspecting':'Inspect →',`btn ${chosen?'primary':'ghost'}`)}</div>
+  </div>
+ </article>`;
 }
-function garageEmptyBay(index){return `<article class="parking-slot empty-slot"><div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light off"></span><span class="slot-branch">EMPTY</span></div><div class="parking-scene"><div class="parking-backwall"><span>YOUR NEXT CAR</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-empty-icon">＋</div></div><div class="parking-info"><h3>Available parking space</h3><p class="small muted">Grow your collection one vehicle at a time.</p>${btn('sub','Browse dealership →','btn sm primary mt-12','data-group="fleet" data-id="dealership"')}</div></article>`;}
+function garageEmptyBay(index){
+ return `<article class="parking-slot empty-slot garage-empty-bay-v4"><div class="parking-roof"><span class="slot-number">BAY ${String(index+1).padStart(2,'0')}</span><span class="slot-light off"></span><span class="slot-branch">AVAILABLE</span></div>
+ <div class="parking-scene"><div class="parking-backwall"><span>YOUR NEXT CAR</span></div><div class="parking-floor"></div><div class="parking-guide guide-left"></div><div class="parking-guide guide-right"></div><div class="parking-empty-icon">＋</div></div>
+ <div class="parking-info"><h3>Room for another ride</h3><p class="small muted">Your next rental machine could park right here.</p>${btn('sub','Explore dealership →','btn primary','data-group="fleet" data-id="dealership"')}</div></article>`;
+}
 function renderFleetFilters(){return `<div class="fleet-toolbar"><input data-role="garage-search" aria-label="Find a vehicle" type="search" placeholder="🔎 Search name, plate, branch…" value="${esc(garageSearch)}"><select data-role="garage-status" aria-label="Filter garage status">${[['all','All vehicles'],['ready','Ready for hire'],['parked','Parked'],['care','Needs attention'],['out','Out on the road'],['incident','Incidents'],['auction','At auction']].map(([k,v])=>`<option value="${k}" ${garageStatus===k?'selected':''}>${v}</option>`).join('')}</select><select data-role="garage-branch" aria-label="Filter by branch">${[['all','Every branch'],...BRANCHES.filter(x=>owned(x.id)).map(x=>[x.id,x.name])].map(([k,v])=>`<option value="${k}" ${garageBranch===k?'selected':''}>${esc(v)}</option>`).join('')}</select><select data-role="garage-sort" aria-label="Sort garage cars">${[['type','By vehicle class'],['name','Name A–Z'],['condition','Lowest condition'],['earnings','Highest earnings']].map(([k,v])=>`<option value="${k}" ${garageSort===k?'selected':''}>${v}</option>`).join('')}</select></div>`;}
+function renderGarageQuickFilters(){
+ const values=[['all','All',state.fleet.length],['ready','Ready',state.fleet.filter(carReady).length],['care','Needs care',state.fleet.filter(vehicleNeedsAttention).length],['out','On road',state.fleet.filter(c=>['rented','transfer'].includes(c.status)).length],['incident','Incidents',state.fleet.filter(c=>c.status==='incident').length],['auction','At auction',state.fleet.filter(c=>c.status==='auction').length]];
+ return `<div class="garage-quick-filters" aria-label="Quick garage filters">${values.map(([id,label,count])=>`<button type="button" data-action="garagefilter" data-id="${id}" class="garage-filter-chip ${garageStatus===id?'active':''}" aria-pressed="${garageStatus===id}">${label}<b>${count}</b></button>`).join('')}</div>`;
+}
 function renderGarage(){
  let c=state.fleet.find(x=>x.id===selectedCar)||state.fleet[0],parked=state.fleet.filter(x=>x.status==='available'),attention=state.fleet.filter(vehicleNeedsAttention).length,capacity=garageCapacity(),estValue=state.fleet.reduce((a,x)=>a+getResale(x),0),cars=garageCars(),search=garageSearch.trim().toLowerCase(),matches=cars.filter(x=>(typeOf(x.type).name+' '+typeOf(x.type).category+' '+x.plate+' '+(DEST[x.branch]?.name||x.branch)).toLowerCase().includes(search));
  let bulkOptions=[['prepare','✨ Prepare all'],['service','🔧 Service all'],['wash','🫧 Wash all'],['fuel','⛽ Refuel all']];
  let costs=bulkOptions.map(([k,label])=>{let n=parked.filter(x=>k==='prepare'?careNeeded(x)||x.body<99.9:k==='service'?x.condition<99.9||x.body<99.9:k==='wash'?x.clean<99.9:x.fuel<99.9);let cost=n.reduce((a,x)=>{let p=carePrices(x);return a+(k==='prepare'?p.fuel+p.service+p.wash+bodyRepairCost(x):k==='service'?p.service+bodyRepairCost(x):p[k]);},0);return listBtn('bulkcare',k,`${label} ${n.length?'· '+(cost?money(cost):'FREE'):''}`,'btn sm',n.length?'':'disabled');}).join('');
  let extra=(garageStatus==='all'&&garageBranch==='all'&&!search&&capacity>state.fleet.length)?garageEmptyBay(state.fleet.length):'';
- return `<section class="parking-section"><div class="parking-head"><div>${compactInfoPanel('garage-collection','🚗 Your arcade garage','Inspect, tune and prepare your cars. Vehicles out on hire still occupy a garage bay.')}</div><div class="parking-head-actions">${btn('sub','＋ Add vehicle','btn sm primary','data-group="fleet" data-id="dealership"')}<span class="parking-count">${state.fleet.length} OWNED · ${parked.length} PARKED</span></div></div>
- 
- <details class="garage-bulk-details" data-compact-info="garage-bulk-actions" ${openInfoPanels.has('garage-bulk-actions')?'open':''}><summary>🧰 Fleet-wide care <span>ⓘ Actions ⌄</span></summary><div class="fleet-batch">${costs}</div></details><div class="parking-slots-grid" id="fleet-results">${matches.map((x,i)=>garageBayCard(x,state.fleet.indexOf(x))).join('')}${extra}</div><div class="section2-help" data-search-empty style="display:${matches.length?'none':'block'}">No cars match these filters. Try another status or branch.</div><p class="tiny muted mt-12" data-fleet-count>${matches.length} vehicles shown · Bulk actions apply to parked cars only.</p></section>
+ return `<section class="parking-section garage-v4" aria-label="Garage collection"><div class="garage-heading-v4">
+   <div class="garage-heading-title"><span class="garage-overline">VEHICLE STORAGE · CAPE TOWN</span><h2>My Garage</h2><p>Inspect your collection, organise your bays and keep every rental ready.</p></div>
+   <div class="garage-heading-actions">${btn('sub','＋ Add vehicle','btn primary','data-group="fleet" data-id="dealership"')}<span class="garage-count-pill">${state.fleet.length} OWNED · ${parked.length} PARKED</span></div>
+ </div>
+ <div class="garage-capacity-line" aria-label="Garage capacity ${state.fleet.length} of ${capacity}"><div><b>🅿 Parking occupancy</b><span>${state.fleet.length} / ${capacity} bays</span></div><div class="garage-capacity-track"><i style="width:${Math.min(100,state.fleet.length/Math.max(1,capacity)*100)}%"></i></div></div>
+ <div class="garage-collection-actions"><div class="garage-view-tabs-v4" aria-label="Garage display mode"><button type="button" class="garage-view-choice ${garageDisplay==='bays'?'active':''}" data-action="garageview" data-id="bays" aria-pressed="${garageDisplay==='bays'}">▦ Parking bays</button><button type="button" class="garage-view-choice ${garageDisplay==='list'?'active':''}" data-action="garageview" data-id="list" aria-pressed="${garageDisplay==='list'}">☷ Compact list</button></div><span class="garage-scope-caption">Sorted by ${garageSort==='type'?'vehicle class':garageSort==='name'?'name':garageSort==='condition'?'condition':'rental return'} · ${matches.length} shown</span></div>
+ ${renderGarageQuickFilters()}
+ <details class="garage-bulk-details" data-compact-info="garage-bulk-actions" ${openInfoPanels.has('garage-bulk-actions')?'open':''}><summary>🧰 Fleet-wide care <span>ⓘ Actions ⌄</span></summary><div class="fleet-batch">${costs}</div></details><div class="${garageDisplay==='list'?'garage-compact-list-v4':'parking-slots-grid garage-bay-grid-v4'}" id="fleet-results">${matches.map(x=>garageDisplay==='list'?fleetCard(x):garageBayCard(x,state.fleet.indexOf(x))).join('')}${garageDisplay==='bays'?extra:''}</div><div class="section2-help" data-search-empty style="display:${matches.length?'none':'block'}">No cars match these filters. Try another status or branch.</div><p class="garage-results-caption" data-fleet-count>${matches.length} vehicle${matches.length===1?'':'s'} shown · Bulk actions affect parked vehicles only · Use Inspect to see vehicle information.</p></section>
  ${autoCareControl()}
- <div class="grid two-thirds garage-inspection-grid"><section class="card pad garage-ops-card"><details class="garage-ops-details" data-compact-info="garage-operations" ${openInfoPanels.has('garage-operations')?'open':''}><summary>⚙️ Fleet operations <span>ⓘ Info ⌄</span></summary><div class="garage-ops-content"><div class="garage-summary-row"><span>🟢 ${available().length} ready</span><span>🚙 ${state.rentals.length} on hire</span><span>🛠️ ${attention} need care</span></div><div class="notice mt-16">${up('workshop')?'✓ Servicing and body repairs are FREE':'🔧 Workshop upgrade makes mechanical maintenance free.'}</div><div class="notice mt-12">${up('carwash')?'✓ Washing is FREE':'🫧 Company Car Wash makes washing free.'}</div><div class="notice mt-12">⛽ Fuel remains chargeable. ${up('fuelcard')?'Your fuel partnership gives 25% off.':''}</div>${btn('sub','View workshop upgrades','btn ghost mt-16',`data-group="fleet" data-id="care"`)}</div></details></section>
+ <div id="garage-inspection-anchor" class="grid two-thirds garage-inspection-grid garage-inspection-v4"><section class="card pad garage-ops-card"><details class="garage-ops-details" data-compact-info="garage-operations" ${openInfoPanels.has('garage-operations')?'open':''}><summary>⚙️ Fleet operations <span>ⓘ Info ⌄</span></summary><div class="garage-ops-content"><div class="garage-summary-row"><span>🟢 ${available().length} ready</span><span>🚙 ${state.rentals.length} on hire</span><span>🛠️ ${attention} need care</span></div><div class="notice mt-16">${up('workshop')?'✓ Servicing and body repairs are FREE':'🔧 Workshop upgrade makes mechanical maintenance free.'}</div><div class="notice mt-12">${up('carwash')?'✓ Washing is FREE':'🫧 Company Car Wash makes washing free.'}</div><div class="notice mt-12">⛽ Fuel remains chargeable. ${up('fuelcard')?'Your fuel partnership gives 25% off.':''}</div>${btn('sub','View workshop upgrades','btn ghost mt-16',`data-group="fleet" data-id="care"`)}</div></details></section>
  <section class="grid" style="align-content:start">${c?renderCarDetails(c):'<div class="card pad">No vehicle selected.</div>'}</section></div>`;
 }
 function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
@@ -3286,7 +3424,9 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='sub'){activeSub[button.dataset.group]=id;render();return;}
  if(action==='closemodal'){modal=null;render();return;}
  if(action==='guide'){modal='guide';render();return;}
- if(action==='selectcar'){selectedCar=id;activeSub.fleet='garage';render();return;}
+ if(action==='selectcar'){selectedCar=id;activeSub.fleet='garage';render();if(activePage==='fleet')document.getElementById('garage-inspection-anchor')?.scrollIntoView({behavior:'smooth',block:'start'});return;}
+ if(action==='garageview'){if(id!=='bays'&&id!=='list')return;garageDisplay=id;render();return;}
+ if(action==='garagefilter'){if(!['all','ready','care','out','incident','auction'].includes(id))return;garageStatus=id;render();return;}
  if(action==='dealerpreview'){if(!TYPES.some(t=>t.id===id))return;dealerPreview=id;render();return;}
  if(action==='dealerpaint'){if(!PAINTS[id])return;dealerPaint=id;render();return;}
  if(action==='dealerprev'||action==='dealernext'){let i=TYPES.findIndex(t=>t.id===dealerPreview);let step=action==='dealerprev'?-1:1;dealerPreview=TYPES[(i+step+TYPES.length)%TYPES.length].id;render();return;}
