@@ -285,4 +285,36 @@ assert.ok(js.includes('data-compact-info="garage-bulk-actions"')&&js.includes('d
 assert.ok(js.includes('data-compact-info="map-details"'),"Map details must remain reachable");
 assert.ok(html.includes('id="ctr-responsive-compact-v2"'),"Compact CSS missing");
 console.log("PASS: Garage vehicle ordering and responsive Info sections.");
+
+// Section 2: artwork-backed dashboard controls and routing may change visually,
+// but must never stop dispatching cars or hide live activity.
+const dashStart=js.indexOf("function renderOverview(){");
+const dashEnd=js.indexOf("function stat(",dashStart);
+const dashMarkup=js.slice(dashStart,dashEnd);
+const dashTileStart=js.indexOf("function dashboardShortcut(");
+const dashTileEnd=js.indexOf("function autoDeskControl()",dashTileStart);
+assert.ok(dashStart>=0&&dashEnd>dashStart&&dashTileStart>=0&&dashTileEnd>dashTileStart,
+  "Section 2 Dashboard helper functions missing");
+assert.ok(html.includes('id="ctr-design-foundation-section-01"')&&html.includes('id="ctr-dashboard-section-02"'),
+  "Arcade styling must ship with both Dashboard and shared design tokens");
+assert.equal((dashMarkup.match(/dashboardShortcut\(/g)||[]).length,9,"Dashboard needs all nine quick action tiles");
+for(const part of ["smartOverview()","dashboard-city-strip","dashboard-summary","dashboard-rental-desk",
+                  "autoDeskControl()","map(rentalCard)","map(offerCard)","renderMap(true)",
+                  "renderLog(5)","nextActions()"]){
+ assert.ok(dashMarkup.includes(part),"Dashboard regression: missing "+part);
+}
+const shortcutFn=vm.runInNewContext(js.slice(dashTileStart,dashTileEnd)+"\ndashboardShortcut");
+assert.match(shortcutFn("🔑","Dispatch Rental","rental","","gold"),/data-action="autorent"/,
+  "Dispatch tile must initiate a real rental, not merely open the Garage");
+assert.match(shortcutFn("🚘","Garage","fleet","garage"),/data-action="dashshortcut" data-id="fleet" data-sub="garage"/);
+assert.match(shortcutFn("🔧","Workshop & Wash","fleet","care"),/data-sub="care"/);
+assert.match(shortcutFn("🎟️","Auctions","events","auctions"),/data-sub="auctions"/);
+assert.match(shortcutFn("💼","Staff","business","staff"),/data-sub="staff"/);
+assert.ok(js.includes("if(action==='dashshortcut')")&&js.includes("const destinations={fleet:"),
+  "Quick-action tab navigation must be routed through the existing app handler");
+assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),
+  "The Dashboard must keep the original rental dispatch logic");
+console.log("PASS: Dashboard section 2 uses live dispatch, 9 routed actions, live rentals, requests, city status and saved game foundation.");
+
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
