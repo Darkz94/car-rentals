@@ -1311,6 +1311,74 @@ select option{background:#18234a;color:white}
 .world3d-car-pin.bakkie-sprite span{font-size:10px;color:#e6ffd8}
 .map-car image{filter:drop-shadow(0 3px 6px #000a)}
 </style>
+
+<style id="ctr-compact-rental-desk">
+/* Compact Dashboard quick-action panel: override older portrait and arcade hero sizes. */
+.hero.hero-compact{
+  min-height:0!important;
+  display:block!important;
+  grid-template-columns:none!important;
+  overflow:visible;
+  border-radius:16px;
+  border-color:#6174a4;
+  background:linear-gradient(110deg,#141e36,#263751);
+  box-shadow:0 8px 20px #02071955;
+}
+.hero.hero-compact .hero-art{opacity:.20}
+.hero.hero-compact .hero-shade{background:linear-gradient(95deg,#0b1724ed,#152137c9)}
+.hero.hero-compact .hero-content{
+  width:100%;
+  max-width:none!important;
+  padding:14px 17px!important;
+  display:block;
+}
+.hero.hero-compact .hero-compact-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.hero.hero-compact .hero-compact-title{
+  font-size:15px;line-height:1.25;font-weight:900;color:#f4f5f9;letter-spacing:.1px;
+}
+.hero.hero-compact .hero-actions{
+  width:100%;margin-top:11px;display:flex;flex-wrap:wrap;gap:9px;
+}
+.hero.hero-compact .hero-actions .btn{
+  width:auto;min-height:38px!important;padding:9px 13px!important;
+  font-size:12px;line-height:1.2;white-space:normal;text-align:center;
+}
+.hero.hero-compact details.hero-help{position:relative;z-index:6;flex:none}
+.hero.hero-compact details.hero-help summary{
+  cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;
+  padding:7px 10px;border:1px solid #627596;border-radius:9px;
+  background:#233451ee;color:#e4edfd;font-size:12px;font-weight:800;
+}
+.hero.hero-compact details.hero-help summary::-webkit-details-marker{display:none}
+.hero.hero-compact details.hero-help summary:focus-visible{outline:2px solid #ffe4a4;outline-offset:2px}
+.hero.hero-compact details.hero-help[open] summary{background:#30496c}
+.hero.hero-compact details.hero-help[open] summary span{transform:rotate(180deg)}
+.hero.hero-compact .hero-help-menu{
+  position:absolute;top:calc(100% + 9px);right:0;width:min(315px,calc(100vw - 35px));
+  border:1px solid #6684ac;border-radius:13px;
+  box-shadow:0 16px 36px #050e23ad;background:#14243a;color:#e9f2fb;
+  padding:14px 16px;line-height:1.55;font-size:12px;
+}
+.hero.hero-compact .hero-help-menu b{font-size:13px}
+.hero.hero-compact .hero-help-menu ol{margin:8px 0 12px;padding-left:19px}
+.hero.hero-compact .hero-help-menu li{margin:4px 0}
+@media(max-width:760px){
+  .hero.hero-compact .hero-content{padding:12px 13px!important}
+  .hero.hero-compact .hero-compact-title{font-size:14px}
+  .hero.hero-compact .hero-actions{
+    margin-top:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px;
+  }
+  .hero.hero-compact .hero-actions .btn{
+    width:100%;min-height:39px!important;padding:8px 6px!important;font-size:11px;
+  }
+}
+@media(max-width:350px){
+  .hero.hero-compact .hero-actions{grid-template-columns:1fr!important}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -1956,7 +2024,8 @@ function smartOverview(){
 function autoDeskControl(){return up('auto')?`<div class="auto-desk"><div><b>✨ Auto-Dispatch Desk</b><span>${state.settings.autoDispatch===false?'Paused — accept rentals yourself.':'Running — matches ready cars to new requests.'}</span></div>${btn('toggleautodespatch',state.settings.autoDispatch===false?'▶ Turn ON':'⏸ Pause',`btn sm ${state.settings.autoDispatch===false?'primary':'ghost'}`)}</div>`:'';}
 
 function renderOverview(){let availableCars=available().length,readyRevenue=state.rentals.reduce((a,r)=>a+r.payout,0),moved=state.stats.returned;
- return `<div class="fadein">${smartOverview()}<section class="hero">${renderHeroArt()}<div class="hero-shade"></div><div class="hero-content"><div class="eyebrow">YOUR CITY. YOUR GARAGE. YOUR EMPIRE.</div><h2>Build your <i>rental empire.</i></h2><p>Buy cars. Welcome customers. Watch their journey across Cape Town. Get paid the moment they return.</p><div class="hero-actions">${btn('autorent','🚘 Dispatch best rental','btn primary')}${btn('page','Explore your garage','btn ghost',`data-id="fleet"`)}</div></div></section>
+ const heroHelpOpen=!!document.querySelector("section.hero-compact details.hero-help")?.open;
+ return `<div class="fadein">${smartOverview()}<section class="hero hero-compact">${renderHeroArt()}<div class="hero-shade"></div><div class="hero-content"><div class="hero-compact-top"><strong class="hero-compact-title">🚗 Rental desk</strong><details class="hero-help" ${heroHelpOpen?'open':''}><summary>ⓘ Info <span aria-hidden="true">⌄</span></summary><div class="hero-help-menu"><b>Quick guide</b><ol><li>Buy vehicles in your garage to build your fleet.</li><li>Dispatch a ready car to a waiting customer.</li><li>Earn rental income when the vehicle returns.</li></ol>${btn('guide','Full game guide','btn sm ghost')}</div></details></div><div class="hero-actions">${btn('autorent','🚘 Dispatch best rental','btn primary')}${btn('page','Explore your garage','btn ghost','data-id="fleet"')}</div></div></section>
  <div class="city-status"><div>${weatherEffect().icon} <b>${state.weather}</b> · ${clockInfo().label} ${isNight()?'🌙 Night':'☀️ Day'}</div><span>${difficulty().name} economy · Fuel ${money(fuelPrice())}/L · ${money(state.rentals.reduce((a,r)=>a+r.payout,0))} pending returns</span>${btn('page','City conditions →','btn sm ghost','data-id="events"')}</div><section class="grid grid-4 stats">
  ${stat('💰','Bank balance',money(state.cash),'Cash in hand','money')}${stat('🚗','Ready vehicles',`${availableCars} / ${state.fleet.length}`,'Available for hire','')}${stat('🚦','Cars on the road',`${state.rentals.length}`,'Rentals in progress','')}${stat('📈','Lifetime revenue',compact(state.stats.earned),`${moved} completed rentals`,'')}
  </section>
