@@ -394,7 +394,7 @@ assert.ok(html.includes('id="ctr-garage-section-04"'),"Section 4 Garage design C
 const garageV4Start=js.indexOf("function renderGarage(){");
 const garageV4End=js.indexOf("\nfunction fleetCard(",garageV4Start);
 const garageV4Body=js.slice(garageV4Start,garageV4End);
-for(const token of ["garage-v4","garage-capacity-line","garage-quick-filters","garage-compact-list-v4","garage-bay-grid-v4","garageDisplay==='list'?fleetCard(x):garageBayCard(x,state.fleet.indexOf(x))","garage-inspection-anchor","data-fleet-count","autoCareControl()","garage-ops-details"]){
+for(const token of ["garage-v4","garage-capacity-line","renderGarageQuickFilters()","garage-compact-list-v4","garage-bay-grid-v4","garageDisplay==='list'?fleetCard(x):garageBayCard(x,state.fleet.indexOf(x))","garage-inspection-anchor","data-fleet-count","autoCareControl()","garage-ops-details"]){
  assert.ok(garageV4Body.includes(token),"Garage Section 4 missing existing feature or view: "+token);
 }
 assert.ok(js.includes("garageDisplay='bays'")&&js.includes("if(action==='garageview')")&&js.includes("if(action==='garagefilter')"),
