@@ -722,4 +722,56 @@ assert.ok(js.includes("let seconds=rentalSeconds(),start=now(),payout=rentalPayo
  js.includes("state.rentals.push({id:uid('rent')"),"Real rentals must use existing duration and payout handlers");
 console.log("PASS: Section 8 rental offer art, 28 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
 
+
+
+// Section 9: Active Rentals and true ledger-backed returns without any economy changes.
+assert.ok(html.includes('id="ctr-active-rentals-section-09"'),"Section 9 styles missing");
+const v9s=js.indexOf("function rentalCard(r){"),v9e=js.indexOf("\nfunction offerCard(o){",v9s);
+const v9rs=js.indexOf("function renderRecentReturns(limit=4){"),v9re=js.indexOf("\nfunction renderLog(",v9rs);
+assert.ok(v9s>=0&&v9e>v9s&&v9rs>=0&&v9re>v9rs,"Section 9 UI missing");
+const v9code=js.slice(v9s,v9e),v9returns=js.slice(v9rs,v9re);
+for(const token of ["item-row rental-compact","rental-compact-bottom","data-countdown-rental",
+ "data-rental-progress","formatTripTime(","money(r.payout)","CAR_IMAGES[t.id]",
+ "rental-trip-v9-route","rental-trip-v9-timeline","btn('page'"]){
+ assert.ok(v9code.includes(token),"Section 9 rental missing "+token);
+}
+for(const token of ["state.ledger||[]","Rental returned · ","money(e.amount)","rental-return-v9","rental-returns-v9-empty"]){
+ assert.ok(v9returns.includes(token),"Section 9 return history missing "+token);
+}
+assert.ok(js.includes("rental-active-v9")&&js.includes("state.rentals.map(rentalCard)")&&
+ js.includes("renderRecentReturns(4)")&&js.includes("rental-map-rentals-v9"),
+ "Live rentals must appear in Dashboard and existing map");
+assert.ok(js.includes("el.parentElement?.setAttribute('aria-valuenow'"),"Live progress must update aria value");
+const v9car={id:"car9",plate:"CA 900",type:"sedan",paint:"silver"};
+const v9rental={id:"r9",carId:"car9",customer:"Family Jacobs",icon:"🚘",from:"hq",dest:"airport",start:100000,due:180000,seconds:80,payout:3400};
+const v9state={fleet:[v9car],ledger:[{t:150000,amount:3450,label:"Rental returned · Wedding Party"},{t:140000,amount:600,label:"Upgrade purchased"}],stats:{returned:1}};
+const v9ctx={
+ state:v9state,typeOf:()=>({id:"sedan",name:"Sedan"}),CAR_IMAGES:{sedan:"assets/executive-sedan-side.webp"},
+ paintFilter:()=>"none",arcadeIcon:()=>"<svg></svg>",now:()=>140000,
+ DEST:{hq:{name:"Cape Town HQ"},airport:{name:"Cape Town Airport"}},
+ clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),round:Math.round,
+ esc:v=>String(v),money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),relativeTime:()=> "40s",formatTripTime:n=>n+"s",
+ btn:(action,label,css,extra)=>'<button data-action="'+action+'" '+extra+'>'+label+'</button>'
+};
+const v9fn=vm.runInNewContext(v9code+"\nrentalCard",v9ctx);
+const v9saved=JSON.stringify(v9state),v9render=v9fn(v9rental);
+assert.ok(v9render.includes('src="assets/executive-sedan-side.webp"')&&v9render.includes("Family Jacobs")&&v9render.includes("CA 900"),
+ "Active rental must show actual car and customer");
+assert.ok(v9render.includes("PENDING ON RETURN")&&v9render.includes(v9ctx.money(3400))&&
+ v9render.includes("Cape Town HQ")&&v9render.includes("Cape Town Airport"),
+ "Active rental must show accurate pending payment and route");
+assert.ok(v9render.includes('aria-valuenow="50"')&&v9render.includes('style="width:50%"')&&
+ v9render.includes('data-countdown-rental="r9"')&&v9render.includes('data-rental-progress="r9"'),
+ "Live return progress must reflect timestamps");
+assert.ok(v9render.includes('data-action="page" data-id="map"')&&v9render.includes("80s trip"),"Rental must link to map and show duration");
+assert.ok(v9fn({...v9rental,seconds:undefined,start:90000}).includes("90s trip"),"Legacy rentals must use saved timestamps");
+const v9history=vm.runInNewContext(v9returns+"\nrenderRecentReturns",v9ctx)();
+assert.ok(v9history.includes("Wedding Party")&&v9history.includes(v9ctx.money(3450))&&
+ !v9history.includes("Upgrade purchased"),"Return history must use completed rental ledger entries only");
+assert.equal(JSON.stringify(v9state),v9saved,"Section 9 rendering must not change saved data");
+assert.ok(js.includes("const RENTAL_MIN_SECONDS=20,RENTAL_MAX_SECONDS=300;")&&
+ js.includes("earn(r.payout+tip,")&&js.includes("function restoreFinished(){let due=state.rentals.filter(r=>r.due<=now())"),
+ "Payment on return, original duration and offline catchup must be preserved");
+console.log("PASS: Section 9 rental cards, timestamps, progress, real return ledger, payment timing and save safety.");
+
 console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
