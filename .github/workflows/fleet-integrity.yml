@@ -2,7 +2,16 @@ name: Fleet integrity checks (no release)
 on:
   push:
     branches:
+      - main
+      - pre-release
       - 'feature/fleet-audit-cleanup-auctions'
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'icons/**'
+      - 'rebuild.py'
+      - 'tests/**'
+      - '.github/workflows/fleet-integrity.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
