@@ -924,8 +924,8 @@ for(const imagePath of ["assets/limo-side.webp","assets/executive-sedan-side.web
 for(const control of ['data-countdown-auction="1"','data-countdown-owned-auction="a1"','data-role="auction-owned-car"','data-action="bid"','data-action="buynow"','data-action="listauction"']){
  assert.ok(auction13markup.includes(control),"Auction control missing "+control);
 }
-assert.ok(auction13markup.includes("R101,000")&&auction13markup.includes("R145,000")&&
- auction13markup.includes("R65,000")&&auction13markup.includes("R90,000"),"Displayed auction financial values incorrect");
+assert.ok(auction13markup.includes(a13ctx.money(101000))&&auction13markup.includes(a13ctx.money(145000))&&
+ auction13markup.includes(a13ctx.money(65000))&&auction13markup.includes(a13ctx.money(90000)),"Displayed auction financial values incorrect");
 assert.ok(auction13markup.includes("You are leading")&&auction13markup.includes("Collector")&&auction13markup.includes("Sold to Dealer"),"Auction status is incomplete");
 assert.equal(JSON.stringify(a13snapshot),a13copy,"Auction screen must not mutate saved data");
 console.log("PASS: Section 13 premium auction visuals, bidding, live timers, own listings, historic results and save safety.");
