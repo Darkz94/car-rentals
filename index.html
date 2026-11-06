@@ -2388,6 +2388,145 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 @media(max-width:365px){.vehicle-v5-stage{min-height:177px}.vehicle-v5-side{height:115px}.vehicle-v5-stat strong{font-size:14px}}
 </style>
+<style id="ctr-workshop-section-06">
+/* SECTION 06: Presentation and selection only. Original service, payment and incident handlers unchanged. */
+.workshop-v6{display:flex;flex-direction:column;gap:13px;min-width:0}
+.workshop-hero{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(130px,.8fr) minmax(0,1.3fr);align-items:center;gap:16px;min-height:184px;padding:17px 20px;border:1.5px solid #5bc9f7;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#1a5c91,#0c2d58 65%,#071b3e);box-shadow:0 4px 0 #0c355c,0 15px 26px #0007}
+.workshop-hero-sky{position:absolute;inset:0;z-index:-2;opacity:.65;pointer-events:none}
+.workshop-hero-sky svg{width:100%;height:100%;object-fit:cover}
+.workshop-hero:before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(100deg,#07203b6c,#061a3dcc 60%,#05152df2)}
+.workshop-hero-car{grid-column:1;grid-row:1;display:grid;place-items:center;min-width:0}
+.workshop-hero-car img{width:100%;height:154px;max-width:360px;object-fit:contain;filter:drop-shadow(0 10px 10px #000b)}
+.workshop-hero-copy{grid-column:2;grid-row:1}
+.workshop-hero-copy>span,.workshop-eyebrow{display:block;font-size:10px;letter-spacing:1px;font-weight:950;color:#8fddff}
+.workshop-hero-copy h2{font-size:clamp(26px,3vw,42px);line-height:.99;margin:8px 0 9px;color:#fff;font-weight:1000;font-style:italic;text-shadow:0 3px 5px #00162b}
+.workshop-hero-copy h2 em{color:#ffdc80}
+.workshop-hero-copy p{font-size:13px;line-height:1.36;color:#e2f3ff;margin:0 0 14px}
+.workshop-hero-flags{display:flex;gap:8px;flex-wrap:wrap}
+.workshop-hero-flags b{font-size:10px;border:1px solid #75bde9;padding:6px 9px;border-radius:999px;background:#092d53c9;color:#e9f9ff}
+.workshop-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.workshop-kpi{display:flex;align-items:center;gap:8px;min-width:0;min-height:84px;padding:11px;border:1.5px solid #6ab9e4;border-radius:15px;background:linear-gradient(143deg,#175381,#0b3157 62%,#081b3b);box-shadow:0 4px 0 #061b3f,0 8px 18px #0007}
+.workshop-kpi--teal{border-color:#4af2c0;background:linear-gradient(143deg,#145c5e,#0a2c4b)}
+.workshop-kpi--gold{border-color:#ffdf87;background:linear-gradient(143deg,#555a5f,#1d3656)}
+.workshop-kpi--purple{border-color:#d6a5f4;background:linear-gradient(143deg,#4a3b7a,#17264f)}
+.workshop-kpi>span{width:42px;height:42px;flex:none}
+.workshop-kpi>div{min-width:0}
+.workshop-kpi small{font-size:9px;font-weight:900;letter-spacing:.2px;color:#e4f1ff;display:block;line-height:1.2}
+.workshop-kpi strong{display:block;font-size:clamp(18px,2.2vw,26px);font-weight:1000;color:#ffe290;overflow-wrap:anywhere;line-height:1.18;margin:3px 0}
+.workshop-kpi--teal strong{color:#8effd4}.workshop-kpi--purple strong{color:#f3dafa}
+.workshop-kpi em{display:block;font-style:normal;color:#bad9ee;font-size:9px;line-height:1.2}
+.workshop-upgrade-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.workshop-upgrade{min-width:0;display:flex;flex-direction:column;gap:12px;padding:15px;border-radius:16px;border:1.5px solid #6eb9e1;background:linear-gradient(145deg,#174c77,#0b2b50 70%,#091d3c);box-shadow:0 3px 0 #051d3a,0 10px 19px #0008}
+.workshop-upgrade--carwash{border-color:#ad98f5;background:linear-gradient(145deg,#41437e,#182c57 65%,#0c1c3f)}
+.workshop-upgrade.owned{border-color:#53e7bb}
+.workshop-upgrade-top{display:flex;align-items:center;gap:10px;min-width:0}
+.workshop-upgrade-top>div{min-width:0;flex:1}
+.workshop-upgrade-art{width:56px;height:56px;flex:none}
+.workshop-upgrade-top small{display:block;font-size:9px;color:#a8e8ff;font-weight:850;line-height:1.2}
+.workshop-upgrade h3{font-size:clamp(13px,1.5vw,18px);margin:3px 0 0;color:#ffde8d;font-weight:950;line-height:1.15}
+.workshop-upgrade-state{font-size:9px;font-weight:1000;color:#0d2d4a;padding:5px 7px;background:#ffdf90;border-radius:8px}
+.workshop-upgrade.owned .workshop-upgrade-state{background:#82ffcc}
+.workshop-upgrade>p{font-size:11px;color:#dceefb;line-height:1.45;flex:1;margin:0}
+.workshop-upgrade-bottom{display:flex;justify-content:space-between;align-items:center;gap:9px;padding-top:11px;border-top:1px solid #8ec7e34d}
+.workshop-upgrade-bottom>div>small{display:block;font-size:9px;color:#dceafb}
+.workshop-upgrade-bottom strong{display:block;font-size:clamp(13px,2vw,20px);color:#ffe49c;font-weight:1000}
+.workshop-upgrade-bottom .btn{min-height:37px;font-size:11px;padding:7px 11px}
+.workshop-owned-mark{font-weight:1000;font-size:12px;color:#9effd5}
+.workshop-service-desk{min-width:0;padding:15px;border:1.5px solid #60ace7;border-radius:18px;background:linear-gradient(155deg,#133e6b,#0b2851 50%,#081b3b);box-shadow:0 10px 25px #0008}
+.workshop-desk-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.workshop-desk-heading h3{font-size:clamp(21px,2.4vw,29px);font-style:italic;font-weight:1000;color:#ffdb7f;margin:4px 0 6px}
+.workshop-desk-heading p{color:#d3e7f5;margin:0;font-size:11px}
+.workshop-fuel-badge{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding:10px 12px;border:1px solid #6ebde5;border-radius:12px;background:#0b2b52}
+.workshop-fuel-badge>span{font-size:9px;font-weight:950;color:#a9e8ff}.workshop-fuel-badge strong{font-size:18px;color:#ffe59d}.workshop-fuel-badge small{font-size:9px;color:#c8e1f2}
+.workshop-filterbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.workshop-filter{display:inline-flex;align-items:center;gap:7px;min-height:33px;cursor:pointer;color:#e2efff;font:inherit;font-size:11px;font-weight:900;padding:6px 11px;background:linear-gradient(140deg,#164774,#0c2a4c);border:1px solid #629cc9;border-radius:999px}
+.workshop-filter span{display:inline-grid;place-items:center;min-width:19px;height:19px;border-radius:50%;background:#081e42;color:#e8f8ff}
+.workshop-filter.active{color:#0e2947;background:linear-gradient(130deg,#fff0a5,#ffc447);border-color:#ffefad;box-shadow:0 3px 12px #ffb84455}
+.workshop-filter.active span{background:#936018;color:#fff}
+.workshop-filter:focus-visible{outline:3px solid #ffe493;outline-offset:2px}
+.workshop-desk-note,.workshop-desk-counter{font-size:10px;line-height:1.4;color:#bed8eb;margin:8px 0 12px}
+.workshop-desk-counter{margin:11px 0 0}
+.workshop-vehicle-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.workshop-vehicle-v6{min-width:0;overflow:hidden;border:1.5px solid #62acdf;border-radius:15px;background:linear-gradient(145deg,#174b7b,#092a50 55%,#081c3e);box-shadow:0 4px 0 #051b37,0 9px 17px #0007}
+.workshop-vehicle-v6--ready{border-color:#49d9ae}.workshop-vehicle-v6--danger{border-color:#f385a0}.workshop-vehicle-v6--attention{border-color:#f2bd68}
+.workshop-vehicle-head{display:flex;align-items:center;gap:8px;padding:10px;background:linear-gradient(135deg,#164a74,#0c315c);min-width:0}
+.workshop-vehicle-art{width:100px;height:78px;flex:none;display:grid;place-items:center;border-radius:11px;background:radial-gradient(ellipse at center,#3d8bae,#153e69 70%,#0a2349);border:1px solid #5c9dc5}
+.workshop-vehicle-art img{width:98%;height:74px;object-fit:contain}
+.workshop-vehicle-identity{min-width:0;flex:1}
+.workshop-vehicle-category{display:block;color:#9be0fa;text-transform:uppercase;font-size:9px;font-weight:900;letter-spacing:.45px}
+.workshop-vehicle-identity h4{margin:3px 0 5px;font-size:15px;color:#ffdc8e;font-weight:950;line-height:1.15}
+.workshop-vehicle-identity>span:last-child{font-size:10px;color:#d2e9fa}
+.workshop-vehicle-status{max-width:102px;text-align:center;font-size:8.5px;line-height:1.2;font-weight:950;border-radius:8px;padding:6px 7px;color:#dcefff;border:1px solid #78abe5;background:#153d64}
+.workshop-vehicle-status--ready{color:#b6ffe0;border-color:#43dbae;background:#125148}
+.workshop-vehicle-status--attention{color:#ffe5ad;border-color:#edb65b;background:#62431e}
+.workshop-vehicle-status--danger{color:#ffe0ea;border-color:#f88ba2;background:#623043}
+.workshop-vehicle-health{padding:9px 10px 4px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.workshop-vehicle-meter{min-width:0;padding:8px;border:1px solid #3c7ea9;border-radius:10px;background:#092346}
+.workshop-vehicle-meter>div{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:9px;color:#dbeeff}
+.workshop-vehicle-meter b{font-variant-numeric:tabular-nums;color:#ffe4ac;font-size:10px}
+.workshop-vehicle-meter>i{display:block;height:6px;margin-top:7px;background:#03152c;border-radius:7px;overflow:hidden}
+.workshop-vehicle-meter em{display:block;height:100%;background:linear-gradient(90deg,#39bdda,#69eab9)}
+.workshop-vehicle-meter em.warning{background:linear-gradient(90deg,#eaa549,#ffe18b)}.workshop-vehicle-meter em.danger{background:linear-gradient(90deg,#e95a78,#ffa37a)}
+.workshop-vehicle-actions{padding:8px 10px 10px}
+.workshop-service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.workshop-service-grid .btn{white-space:normal;min-height:38px;line-height:1.2;font-size:10px;padding:7px 6px;background:linear-gradient(140deg,#23578b,#12355e);border-color:#629aca}
+.workshop-service-grid .btn:disabled{opacity:.38;cursor:not-allowed}
+.workshop-vehicle-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;border-top:1px solid #75b4d45d;padding-top:9px;margin-top:9px}
+.workshop-vehicle-foot>div{flex:1;min-width:95px}
+.workshop-vehicle-foot small{display:block;color:#b7d6e9;font-size:8.5px;font-weight:900}
+.workshop-vehicle-foot strong{display:block;color:#ffe19a;font-size:16px;line-height:1.2}
+.workshop-vehicle-foot>div>span{font-size:8.5px;color:#b4d3e5}
+.workshop-vehicle-foot .btn{font-size:10px;min-height:35px;padding:7px 9px}
+.workshop-recovery{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;padding:10px;border:1px solid #e57f94;border-radius:11px;background:#4b263ee3}
+.workshop-recovery b{font-size:11px;color:#ffe0e6}.workshop-recovery small{display:block;font-size:9px;color:#f0c0ce;margin-top:4px}
+.workshop-recovery .btn{font-size:10px}
+.workshop-empty{grid-column:1/-1;padding:20px;text-align:center;border:1px dashed #5c9ab9;border-radius:12px;color:#bfdcf0}
+.workshop-v6 .fleet-auto-panel{margin:0;border:1.5px solid #619ed5;background:linear-gradient(145deg,#143d66,#0c274a)}
+.workshop-v6 .auto-care-item{border-color:#527da3;background:linear-gradient(135deg,#143d63,#0b2d50)}
+@media(max-width:1070px){
+ .workshop-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .workshop-vehicle-list{grid-template-columns:1fr}
+ .workshop-vehicle-art{width:112px}
+}
+@media(max-width:720px){
+ .workshop-v6{gap:10px}
+ .workshop-hero{min-height:148px;grid-template-columns:93px minmax(0,1fr);gap:8px;padding:10px;border-radius:15px}
+ .workshop-hero-car img{height:105px}
+ .workshop-hero-copy>span{font-size:8px}
+ .workshop-hero-copy h2{font-size:clamp(19px,5.3vw,27px);margin:5px 0}
+ .workshop-hero-copy p{font-size:10px;margin:0 0 8px}
+ .workshop-hero-flags{gap:4px}
+ .workshop-hero-flags b{font-size:8px;padding:5px 6px}
+ .workshop-kpis{gap:6px}
+ .workshop-kpi{min-height:67px;padding:8px;gap:6px;border-radius:12px}
+ .workshop-kpi>span{width:32px;height:32px}
+ .workshop-kpi small{font-size:8px}.workshop-kpi strong{font-size:17px}.workshop-kpi em{font-size:8px}
+ .workshop-upgrade-grid{grid-template-columns:1fr;gap:8px}
+ .workshop-upgrade{padding:11px;gap:8px}
+ .workshop-upgrade-art{width:46px;height:46px}
+ .workshop-service-desk{padding:10px;border-radius:13px}
+ .workshop-desk-heading{align-items:flex-start}
+ .workshop-desk-heading h3{font-size:22px}
+ .workshop-desk-heading p{font-size:10px}
+ .workshop-fuel-badge{padding:7px;text-align:right}.workshop-fuel-badge strong{font-size:14px}.workshop-fuel-badge small{font-size:8px}
+ .workshop-filter{font-size:10px;padding:5px 8px;min-height:31px}
+ .workshop-vehicle-head{padding:8px;gap:6px;flex-wrap:wrap}
+ .workshop-vehicle-art{width:84px;height:67px}.workshop-vehicle-art img{height:64px}
+ .workshop-vehicle-identity h4{font-size:14px}.workshop-vehicle-status{max-width:100%;font-size:8px}
+ .workshop-vehicle-health{padding:8px 8px 4px;gap:6px}
+ .workshop-vehicle-actions{padding:7px 8px 8px}
+ .workshop-vehicle-foot .btn{font-size:9px}
+}
+@media(max-width:370px){
+ .workshop-hero{grid-template-columns:75px minmax(0,1fr)}
+ .workshop-hero-car img{height:88px}
+ .workshop-hero-copy h2{font-size:19px}
+ .workshop-desk-heading{flex-wrap:wrap}
+ .workshop-fuel-badge{align-items:flex-start}
+ .workshop-vehicle-art{width:72px}
+}
+@media(prefers-reduced-motion:reduce){.workshop-filter{transition:none!important}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/city-hatch-side.png',sedan:'assets/executive-sedan-side.webp',coupe:'assets/coastal-coupe-side.webp',bakkie:'assets/adventure-bakkie-side.png',jeep:'assets/jeep-4x4-side.webp',truck:'assets/delivery-truck-side.webp',tow:'assets/tow-truck-side.webp',donk:'assets/donk-side.webp',limo:'assets/limo-side.webp',partybus:'assets/partybus-side.webp',bus:'assets/tourbus-side.webp',sport:'assets/performance-sport-side.webp',super:'assets/supercar-gt-side.webp',hyper:'assets/hypercar-side.webp',muscle:'assets/muscle-car-side.webp',classic:'assets/classic-car-side.webp',van:'assets/modern-panelvan-side.webp'};
 
@@ -2591,7 +2730,7 @@ function restoreSlot(n){let v=readSlot(n);if(!v)return notify(`Slot ${n} is empt
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
-let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
+let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',workshopFilter='all',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,dealerClass='all',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
 function note(msg,kind='good'){if(offlineSimulation)return;state.log.unshift({id:uid('log'),at:now(),text:msg,kind});state.log=state.log.slice(0,35);}
 function arcadeFx(label,value='',unlock=false){
@@ -3321,9 +3460,73 @@ function renderDealership(){
  return `<div class="dealer-card ${isLocked?'locked':''} ${checked?'compare':''} ${isFocus?'preview-active':''}"><div class="dealer-visual"><img src="${CAR_IMAGES[x.id]}" alt="${esc(x.name)}">${isFocus?'<span class="dealer-preview-pill">● IN SHOWROOM</span>':''}${own?`<span class="owned-indicator">✓ ${own} OWNED</span>`:''}</div><div class="dealer-card-body"><div class="flex between center gap-8"><h3>${esc(x.name)}</h3><span class="pill ${isLocked?'orange':'green'}">${isLocked?'REP '+x.unlock:'UNLOCKED'}</span></div><p class="small muted mt-12">${esc(x.desc)}</p><div class="dealer-price">${money(x.price)}</div><div class="dealer-metrics"><div class="dealer-metric"><small>Base rental income (before trip length)</small><b class="money">${money(x.rate)}</b></div><div class="dealer-metric"><small>Fuel tank</small><b>${x.tank} L</b></div><div class="dealer-metric"><small>Category</small><b>${esc(x.category)}</b></div><div class="dealer-metric"><small>Break-even estimate</small><b>${Math.ceil(x.price/(x.rate*1.35*AVERAGE_DURATION_MULTIPLIER))} trips</b></div></div><div class="btn-group mt-16">${listBtn('dealerpreview',x.id,x.id==='bakkie'?(isFocus?'● Displaying 2D':'◈ Preview 2D'):(isFocus?'● Displaying 3D':'◈ Preview 2D'),'btn sm '+(isFocus?'primary':'dealer-preview-card-button'))}${listBtn('buycar',x.id,isLocked?'🔒 Rep '+x.unlock:full?'Garage full':freeCash()<x.price?'Insufficient cash':'Buy · '+money(x.price),'btn sm primary',isLocked||full||freeCash()<x.price?'disabled':'')}${listBtn('comparecar',x.id,checked?'✓ Comparing':'Compare','btn sm ghost')}</div></div></div>`;}).join('')}</div></div>`;
 }
 
-function renderCare(){let wk=up('workshop'),cw=up('carwash');return `${compactInfoPanel('fleet-workshop','🔧 Workshop & wash','Own a workshop for free servicing and a car wash for free washing. Fuel and roadside towing remain paid.')}<div class="grid grid-2"><section class="card pad"><div class="small bold">🔧 Company workshop</div><div class="notice ${wk?'success':'warn'}">${wk?'✅ WORKSHOP OWNED · Servicing and maintenance are FREE':'Before ownership: servicing R850 + wear-related fees per vehicle.'}</div>${wk?'<div class="quick-badge mt-16">✓ PERMANENT UPGRADE ACTIVE</div>':listBtn('upgrade','workshop','Buy workshop · '+money(UPGRADES[0].price),'btn primary block mt-16')}</section>
- <section class="card pad"><div class="small bold">🫧 Company car wash</div><div class="notice ${cw?'success':'warn'}">${cw?'✅ CAR WASH OWNED · All vehicle washes are FREE':'Before ownership: washing costs R180 per vehicle.'}</div>${cw?'<div class="quick-badge mt-16">✓ PERMANENT UPGRADE ACTIVE</div>':listBtn('upgrade','carwash','Build car wash · '+money(UPGRADES[1].price),'btn primary block mt-16')}</section>
- </div><div class="card pad mt-16">${paneHeading('Quick maintenance','Keep vehicles fuelled, cleaned and in great condition.')}<div class="grid grid-3">${fleetInGarageOrder(state.fleet).map(x=>smallCar(x,{action:'care'})).join('')}</div></div>`;}
+function renderWorkshopVehicle(c){
+ const t=typeOf(c.type),prices=carePrices(c),parked=c.status==='available';
+ const due=careNeeded(c)||(c.body??100)<99.9;
+ const bodyCost=bodyRepairCost(c),prepCost=prices.service+prices.wash+prices.fuel;
+ const recovery=state.incidents.find(i=>i.carId===c.id);
+ const stateLabel=c.status==='incident'?'ROADSIDE ASSISTANCE':c.status==='rented'?'ON HIRE':c.status==='transfer'?'IN TRANSIT':c.status==='auction'?'AT AUCTION':due?'SERVICE DUE':'RENTAL READY';
+ const tone=c.status==='incident'?'danger':!parked?'road':due?'attention':'ready';
+ const indicators=[['⛽','FUEL',c.fuel],['🔧','MECHANICAL',c.condition],['🫧','CLEAN',c.clean],['🛡️','BODY',c.body??100]];
+ const btnCost=(cost,readyLabel)=>cost?money(cost):readyLabel;
+ return `<article class="workshop-vehicle-v6 workshop-vehicle-v6--${tone}" data-workshop-car="${esc(c.id)}">
+  <div class="workshop-vehicle-head"><div class="workshop-vehicle-art"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}" loading="lazy" style="filter:${paintFilter(c)} drop-shadow(0 7px 6px #00152db8)"></div>
+   <div class="workshop-vehicle-identity"><span class="workshop-vehicle-category">${esc(t.category)}</span><h4>${esc(t.name)}</h4><span>${esc(c.plate)} · ${esc(DEST[c.branch]?.name||c.branch)}</span></div>
+   <span class="workshop-vehicle-status workshop-vehicle-status--${tone}">${stateLabel}</span></div>
+  <div class="workshop-vehicle-health">${indicators.map(([icon,label,value])=>`<div class="workshop-vehicle-meter"><div><span>${icon} ${label}</span><b>${round(value)}%</b></div><i><em class="${value<30?'danger':value<60?'warning':'healthy'}" style="width:${clamp(value)}%"></em></i></div>`).join('')}</div>
+  <div class="workshop-vehicle-actions"><div class="workshop-service-grid">
+    ${listBtn('fuel',c.id,'⛽ Refuel · '+(c.fuel>=99.9?'FULL':btnCost(prices.fuel,'FREE')),'btn workshop-action',!parked||c.fuel>=99.9?'disabled':'')}
+    ${listBtn('wash',c.id,'🫧 Wash · '+(c.clean>=99.9?'CLEAN':btnCost(prices.wash,'FREE')),'btn workshop-action',!parked||c.clean>=99.9?'disabled':'')}
+    ${listBtn('service',c.id,'🔧 Service · '+(c.condition>=99.9?'SERVICED':btnCost(prices.service,'FREE')),'btn workshop-action',!parked||c.condition>=99.9?'disabled':'')}
+    ${listBtn('bodyrepair',c.id,'🛡️ Bodywork · '+((c.body??100)>=99.9?'PERFECT':btnCost(bodyCost,'FREE')),'btn workshop-action',!parked||(c.body??100)>=99.9?'disabled':'')}
+   </div>
+   <div class="workshop-vehicle-foot"><div><small>PREPARE VEHICLE</small><strong>${prepCost?money(prepCost):'FREE'}</strong><span>Fuel + service + wash only</span></div>
+    ${listBtn('care',c.id,'✨ Prepare all','btn primary',!parked||!careNeeded(c)?'disabled':'')}
+    ${listBtn('selectcar',c.id,'Inspect →','btn ghost')}
+   </div>
+   ${c.status==='incident'&&recovery?`<div class="workshop-recovery"><div><b>⚠️ Recovery required</b><small>The car must be recovered before workshop maintenance.</small></div>${listBtn('resolve',recovery.id,'Recover · '+money(up('insurance')?450:900),'btn danger')}</div>`:''}
+  </div>
+ </article>`;
+}
+function renderCare(){
+ const wk=up('workshop'),cw=up('carwash'),fuelDiscount=up('fuelcard');
+ const parked=state.fleet.filter(c=>c.status==='available');
+ const due=parked.filter(c=>careNeeded(c)||(c.body??100)<99.9);
+ const onRoad=state.fleet.filter(c=>c.status==='rented'||c.status==='transfer');
+ const incidents=state.fleet.filter(c=>c.status==='incident');
+ const totalPrep=due.reduce((sum,c)=>{const p=carePrices(c);return sum+p.fuel+p.service+p.wash+bodyRepairCost(c)},0);
+ const selected=state.fleet.find(c=>c.id===selectedCar)||state.fleet[0]||null;
+ const heroImage=selected?CAR_IMAGES[typeOf(selected.type).id]:CAR_IMAGES.hatch;
+ const active=['all','needs','parked','road','incident'].includes(workshopFilter)?workshopFilter:'all';
+ const ordered=fleetInGarageOrder(state.fleet);
+ const shown=ordered.filter(c=>active==='all'||active==='needs'&&(c.status==='available'&&(careNeeded(c)||(c.body??100)<99.9))||active==='parked'&&c.status==='available'||active==='road'&&['rented','transfer','auction'].includes(c.status)||active==='incident'&&c.status==='incident');
+ const filters=[['all','All',state.fleet.length],['needs','Needs care',due.length],['parked','Parked',parked.length],['road','Away',state.fleet.filter(c=>['rented','transfer','auction'].includes(c.status)).length],['incident','Incidents',incidents.length]];
+ const upgradeData=[['workshop','🔧','COMPANY WORKSHOP','Mechanical service & body repairs',wk,'All mechanical servicing and bodywork repairs are FREE. Fuel and towing still cost money.'],
+                   ['carwash','🫧','COMPANY CAR WASH','Every vehicle wash',cw,'Washes are FREE once owned. Fuel and other maintenance follow their usual prices.']];
+ return `<div class="workshop-v6 fadein" aria-label="Workshop and wash command centre">
+  <section class="workshop-hero">
+    <div class="workshop-hero-sky" aria-hidden="true">${renderHeroArt()}</div><div class="workshop-hero-car"><img src="${heroImage}" alt="" loading="lazy"></div>
+    <div class="workshop-hero-copy"><span>COASTLINE AUTO CARE</span><h2>Workshop <em>&amp; Wash</em></h2><p>Keep your fleet fresh, fuelled and earning across Cape Town.</p><div class="workshop-hero-flags"><b>${due.length} cars need care</b><b>${parked.length} parked</b></div></div>
+  </section>
+  <section class="workshop-kpis" aria-label="Workshop fleet summary">
+    <div class="workshop-kpi workshop-kpi--teal"><span>${arcadeIcon('ready')}</span><div><small>RENTAL READY</small><strong>${available().length}</strong><em>Ready to hire now</em></div></div>
+    <div class="workshop-kpi workshop-kpi--gold"><span>${arcadeIcon('care')}</span><div><small>NEEDS SERVICE</small><strong>${due.length}</strong><em>Parked and requiring care</em></div></div>
+    <div class="workshop-kpi workshop-kpi--blue"><span>${arcadeIcon('road')}</span><div><small>AWAY / INCIDENT</small><strong>${onRoad.length+incidents.length}</strong><em>Cannot be serviced yet</em></div></div>
+    <div class="workshop-kpi workshop-kpi--purple"><span>${arcadeIcon('cash')}</span><div><small>FULL FLEET CARE</small><strong>${money(totalPrep)}</strong><em>Estimated incl. bodywork</em></div></div>
+  </section>
+  <section class="workshop-upgrade-grid" aria-label="Workshop investments">${upgradeData.map(([id,icon,title,subtitle,owned,description])=>{const upgrade=UPGRADES.find(u=>u.id===id);return `<article class="workshop-upgrade workshop-upgrade--${id} ${owned?'owned':''}"><div class="workshop-upgrade-top"><span class="workshop-upgrade-art">${arcadeIcon(id==='workshop'?'care':'rewards')}</span><div><small>${subtitle}</small><h3>${title}</h3></div><span class="workshop-upgrade-state">${owned?'OWNED':'ONE-TIME'}</span></div>
+   <p>${description}</p><div class="workshop-upgrade-bottom"><div><small>${owned?'PERMANENT BENEFIT ACTIVE':'UPGRADE COST'}</small><strong>${owned?'FREE SERVICES':money(upgrade.price)}</strong></div>
+   ${owned?'<span class="workshop-owned-mark">✓ ACTIVE</span>':listBtn('upgrade',id,'Buy upgrade','btn primary',freeCash()<upgrade.price?'disabled':'')}</div></article>`}).join('')}</section>
+  <section class="workshop-service-desk" aria-label="Vehicle maintenance">
+   <div class="workshop-desk-heading"><div><span class="workshop-eyebrow">YOUR VEHICLE SERVICE DESK</span><h3>Quick Maintenance</h3><p>Real-time prices, vehicle health and individual repair actions.</p></div><div class="workshop-fuel-badge"><span>⛽ FUEL PRICE</span><strong>${money(fuelPrice())}/L</strong><small>${fuelDiscount?'Fuel partnership discount active':'Standard rate applies'}</small></div></div>
+   <div class="workshop-filterbar" aria-label="Filter vehicles by care status">${filters.map(([id,label,count])=>`<button type="button" class="workshop-filter ${active===id?'active':''}" data-action="workshopfilter" data-id="${id}" aria-pressed="${active===id}">${label}<span>${count}</span></button>`).join('')}</div>
+   <p class="workshop-desk-note">Only parked vehicles can be serviced, washed, refuelled or repaired. Preparing a vehicle covers fuel, mechanical service and washing; bodywork is separate.</p>
+   <div class="workshop-vehicle-list">${shown.length?shown.map(renderWorkshopVehicle).join(''):'<div class="workshop-empty">No vehicles match this filter. Choose another status to see your fleet.</div>'}</div>
+   <p class="workshop-desk-counter">Showing ${shown.length} of ${state.fleet.length} vehicles · Ordered by vehicle class.</p>
+  </section>
+  ${autoCareControl()}
+ </div>`;
+}
 function renderTuning(){return `${compactInfoPanel('fleet-tuning','🏁 Performance lab','Five tuning levels per vehicle. Each gives 13% more base rental value. Fuel, service and wash costs still apply.')}<div class="grid two-thirds"><section class="card pad">${paneHeading('Performance garage','Improve the rental return of any parked car. Each of the five tuning levels adds 13% to its booking payout.')}<div class="grid grid-2">${fleetInGarageOrder(state.fleet).map(c=>{let t=typeOf(c.type),cost=round(14000*Math.pow((c.tune||0)+1,1.65));return `<div class="listing"><div class="flex center gap-12"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><b>${esc(t.name)}</b><div class="car-plate">${esc(c.plate)}</div><div class="small positive mt-12">+${(c.tune||0)*13}% rental earnings</div></div></div><div class="dyno-stats"><span>⚙️ ${carHorsepower(c)} HP</span><span>📈 ${money(round(t.rate*(1+(c.tune||0)*.13)))}/hire base</span></div><div class="mini-progress"><span style="width:${(c.tune||0)*20}%"></span></div>${listBtn('tune',c.id,c.tune>=5?'MAX TUNING':`Tune to ${c.tune+1}/5 · ${money(cost)}`,'btn block mt-12',c.tune>=5||c.status!=='available'?'disabled':'')}</div>`;}).join('')}</div></section><section class="card pad">${paneHeading('Prestige collection','Unlock classic cars, muscle cars, sports cars, supercars and hypercars as your reputation grows.')}<div class="notice">🚘 Reputation 3 unlocks Classic. Level 4 unlocks Muscle. Level 5 unlocks Sports. Level 8 unlocks Supercar. Level 12 unlocks Hypercar.</div><div class="divider"></div>${TYPES.filter(t=>['classic','muscle','sport','super','hyper'].includes(t.id)).map(t=>`<div class="item-row"><div class="icon-avatar">${t.icon}</div><div class="grow"><b>${esc(t.name)}</b><div class="small muted">Rep ${t.unlock} · ${money(t.price)}</div></div><span class="pill ${state.rep>=t.unlock?'green':'orange'}">${state.rep>=t.unlock?'UNLOCKED':'LOCKED'}</span></div>`).join('')}</section></div>`;}
 
 function renderMapPage(){return `<div class="fadein">${featureHeading('🌍','Cape Town, brought to life','Watch your rental cars on a 2D Cape Town map as they travel for their actual 20-second to 5-minute bookings.')}<div class="mt-16"><div class="map-state-tools"><span>🕒 ${clockInfo().label} · ${isNight()?'Night':'Day'} · ${weatherEffect().icon} ${state.weather}</span><div>${[['auto','Auto'],['day','☀️ Day'],['night','🌙 Night']].map(([k,v])=>btn('maptheme',v,`btn sm ${state.settings.mapTheme===k?'primary':''}`,`data-id="${k}"`)).join('')}</div></div>${renderMap()}</div><details class="map-caption-details" data-compact-info="map-details" ${openInfoPanels.has('map-details')?'open':''}><summary>ⓘ Map details ⌄</summary><p class="map-caption">Stylised Cape Town-inspired game geography, not GPS road data. Cars follow the connected in-game roads to their destination, then return as their actual 20-second to 5-minute rental completes. Branch transfers travel one way.</p></details><div class="grid two-thirds mt-16"><section class="card pad">${paneHeading('Cars on the road',`${state.rentals.length} active customer trips · ${state.fleet.filter(c=>c.status==='transfer').length} branch transfers`)}${state.rentals.length?state.rentals.map(rentalCard).join(''):emptyState('🚦','No journeys yet','Dispatch an available car from the Dashboard and watch it travel here.',btn('page','View customer requests','btn primary',`data-id="overview"`))}<div class="notice mt-16">💳 <b>Rental income is paid upon return.</b> There are no fake passive rental payments while a car is still out on the road.</div></section><section class="card pad">${paneHeading('Locations & branches','Tap any map pin to focus a destination.')}<div class="route-stack">${Object.entries(DEST).map(([id,p])=>`<button type="button" data-action="mapfocus" data-id="${id}" style="width:100%;background:${mapFocus===id?'#2e4b57':'#1b3240'};border:1px solid #385669;border-radius:11px;padding:10px;color:#e3f0ed;text-align:left" class="flex between center"><span class="bold">📍 ${esc(p.name)}</span><span class="pill ${owned(id)?'green':''}">${owned(id)?'YOUR BRANCH':'DESTINATION'}</span></button>`).join('')}</div></section></div></div>`;}
@@ -3513,6 +3716,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='selectcar'){selectedCar=id;activeSub.fleet='garage';render();if(activePage==='fleet')document.getElementById('garage-inspection-anchor')?.scrollIntoView({behavior:'smooth',block:'start'});return;}
  if(action==='garageview'){if(id!=='bays'&&id!=='list')return;garageDisplay=id;render();return;}
  if(action==='garagefilter'){if(!['all','ready','care','out','incident','auction'].includes(id))return;garageStatus=id;render();return;}
+ if(action==='workshopfilter'){if(!['all','needs','parked','road','incident'].includes(id))return;workshopFilter=id;render();return;}
  if(action==='dealerpreview'){if(!TYPES.some(t=>t.id===id))return;dealerPreview=id;render();return;}
  if(action==='dealerpaint'){if(!PAINTS[id])return;dealerPaint=id;render();return;}
  if(action==='dealerprev'||action==='dealernext'){let i=TYPES.findIndex(t=>t.id===dealerPreview);let step=action==='dealerprev'?-1:1;dealerPreview=TYPES[(i+step+TYPES.length)%TYPES.length].id;render();return;}
