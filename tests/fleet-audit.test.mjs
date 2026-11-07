@@ -51,7 +51,7 @@ assert.equal(jeep.category, "Jeep");
 assert.equal(jeep.price, 149000);
 assert.equal(jeep.rate, 1000);
 assert.equal(jeep.tank, 72);
-assert.equal(jeep.unlock, 2);
+assert.equal(jeep.unlock, 3);
 assert.equal(horsepower.jeep, 210);
 assert.equal(customerList.filter(c => c.need === "Jeep").map(c => c.id).sort().join(","),
   "adventure-couple,trail-explorer");
@@ -65,7 +65,7 @@ assert.equal(tow.category, "Tow");
 assert.equal(tow.price, 275000);
 assert.equal(tow.rate, 1650);
 assert.equal(tow.tank, 90);
-assert.equal(tow.unlock, 3);
+assert.equal(tow.unlock, 8);
 assert.equal(horsepower.tow, 300);
 assert.equal(customerList.filter(c => c.need === "Tow").map(c => c.id).sort().join(","), "insurance-recovery-team,roadside-rescue-nina");
 assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 5200);
@@ -81,7 +81,7 @@ assert.equal(donk.category, "Donk");
 assert.equal(donk.price, 365000);
 assert.equal(donk.rate, 2300);
 assert.equal(donk.tank, 68);
-assert.equal(donk.unlock, 4);
+assert.equal(donk.unlock, 11);
 assert.equal(horsepower.donk, 320);
 assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().join(","), "music-video-crew,show-promoter-zane");
 assert.ok(!("Donk" in equivalence), "Donk uses exact-category matching");
@@ -97,14 +97,14 @@ assert.equal(limo.category,"Limo");
 assert.equal(limo.price,380000);
 assert.equal(limo.rate,2450);
 assert.equal(limo.tank,69);
-assert.equal(limo.unlock,4);
+assert.equal(limo.unlock, 13);
 assert.equal(horsepower.limo,390);
 assert.ok(limo.price>donk.price&&limo.price<byId.get("muscle").price,"Limo price must sit between Donk and Muscle");
 assert.ok(limo.rate>donk.rate&&limo.rate<byId.get("muscle").rate,"Limo rental rate must sit between Donk and Muscle");
 assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Limo").map(c=>c.id).sort()),["airport-vip-transfer","matric-farewell","wedding-chauffeur"],"Three dedicated Limo customers required");
 assert.ok(!("Limo" in equivalence),"Limo customers must use exact category matching");
 assert.ok(js.includes("['Hatch','Sedan','Coupe','Classic','Limo'].includes(t.category)"),"Limo must appear in executive dealership category");
-assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Generic auction lots must include the new Limo at level 4");
+assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Generic auction lots must include the Limo once Level 13 is reached");
 
 const partyBus=byId.get("partybus");
 assert.ok(partyBus,"Party Bus vehicle must exist");
@@ -114,7 +114,7 @@ assert.equal(partyBus.category,"Party Bus");
 assert.equal(partyBus.price,495000);
 assert.equal(partyBus.rate,2850);
 assert.equal(partyBus.tank,115);
-assert.equal(partyBus.unlock,5);
+assert.equal(partyBus.unlock, 16);
 assert.equal(horsepower.partybus,300);
 assert.ok(partyBus.price>byId.get("muscle").price&&partyBus.price<byId.get("bus").price,"Party Bus purchase price should fall between Muscle and Tour Bus");
 assert.ok(partyBus.rate>byId.get("bus").rate&&partyBus.rate<byId.get("sport").rate,"Party Bus rate should fall between Tour Bus and Sports");
@@ -124,6 +124,28 @@ assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching"
 assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
 assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Random auction must include unlocked Party Bus models");
+
+const expectedTierLevels={"hatch":2,"sedan":2,"bakkie":2,"jeep":3,"van":4,"coupe":5,"classic":7,"tow":8,"truck":9,"donk":11,"limo":13,"muscle":14,"partybus":16,"bus":17,"sport":19,"super":22,"hyper":25};
+for(const [id,level] of Object.entries(expectedTierLevels)) assert.equal(byId.get(id).unlock,level,"Vehicle tier changed for "+id);
+assert.equal(Math.min(...typeList.map(t=>t.unlock)),2,"Starter models must unlock at Level 2");
+assert.equal(Math.max(...typeList.map(t=>t.unlock)),25,"All 17 vehicles must unlock by Level 25");
+assert.equal(typeList.filter(t=>t.unlock<=2).length,3,"Exactly the three starter vehicles unlock at Level 2");
+assert.match(js,/function fresh\(\)\{return \{version:3,[^\n]*rep:2,xp:0/,"New game must still start at Reputation Level 2");
+assert.ok(js.includes("state.fleet.some(car=>TYPES.some("),"Legacy premium cars must retain customer requests");
+const customerUnlockSource=js.match(/function customerUnlocked\(c\)\{[^\n]*\}/)?.[0];
+assert.ok(customerUnlockSource,"Customer unlock rule missing");
+const legacyUnlockState={rep:2,fleet:[]};
+const unlockedDemand=vm.runInNewContext(typeSource+"\n"+customerUnlockSource+"\ncustomerUnlocked",{state:legacyUnlockState});
+const sportsDemand=customerList.find(c=>c.need==='Sport');
+assert.equal(unlockedDemand(sportsDemand),false,"New players must not get locked high-tier bookings");
+legacyUnlockState.fleet.push({type:'sport'});
+assert.equal(unlockedDemand(sportsDemand),true,"Previously owned sports car must still get customer bookings");
+legacyUnlockState.fleet=[];
+legacyUnlockState.rep=19;
+assert.equal(unlockedDemand(sportsDemand),true,"Sports bookings should open at Level 19");
+assert.ok(js.includes("tierRules:25"),"New auction lots must use the new unlock tier rules");
+assert.ok(js.includes("!a.tierRules"),"Pre-update saved auction lots must settle normally");
+console.log("PASS: All 17 vehicle classes now unlock across Levels 2-25; old fleet and auction bids protected.");
 
 for (const customer of customerList) {
   const vehicle = typeList.find(t => t.category === customer.need);
@@ -160,7 +182,7 @@ assert.ok(engine.includes("function advancePlayerAuctions("));
 const testScript = [
   typeSource,
   "let time=1000,seq=0,selectedCar=null;",
-  "let state={cash:20000000,rep:12,fleet:[],auction:null,playerAuctions:[],stats:{sales:0},ledger:[]};",
+  "let state={cash:20000000,rep:25,fleet:[],auction:null,playerAuctions:[],stats:{sales:0},ledger:[]};",
   "const now=()=>time,uid=p=>p+'_'+(++seq),round=Math.round;",
   "const typeOf=id=>TYPES.find(t=>t.id===id)||TYPES[0],rand=(a,b)=>a,pick=a=>a[0];",
   "const notify=()=>{},note=()=>{},money=n=>'R'+n,garageCapacity=()=>100;",
@@ -168,7 +190,7 @@ const testScript = [
   "const freeCash=()=>state.cash-bidReserve();",
   "const getResale=c=>round(typeOf(c.type).price*(.38+.24*c.condition/100));",
   "const spend=amount=>{if(freeCash()<amount)return false;state.cash-=amount;return true;};",
-  "const addCar=(id,price)=>{if(state.rep<typeOf(id).unlock||state.fleet.length>=100||!spend(price))return false;state.fleet.push({id:uid('car'),type:id,status:'available',condition:70,plate:id});return true;};",
+  "const addCar=(id,price,auction,branch,honorExistingAuction=false)=>{if((state.rep<typeOf(id).unlock&&!honorExistingAuction)||state.fleet.length>=100||!spend(price))return false;state.fleet.push({id:uid('car'),type:id,status:'available',condition:70,plate:id});return true;};",
   engine,
   "let passing=0;",
   "for(const t of TYPES){",
@@ -188,12 +210,19 @@ const testScript = [
   "if(!listCarForAuction('one'))passing++;",
   "state.fleet.push({id:'rented',type:'van',status:'rented',condition:100,plate:'RENTED'});",
   "if(!listCarForAuction('rented'))passing++;",
-  "return passing;"
+  "state.rep=2;state.fleet=[{id:'keep',type:'hatch',status:'available',condition:100,plate:'KEEP'}];",
+ "state.cash=20000000;state.auction={id:uid('oldlot'),type:'hyper',base:100000,highest:0,bidder:'',playerBid:0};",
+ "let beforeLegacy=state.fleet.length;if(buyAuctionNow()&&state.fleet.length===beforeLegacy+1&&state.fleet.at(-1).type==='hyper')passing++;",
+ "state.auction={id:uid('oldbid'),type:'hyper',base:100000,highest:120000,bidder:'You',playerBid:120000};",
+ "beforeLegacy=state.fleet.length;closeAuction();if(state.fleet.length===beforeLegacy+1&&state.fleet.at(-1).type==='hyper')passing++;",
+ "state.auction={id:uid('newlot'),type:'hyper',base:100000,highest:0,bidder:'',playerBid:0,tierRules:25};",
+ "beforeLegacy=state.fleet.length;if(!buyAuctionNow()&&state.fleet.length===beforeLegacy)passing++;",
+ "return passing;"
 ].join("\n");
 const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
-assert.equal(successful, 70, "Failed auction bidding, owned-sale or protection scenarios");
+assert.equal(successful, 73, "Failed auction bidding, existing-lot protection or new-tier lock scenarios");
 // Protect the Premium Upgrade catalogue, 100-level cap, prices and garage capacity.
 const premiumPerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
 assert.equal(premiumPerks.length,10,"There must be 10 Premium Upgrade categories");
