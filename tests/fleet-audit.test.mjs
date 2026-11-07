@@ -239,7 +239,7 @@ assert.deepEqual(requiredRentals, [20,25,30,35,40,45,50,55],
   "Reputation level requirements must increase progressively");
 assert.equal(requiredRentals.reduce((a,b)=>a+b,0), 300, "Reputation 2 to 10 should require 300 unboosted rentals");
 const progressState={rep:2,xp:0};
-const awardRepXP=vm.runInNewContext(repSource+"\n"+awardSource+"\nawardRepXP",
+const awardRepXP=vm.runInNewContext("const REPUTATION_MAX_LEVEL=50;\n"+repSource+"\n"+awardSource+"\nawardRepXP",
   {state:progressState,note:()=>{}});
 for(let i=0;i<299;i++)awardRepXP(10);
 assert.equal(progressState.rep,9, "299 rentals should not reach Reputation 10");
@@ -247,6 +247,25 @@ awardRepXP(10);
 assert.equal(progressState.rep,10, "300 rentals should reach Reputation 10");
 assert.equal(progressState.xp,0, "XP should reset on the exact Reputation 10 threshold");
 console.log("PASS: Reputation 2 to 10 needs exactly 300 base-XP rentals.");
+// Level 50 is the final reputation level, independent of 100-level Premium Upgrades.
+assert.match(js,/const REPUTATION_MAX_LEVEL=50;/);
+assert.ok(js.includes("const PREMIUM_MAX_LEVEL=100;"),"Premium Upgrade level cap must remain unchanged");
+progressState.rep=49;progressState.xp=0;
+awardRepXP(repNeeded(49)+150);
+assert.equal(progressState.rep,50,"Reputation must reach level 50");
+const finalXP=progressState.xp;
+awardRepXP(100000);
+assert.equal(progressState.rep,50,"Reputation must not exceed level 50");
+assert.equal(progressState.xp,finalXP,"XP must not keep growing at the cap");
+progressState.rep=53;progressState.xp=75;
+awardRepXP(100000);
+assert.equal(progressState.rep,53,"Legacy saved reputations above 50 must not be downgraded");
+assert.equal(progressState.xp,75,"Legacy XP must be preserved");
+for(const marker of ["repProgressText()","repProgressPercent()","repProgressAria()"]){
+ assert.ok(js.includes(marker),"Level 50 display helper missing: "+marker);
+}
+console.log("PASS: Reputation Level 50 cap, unchanged Premium Upgrades, preserved high-level legacy saves.");
+
 
 const compactRentalCard=js.slice(js.indexOf("function rentalCard("),js.indexOf("function offerCard("));
 assert.ok(compactRentalCard.includes('item-row rental-compact'),"Rental cards must use the compact mobile layout");
