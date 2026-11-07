@@ -3393,6 +3393,60 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
  .vehicle-v5-roof img{object-fit:contain}
 }
 </style>
+<style id="ctr-dealership-label-compact-fix">
+/* Dealership showroom: keep model info compact so roofs remain visible.
+   Only the showroom overlay is affected; garage labels stay unchanged. */
+.dealership-v12 .dealer-v12-stage .garage-stage-label {
+  top: 8px !important;
+  left: 8px !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: grid;
+  grid-template-columns: minmax(0, max-content) max-content;
+  column-gap: 9px;
+  row-gap: 2px;
+  align-items: center;
+  justify-items: start;
+  width: max-content;
+  min-width: 0;
+  max-width: min(260px, calc(80% - 16px));
+  height: auto;
+  padding: 6px 9px;
+  box-sizing: border-box;
+}
+.dealership-v12 .dealer-v12-stage .garage-stage-label small {
+  font-size: 8px;
+  line-height: 1.15;
+  letter-spacing: .07em;
+  margin: 0;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  white-space: nowrap;
+}
+.dealership-v12 .dealer-v12-stage .garage-stage-label strong {
+  font-size: 13px;
+  line-height: 1.15;
+  margin: 0;
+  overflow-wrap: anywhere;
+  grid-column: 1;
+  grid-row: 2;
+}
+.dealership-v12 .dealer-v12-stage .garage-stage-label > span:not(.dealer-label-price) {
+  font-size: 9px;
+  line-height: 1.2;
+  margin: 0;
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+.dealership-v12 .dealer-v12-stage .garage-stage-label .dealer-label-price {
+  font-size: 16px;
+  line-height: 1.1;
+  margin: 0;
+  grid-column: 2;
+  grid-row: 2;
+  white-space: nowrap;
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp'};
 
