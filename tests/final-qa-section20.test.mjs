@@ -163,4 +163,16 @@ assert.match(js,/if\(action==='page'\)\{[^}]*if\(id==='events'\)activeSub\.event
 const mobileGarageRules=html.split('<style id="ctr-garage-section-04">')[1]?.split('</style>')[0]||'';
 assert.match(mobileGarageRules,/@media\(max-width:720px\)\{[\s\S]*?\.garage-heading-v4\{display:grid;grid-template-columns:minmax\(0,1fr\)/,'Mobile Garage heading must use a single-column grid');
 assert.match(mobileGarageRules,/\.garage-heading-actions\{width:100%;justify-content:flex-start;gap:7px\}/,'Mobile Garage actions must have their own full-width row');
+// Dashboard simplification: keep rentals usable while directing feature discovery to bottom tabs.
+const dashboardUI=js.split('function renderOverview(){')[1]?.split('function stat(')[0]||'';
+const dashboardTip=js.split('function smartOverview(){')[1]?.split('function dashboardShortcut(')[0]||'';
+assert.match(dashboardUI,/state\.offers\.slice\(0,2\)\.map\(offerCard\)/,'First two customer offers remain visible');
+assert.match(dashboardUI,/extraOffers\.map\(offerCard\)/,'All remaining offers stay accessible');
+assert.match(dashboardUI,/btn\('autorent'/,'Best-match dispatch stays on Dashboard');
+assert.match(dashboardUI,/data-countdown-rental/,'Active rental countdowns remain visible');
+assert.match(dashboardTip,/READY TO RENT/,'Keep ready vehicle metric');
+assert.match(dashboardTip,/PAYMENT ON RETURN/,'Keep return-payment metric');
+for(const duplicated of ['dashboardShortcut(','nextActions()','autoDeskControl()','renderMap(true)','renderRecentReturns(4)','renderLog(5)','dashboard-city-strip','dashboard-summary'])assert.ok(!dashboardUI.includes(duplicated),'Redundant Dashboard control remains: '+duplicated);
+for(const feature of ['function renderFleet()','function renderBusiness()','function renderEvents()','function renderMapPage()','function autoDeskControl()','function offerCard('])assert.ok(js.includes(feature),'Existing tab feature missing: '+feature);
+assert.match(html,/<style id="ctr-dashboard-simplified-2026">/,'Dashboard uses compact layout');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');
