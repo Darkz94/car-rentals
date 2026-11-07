@@ -185,4 +185,13 @@ assert.match(portraitFix,/\.dashboard-header \.arcade-identity\{[\s\S]*?grid-col
 assert.match(portraitFix,/\.dashboard-header \.topmeta\{[\s\S]*?grid-column:2;[\s\S]*?grid-row:1;/,'Cash and settings must stay together on the top right');
 assert.match(portraitFix,/\.dashboard-header \.arcade-page-copy\{[\s\S]*?grid-row:3;/,'Dashboard ribbon needs its own aligned row');
 assert.match(html,/<nav class="mobile-nav" aria-label="Mobile navigation">\$\{NAV\.map/,'Original bottom tab navigation remains intact');
+// Reference dashboard: Table Mountain background, three fixed header zones and six equal bottom tabs.
+const referenceCss=html.split('<style id="ctr-dashboard-reference-layout-2026">')[1]?.split('</style>')[0]||'';
+assert.match(referenceCss,/assets\/cape-town-waterfront-header\.webp/,'Bundled Cape Town reference background must be used');
+assert.match(referenceCss,/grid-template-columns:minmax\(0,30fr\) minmax\(0,35fr\) minmax\(0,35fr\)/,'Narrow portrait header must use three stable columns');
+for(const [part,selector] of [['LV','.dashboard-header .arcade-rep-chip'],['Logo','.dashboard-header .arcade-identity'],['Cash and settings','.dashboard-header .topmeta'],['Dashboard ribbon','.dashboard-header .arcade-page-copy']])assert.ok(referenceCss.includes(selector),'Missing fixed header zone '+part);
+assert.match(referenceCss,/\.mobile-nav\{[\s\S]*?grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/,'Keep six evenly spaced Android navigation buttons');
+assert.match(referenceCss,/\.mobile-nav button\{[\s\S]*?min-height:72px/,'Navigation labels must not clip');
+assert.match(js,/class="dashboard-next-car"/,'Dashboard must include a real fleet vehicle illustration');
+assert.match(js,/CAR_IMAGES\.limo/,'Next move art must reuse approved limousine illustration');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');
