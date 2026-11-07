@@ -1067,3 +1067,66 @@ assert.ok(js.includes("function signContract(id){let c=CONTRACTS.find")&&js.incl
  js.includes("arcadeFx('ACHIEVEMENT UNLOCKED'")&&
  js.includes("s.version!==3"),"Existing event logic, notifications or save rules changed");
 console.log("PASS: Section 17 original five corporate clients, mission rewards, roadside fees, weather map, timers and visual notification safety.");
+
+
+// Cross-tab Android layout audit (all six primary pages and their subviews).
+const auditSource=(start,end)=>{
+ const a=js.indexOf(start),b=js.indexOf(end,a+start.length);
+ assert.ok(a>=0&&b>a,'UI navigation section missing: '+start);
+ return js.slice(a,b);
+};
+const auditCss=(id)=>{
+ const css=html.split('<style id="'+id+'">')[1]?.split('</style>')[0];
+ assert.ok(css,'Mobile layout stylesheet missing: '+id);
+ return css;
+};
+const mainTabs=auditSource('const NAV=','function btn(');
+for(const tab of ['overview','fleet','map','business','events','progress']){
+ assert.ok(mainTabs.includes("['"+tab+"'"),'Missing navigation route: '+tab);
+}
+assert.equal((mainTabs.match(/\['(?:overview|fleet|map|business|events|progress)'/g)||[]).length,6,'Exactly six main navigation tabs must remain');
+const mainScreen=auditSource('function render(){','function afterAction(){');
+assert.match(mainScreen,/class="mobile-nav"/,'Android dock must be present');
+assert.match(mainScreen,/data-action="page"/,'Android dock must keep working navigation');
+for(const page of ['overview','fleet','map','business','events']){
+ assert.ok(mainScreen.includes("activePage==='"+page+"'"),'Main renderer route missing: '+page);
+}
+assert.ok(mainScreen.includes('renderProgress()'),'Progress page renderer missing');
+
+const fleetMenu=auditSource('function renderFleet(){','const openInfoPanels=');
+for(const sub of ['garage','dealership','care','tuning'])assert.ok(fleetMenu.includes("['"+sub+"'"),'Fleet menu missing '+sub);
+assert.match(fleetMenu,/class="fleet-command-tabs"/,'Fleet navigation grid missing');
+assert.match(auditCss('ctr-fleet-shell-section-03'),/@media\(max-width:720px\)/,'Fleet requires phone breakpoint');
+assert.match(auditCss('ctr-garage-section-04'),/@media\(max-width:720px\)/,'Garage needs mobile layout');
+assert.match(auditCss('ctr-dealership-mobile-head-fix-2026'),/grid-template-columns:minmax\(0,1fr\)!important/,'Showroom header must not be squeezed into badge column');
+assert.match(auditCss('ctr-workshop-section-06'),/@media\(max-width:720px\)/,'Workshop needs mobile layout');
+assert.match(auditCss('ctr-performance-section-07'),/@media\(max-width:720px\)/,'Performance needs mobile layout');
+
+const livePage=auditSource('function renderMapPage(){','function renderCommand(){');
+for(const component of ['live-map-hero-v10','live-map-panel-v10','live-map-trips-v10','live-map-places-v10']){
+ assert.ok(livePage.includes(component),'Live map content missing '+component);
+}
+assert.match(auditCss('ctr-live-map-section-10'),/@media\(max-width:720px\)/,'Live map needs phone breakpoint');
+
+const businessMenu=auditSource('function renderBusiness(){','function renderUpgrades(){');
+for(const tab of ['command','upgrades','branches','contracts','staff','finance'])assert.ok(businessMenu.includes("['"+tab+"'"),'Business section missing '+tab);
+assert.match(businessMenu,/renderTabs\('business',tabs\)/,'Business navigation handler missing');
+assert.match(auditCss('ctr-business-square-nav-2026'),/aspect-ratio:1 \/ 1/,'Business buttons must remain square');
+for(const id of ['ctr-business-command-section-11','ctr-branches-section-14','ctr-staff-section-15','ctr-upgrades-section-16']){
+ assert.match(auditCss(id),/@media\(max-width:/,'Missing responsive Business stylesheet '+id);
+}
+
+const eventsMenu=auditSource('function renderEvents(){','function renderAuctions(){');
+for(const tab of ['auctions','incidents','challenges','weather'])assert.ok(eventsMenu.includes("['"+tab+"'"),'Events section missing '+tab);
+assert.match(eventsMenu,/renderTabs\('events',tabs\)/,'Events tabs must remain interactive');
+assert.match(auditCss('ctr-auctions-section-13'),/@media\(max-width:640px\)/,'Auctions need phone breakpoint');
+assert.match(auditCss('ctr-events-section-17'),/@media\(max-width:640px\)/,'Events need phone breakpoint');
+
+const progressMenu=auditSource('function renderProgress(){','function renderMilestones(){');
+for(const tab of ['milestones','premium','stats','roadmap','settings'])assert.ok(progressMenu.includes("['"+tab+"'"),'Progress section missing '+tab);
+assert.match(progressMenu,/renderTabs\('progress',tabs\)/,'Progress tabs must remain interactive');
+assert.match(auditCss('ctr-progress-section-18'),/@media\(max-width:580px\)/,'Progress needs phone breakpoint');
+assert.match(auditCss('ctr-responsive-compact-v2'),/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'Mobile tab layout needs equal columns');
+assert.match(auditCss('ctr-dashboard-portrait-alignment-2026'),/safe-area-inset-bottom/,'Main Android dock needs safe-area padding');
+assert.ok(js.includes("const KEY='cape-town-rentals-coastline-v3'"),'V3 save structure must remain unchanged');
+console.log('PASS: Cross-tab navigation, 19 subviews, portrait CSS rules and Android dock protections.');
