@@ -118,7 +118,7 @@ try{
       console.log(width+'px Dashboard header without redundant title: '+JSON.stringify(header));
       if(!header.present||header.unwantedRibbon||!header.logo||!header.level||!header.cash||!header.settings)
         problems.push(width+'px Dashboard header unexpectedly missing a primary element '+JSON.stringify(header));
-      if(header.gridRows?.trim().split(/\\s+/).length!==2)
+      if(header.gridRows?.trim().split(' ').filter(Boolean).length!==2)
         problems.push(width+'px Dashboard header has unused grid row '+JSON.stringify(header));
     }
     if(route==='business'&&sub==='command'){
