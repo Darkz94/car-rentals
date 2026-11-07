@@ -71,6 +71,17 @@ try{
     if(result.outside.length)problems.push(width+'px '+name+' panel outside viewport '+JSON.stringify(result.outside));
     if(result.narrow.length)problems.push(width+'px '+name+' compressed dealership title '+JSON.stringify(result.narrow));
     if(result.dock!==6||result.activeDock!==1)problems.push(width+'px '+name+' bottom navigation invalid '+JSON.stringify(result));
+    if(route==='business'&&sub==='command'){
+      // One navigation grid only: all six business destinations, no duplicated department shortcuts.
+      const business=await page.evaluate(()=>({
+        navIds:[...document.querySelectorAll('.business-shell-v11 .business-v11-nav button[data-action="sub"][data-group="business"]')].map(btn=>btn.dataset.id),
+        duplicateSections:document.querySelectorAll('.business-v11-links').length,
+        priorities:!!document.querySelector('.business-v11-tasks')
+      }));
+      const expected=['command','upgrades','branches','contracts','staff','finance'];
+      if(JSON.stringify(business.navIds)!==JSON.stringify(expected)||business.duplicateSections!==0||!business.priorities)
+        problems.push(width+'px Business navigation duplicated or missing '+JSON.stringify(business));
+    }
     if(route==='business'&&sub==='contracts'){
       // Exercise a signed contract with a large Rand total without changing saved game state.
       const earned=await page.evaluate(()=>{
