@@ -798,6 +798,15 @@ for(const token of ["staffOverhead()","branchOverhead()","bidReserve()","freeCas
 }
 assert.ok(v11biz.includes("business-shell-v11")&&v11biz.includes("renderTabs('business',tabs)"),
  "Business navigation and existing sub-tabs must remain");
+const businessGridStyle=html.split('<style id="ctr-business-square-nav-2026">')[1]?.split('</style>')[0]||'';
+assert.ok(businessGridStyle.includes('grid-template-columns:repeat(3,minmax(0,1fr))!important'),'Business options must form three equal columns on phones');
+assert.ok(businessGridStyle.includes('aspect-ratio:1 / 1'),'Business navigation options must be square');
+assert.ok(businessGridStyle.includes('min-height:80px!important'),'Business navigation buttons must retain touch-friendly size');
+assert.ok(v11biz.includes('business-grid-icon')&&v11biz.includes('business-grid-label'),'Business buttons need separate centred icons and labels');
+for(const tab of ['command','upgrades','branches','contracts','staff','finance'])
+  assert.ok(v11biz.includes("['"+tab+"','<span"),'Business tab must remain available: '+tab);
+assert.ok(v11biz.includes("renderTabs('business',tabs)"),'Business tabs must keep existing data-action and active-state handling');
+
 const mock11={
  cash:120000,day:4,rep:5,branches:["hq"],fleet:[
   {id:"car1",type:"limo",status:"available",branch:"hq"},
