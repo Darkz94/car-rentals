@@ -1,0 +1,77 @@
+name: One-time setup - create release signing key
+
+# Run once, manually. Creates the permanent release keystore on a GitHub runner,
+# stores the four APK_* secrets, and attaches an ENCRYPTED backup of the keystore.
+# Needs two repo secrets that YOU add first: SETUP_TOKEN and BACKUP_PASSPHRASE.
+# Refuses to run if any APK_* secret already exists, so it can never replace a live key.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create keystore, set secrets, encrypt backup
+        env:
+          GH_TOKEN: ${{ secrets.SETUP_TOKEN }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          [ -n "${GH_TOKEN:-}" ] || { echo "::error::Secret SETUP_TOKEN is missing"; exit 1; }
+          [ "${#BACKUP_PASSPHRASE}" -ge 12 ] || { echo "::error::Secret BACKUP_PASSPHRASE is missing or shorter than 12 characters"; exit 1; }
+
+          existing="$(gh secret list --repo "$REPO" | awk '{print $1}' | grep -E '^APK_(KEYSTORE_BASE64|KEYSTORE_PASSWORD|KEY_ALIAS|KEY_PASSWORD)$' || true)"
+          if [ -n "$existing" ]; then
+            echo "::error::Signing secrets already exist ($existing). Not overwriting an existing key."
+            exit 1
+          fi
+
+          umask 077
+          mkdir -p "$RUNNER_TEMP/ks" && cd "$RUNNER_TEMP/ks"
+          ALIAS="capetownrentals-release"
+          PASS="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)"
+          [ "${#PASS}" -eq 32 ] || { echo "::error::Password generation failed"; exit 1; }
+          echo "::add-mask::$PASS"
+          export PASS
+
+          keytool -genkeypair -storetype PKCS12 -keystore release.p12 -alias "$ALIAS" \
+            -keyalg RSA -keysize 4096 -validity 36500 \
+            -storepass:env PASS -keypass:env PASS \
+            -dname "CN=Cape Town Rentals, O=Cape Town Rentals, C=ZA" >/dev/null 2>&1
+
+          openssl base64 -A -in release.p12 > release.b64
+          openssl base64 -d -A -in release.b64 | cmp - release.p12
+          keytool -list -keystore release.p12 -storepass:env PASS -alias "$ALIAS" >/dev/null 2>&1
+
+          # Encrypted backup (keystore + passwords), readable only with BACKUP_PASSPHRASE.
+          { echo "alias=$ALIAS"; echo "password=$PASS"; } > passwords.txt
+          tar -cf backup.tar release.p12 passwords.txt
+          openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -pass env:BACKUP_PASSPHRASE -in backup.tar -out cape-town-rentals-signing-backup.enc
+          # prove the backup decrypts to the identical archive
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -pass env:BACKUP_PASSPHRASE -in cape-town-rentals-signing-backup.enc | cmp - backup.tar
+
+          gh secret set APK_KEYSTORE_BASE64 --repo "$REPO" < release.b64
+          printf '%s' "$PASS"  | gh secret set APK_KEYSTORE_PASSWORD --repo "$REPO"
+          printf '%s' "$ALIAS" | gh secret set APK_KEY_ALIAS         --repo "$REPO"
+          printf '%s' "$PASS"  | gh secret set APK_KEY_PASSWORD       --repo "$REPO"
+
+          mkdir -p "$GITHUB_WORKSPACE/backup-out"
+          cp cape-town-rentals-signing-backup.enc "$GITHUB_WORKSPACE/backup-out/"
+          rm -f passwords.txt backup.tar release.b64
+
+          echo "Signing secrets created. Certificate fingerprint (public):"
+          keytool -list -v -keystore release.p12 -storepass:env PASS -alias "$ALIAS" 2>/dev/null | grep -E 'SHA256:|SHA1:' | sed 's/^ *//'
+          rm -f release.p12
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: signing-key-backup-ENCRYPTED
+          path: backup-out/cape-town-rentals-signing-backup.enc
+          retention-days: 90
+          if-no-files-found: error
