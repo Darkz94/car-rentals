@@ -902,7 +902,7 @@ assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReser
  js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
 console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
 
-console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 70 auction scenarios.");
+console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 73 auction scenarios.");
 
 
 // Section 12 dealership: premium presentation, no changes to economy or save version.
@@ -912,7 +912,7 @@ assert.ok(d12start>0&&d12end>d12start,"Dealership renderer missing");
 for(const token of ["dealership-v12","dealer-v12-stage","renderHeroArt()","CAR_IMAGES[t.id]","CAR_IMAGES[x.id]","dealer-v12-filter-chips","dealer-comparison","data-dealer-result-count","data-role=\"dealer-search\"","data-role=\"dealer-class\"","data-role=\"dealer-sort\"","data-role=\"dealer-branch\"","freeCash()","bidReserve()","garageCapacity()","data-action=\"dealerfilter\""]){
  assert.ok(d12.includes(token),"Section 12 visual/behaviour feature missing "+token);
 }
-assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='hq')")&&
+assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false)")&&
  js.includes("let cost=price??t.price;if(!spend(cost,")&&
  js.includes("state.fleet.push(car)")&&
  js.includes("modal='dealerbuy'")&&
@@ -944,7 +944,7 @@ assert.ok(js.includes("let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.0
  js.includes("ends:now()+75000")&&
  js.includes("ends:start+75000,nextBidAt:start+5000")&&
  js.includes("const reserve=round(getResale(car)*.85)")&&
- js.includes("if(addCar(a.type,price,true))")&&
+ js.includes("if(addCar(a.type,price,true,'hq',!a.tierRules))")&&
  js.includes("a.status='sold';a.salePrice=amount"),
  "Original bid increments, auction durations, reserve prices and settlements must remain");
 const a13snapshot={cash:450000,rep:5,fleet:[{id:"car1",type:"hatch",status:"available",plate:"CA 123"},{id:"car2",type:"sedan",status:"auction",plate:"CA 456"}],
