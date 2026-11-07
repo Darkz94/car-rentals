@@ -175,4 +175,14 @@ assert.match(dashboardTip,/PAYMENT ON RETURN/,'Keep return-payment metric');
 for(const duplicated of ['dashboardShortcut(','nextActions()','autoDeskControl()','renderMap(true)','renderRecentReturns(4)','renderLog(5)','dashboard-city-strip','dashboard-summary'])assert.ok(!dashboardUI.includes(duplicated),'Redundant Dashboard control remains: '+duplicated);
 for(const feature of ['function renderFleet()','function renderBusiness()','function renderEvents()','function renderMapPage()','function autoDeskControl()','function offerCard('])assert.ok(js.includes(feature),'Existing tab feature missing: '+feature);
 assert.match(html,/<style id="ctr-dashboard-simplified-2026">/,'Dashboard uses compact layout');
+// Mobile portrait regression: dock labels must have breathing room; header must not overlap.
+const portraitFix=html.split('<style id="ctr-dashboard-portrait-alignment-2026">')[1]?.split('</style>')[0]||'';
+assert.match(portraitFix,/@media \(orientation:portrait\) and \(max-width:900px\)/,'Phone layout override must be portrait-only');
+assert.match(portraitFix,/\.mobile-nav button\{[\s\S]*?min-height:72px;[\s\S]*?overflow:visible;/,'All six bottom-tab labels need full-height, unclipped buttons');
+assert.match(portraitFix,/calc\(16px \+ env\(safe-area-inset-bottom,0px\)\)/,'Dock must leave room for Android bottom insets');
+assert.match(portraitFix,/\.topbar\.arcade-header\.dashboard-header\{[\s\S]*?grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/,'Narrow header must use non-overlapping columns');
+assert.match(portraitFix,/\.dashboard-header \.arcade-identity\{[\s\S]*?grid-column:1\/-1;[\s\S]*?grid-row:2;/,'Logo must be centered on its own narrow-phone row');
+assert.match(portraitFix,/\.dashboard-header \.topmeta\{[\s\S]*?grid-column:2;[\s\S]*?grid-row:1;/,'Cash and settings must stay together on the top right');
+assert.match(portraitFix,/\.dashboard-header \.arcade-page-copy\{[\s\S]*?grid-row:3;/,'Dashboard ribbon needs its own aligned row');
+assert.match(html,/<nav class="mobile-nav" aria-label="Mobile navigation">\$\{NAV\.map/,'Original bottom tab navigation remains intact');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');
