@@ -157,4 +157,10 @@ for(const needle of [
  "if(modal!=='reset')return",
  "if(modal==='importsave')pendingImportSave=null;modal=null;render();"
 ])assert.ok(js.includes(needle),'Missing confirmation safeguard: '+needle);
+// Main Events navigation must always open Auctions, including after viewing Challenges.
+assert.match(js,/if\(action==='page'\)\{[^}]*if\(id==='events'\)activeSub\.events='auctions';/,'Events navigation should reset the subtab to Auctions');
+// Portrait Garage heading must take a full row rather than squeeze beside both actions.
+const mobileGarageRules=html.split('<style id="ctr-garage-section-04">')[1]?.split('</style>')[0]||'';
+assert.match(mobileGarageRules,/@media\(max-width:720px\)\{[\s\S]*?\.garage-heading-v4\{display:grid;grid-template-columns:minmax\(0,1fr\)/,'Mobile Garage heading must use a single-column grid');
+assert.match(mobileGarageRules,/\.garage-heading-actions\{width:100%;justify-content:flex-start;gap:7px\}/,'Mobile Garage actions must have their own full-width row');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');

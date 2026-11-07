@@ -2302,9 +2302,12 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 }
 @media(max-width:720px){
  .fleet-shell-v3 .garage-v4{padding:10px;border-radius:14px;margin:0 0 10px}
- .garage-heading-v4{align-items:start;gap:8px;margin-bottom:10px}
- .garage-heading-title h2{font-size:24px}
- .garage-heading-title p{font-size:10px}
+ .garage-heading-v4{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:8px;margin-bottom:10px}
+ .garage-heading-title{width:100%;min-width:0;flex:none}
+ .garage-overline{font-size:9px;letter-spacing:.8px}
+ .garage-heading-title h2{font-size:clamp(23px,6vw,27px);margin:3px 0 2px}
+ .garage-heading-title p{font-size:11px;line-height:1.35;max-width:100%}
+ .garage-heading-actions{width:100%;justify-content:flex-start;gap:7px}
  .garage-heading-actions .btn{min-height:35px;font-size:11px;padding:6px 10px}
  .garage-count-pill{font-size:9px;padding:7px 8px}
  .garage-capacity-line{padding:9px;margin-bottom:9px}
@@ -5090,7 +5093,7 @@ document.getElementById('app').addEventListener('click',e=>{
    activePage=id;activeSub[id]=section;
    window.scrollTo({top:0,behavior:'instant'});render();return;
  }
- if(action==='page'){if(!NAV.some(x=>x[0]===id))return;activePage=id;if(id==='business'&&!activeSub.business)activeSub.business='command';if(id==='fleet')activeSub.fleet='garage';window.scrollTo({top:0,behavior:'instant'});render();return;}
+ if(action==='page'){if(!NAV.some(x=>x[0]===id))return;activePage=id;if(id==='business'&&!activeSub.business)activeSub.business='command';if(id==='fleet')activeSub.fleet='garage';if(id==='events')activeSub.events='auctions';window.scrollTo({top:0,behavior:'instant'});render();return;}
  if(action==='sub'){activeSub[button.dataset.group]=id;render();return;}
  if(action==='closemodal'){if(modal==='importsave')pendingImportSave=null;modal=null;render();return;}
  if(action==='guide'){modal='guide';render();return;}
