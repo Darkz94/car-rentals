@@ -286,46 +286,26 @@ assert.ok(js.includes('data-compact-info="map-details"'),"Map details must remai
 assert.ok(html.includes('id="ctr-responsive-compact-v2"'),"Compact CSS missing");
 console.log("PASS: Garage vehicle ordering and responsive Info sections.");
 
-// Section 2: artwork-backed dashboard controls and routing may change visually,
-// but must never stop dispatching cars or hide live activity.
+// Section 2: simplified Dashboard preserves rentals and encourages bottom navigation.
 const dashStart=js.indexOf("function renderOverview(){");
 const dashEnd=js.indexOf("function stat(",dashStart);
 const dashMarkup=js.slice(dashStart,dashEnd);
-const dashTileStart=js.indexOf("function dashboardShortcut(");
-const dashTileEnd=js.indexOf("function autoDeskControl()",dashTileStart);
-assert.ok(dashStart>=0&&dashEnd>dashStart&&dashTileStart>=0&&dashTileEnd>dashTileStart,
-  "Section 2 Dashboard helper functions missing");
-assert.ok(html.includes('id="ctr-design-foundation-section-01"')&&html.includes('id="ctr-dashboard-section-02"'),
-  "Arcade styling must ship with both Dashboard and shared design tokens");
-assert.equal((dashMarkup.match(/dashboardShortcut\(/g)||[]).length,9,"Dashboard needs all nine quick action tiles");
-for(const part of ["smartOverview()","dashboard-city-strip","dashboard-summary","dashboard-rental-desk",
-                  "autoDeskControl()","map(rentalCard)","map(offerCard)","renderMap(true)",
-                  "renderLog(5)","nextActions()"]){
- assert.ok(dashMarkup.includes(part),"Dashboard regression: missing "+part);
+const tipStart=js.indexOf("function smartOverview(){");
+const tipEnd=js.indexOf("function dashboardShortcut(",tipStart);
+const tipMarkup=js.slice(tipStart,tipEnd);
+assert.ok(dashStart>=0&&dashEnd>dashStart&&tipStart>=0&&tipEnd>tipStart,"Dashboard renderer missing");
+assert.ok(html.includes('id="ctr-design-foundation-section-01"')&&html.includes('id="ctr-dashboard-section-02"')&&html.includes('id="ctr-dashboard-simplified-2026"'),"Dashboard styling missing");
+for(const need of ["smartOverview()","dashboard-rental-desk","dashboard-rental-help","dashboard-rental-actions","state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","state.rentals.slice(0,3)","data-countdown-rental","btn('autorent'"]){
+ assert.ok(dashMarkup.includes(need),"Simplified Dashboard missing "+need);
 }
-const dashIconStart=js.indexOf("function arcadeIcon("),dashIconEnd=js.indexOf("function renderHeroArt(",dashIconStart);
-assert.ok(dashIconStart>=0&&dashIconEnd>dashIconStart,"Section 2 illustrated arcade icon renderer missing");
-const shortcutFn=vm.runInNewContext(js.slice(dashIconStart,dashIconEnd)+"\n"+js.slice(dashTileStart,dashTileEnd)+"\ndashboardShortcut");
-assert.match(shortcutFn("🔑","Dispatch Rental","rental","","gold"),/class="arcade-art-icon"/,
-  "Dispatch shortcut must render the custom illustrated icon");
-assert.match(shortcutFn("🚘","Garage","fleet","garage"),/class="arcade-art-icon"/,
-  "Garage shortcut must render the custom illustrated icon");
-assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settings"'),
-  "Header gear must route to real Settings rather than the game guide");
-assert.ok(html.includes("SECTION 02 POLISH")&&js.includes("function renderHeroArt()"),
-  "Cape Town scene and portrait polish must be bundled for offline Android");
-assert.match(shortcutFn("🔑","Dispatch Rental","rental","","gold"),/data-action="autorent"/,
-  "Dispatch tile must initiate a real rental, not merely open the Garage");
-assert.match(shortcutFn("🚘","Garage","fleet","garage"),/data-action="dashshortcut" data-id="fleet" data-sub="garage"/);
-assert.match(shortcutFn("🔧","Workshop & Wash","fleet","care"),/data-sub="care"/);
-assert.match(shortcutFn("🎟️","Auctions","events","auctions"),/data-sub="auctions"/);
-assert.match(shortcutFn("💼","Staff","business","staff"),/data-sub="staff"/);
-assert.ok(js.includes("if(action==='dashshortcut')")&&js.includes("const destinations={fleet:"),
-  "Quick-action tab navigation must be routed through the existing app handler");
-assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),
-  "The Dashboard must keep the original rental dispatch logic");
-console.log("PASS: Dashboard section 2 uses live dispatch, 9 routed actions, live rentals, requests, city status and saved game foundation.");
-
+for(const removed of ["dashboardShortcut(","dashboard-city-strip","dashboard-summary","autoDeskControl()","renderMap(true)","renderLog(5)","nextActions()"]){
+ assert.ok(!dashMarkup.includes(removed),"Redundant Dashboard shortcut remains "+removed);
+}
+assert.ok(tipMarkup.includes("READY TO RENT")&&tipMarkup.includes("PAYMENT ON RETURN"),"At-a-glance fleet totals missing");
+assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settings"'),"Header Settings must remain reachable");
+assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),"Dispatch logic missing");
+assert.ok(js.includes("if(action==='page')")&&js.includes("function renderMapPage()"),"Bottom navigation missing");
+console.log("PASS: Simplified Dashboard retains dispatch, requests, active rentals and bottom navigation.");
 
 
 // Section 3: Fleet command shell must render live KPIs, image-backed header,
@@ -663,10 +643,11 @@ for(const need of ["bestCar(o)","carMatch(c,o)>=0","fleetInGarageOrder(state.fle
  "data-countdown-offer","data-offer-progress","rental-offer-car-","listBtn('rent'","CAR_IMAGES[typeOf(candidate.type).id]","canServeCategory(o.need,t.category)"]){
  assert.ok(v8offerSrc.includes(need),"Section 8 offer missing "+need);
 }
-for(const need of ["rental-desk-v8-banner","renderHeroArt()","dashboard-rental-help","dashboard-rental-actions",
- "rental-desk-v8-summary","autoDeskControl()","state.offers.map(offerCard)","rental-requests-v8-empty","map(rentalCard)"]){
- assert.ok(v8deskSrc.includes(need),"Section 8 desk missing "+need);
+for(const need of ["dashboard-desk-simple","dashboard-rental-help","dashboard-rental-actions",
+ "state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboard-more-offers","btn('autorent'"]){
+ assert.ok(v8deskSrc.includes(need),"Simplified Section 8 desk missing "+need);
 }
+assert.ok(js.includes("function autoDeskControl()")&&js.includes("toggleautodespatch"),"Auto-Dispatch remains available in Business");
 assert.ok(!v8deskSrc.includes("state.offers.slice(0,5)"),"All existing customer offers must remain visible");
 assert.ok(v8autoSrc.includes("up('auto')")&&v8autoSrc.includes("state.settings.autoDispatch!==false")&&
  v8autoSrc.includes("toggleautodespatch")&&v8autoSrc.includes("openupgrade"),"Auto-Dispatch state controls missing");
@@ -738,9 +719,9 @@ for(const token of ["item-row rental-compact","rental-compact-bottom","data-coun
 for(const token of ["state.ledger||[]","Rental returned · ","money(e.amount)","rental-return-v9","rental-returns-v9-empty"]){
  assert.ok(v9returns.includes(token),"Section 9 return history missing "+token);
 }
-assert.ok(js.includes("rental-active-v9")&&js.includes("state.rentals.map(rentalCard)")&&
- js.includes("renderRecentReturns(4)")&&js.includes("rental-map-rentals-v9"),
- "Live rentals must appear in Dashboard and existing map");
+assert.ok(js.includes("dashboard-simple-trips")&&js.includes("state.rentals.slice(0,3)")&&
+ js.includes("function renderRecentReturns(limit=4)")&&js.includes("rental-map-rentals-v9"),
+ "Active rentals remain visible on Dashboard; detailed routes and returns remain in the game");
 assert.ok(js.includes("el.parentElement?.setAttribute('aria-valuenow'"),"Live progress must update aria value");
 const v9car={id:"car9",plate:"CA 900",type:"sedan",paint:"silver"};
 const v9rental={id:"r9",carId:"car9",customer:"Family Jacobs",icon:"🚘",from:"hq",dest:"airport",start:100000,due:180000,seconds:80,payout:3400};
