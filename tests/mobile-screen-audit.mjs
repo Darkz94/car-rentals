@@ -71,6 +71,37 @@ try{
     if(result.outside.length)problems.push(width+'px '+name+' panel outside viewport '+JSON.stringify(result.outside));
     if(result.narrow.length)problems.push(width+'px '+name+' compressed dealership title '+JSON.stringify(result.narrow));
     if(result.dock!==6||result.activeDock!==1)problems.push(width+'px '+name+' bottom navigation invalid '+JSON.stringify(result));
+    if(route==='overview'&&!sub){
+      // Exercise the Dashboard switch with a purchased Auto-Dispatch Desk.
+      // This browser's test state is restored; no production data or saved games are involved.
+      const auto=await page.evaluate(()=>{
+        const originalUpgrades={...state.upgrades};
+        const originalSettings={...state.settings,autoCare:{...state.settings.autoCare}};
+        try{
+          state.upgrades.auto=false;render();
+          const locked=!!document.querySelector('.dashboard-autodispatch-unlock')&&!document.querySelector('.dashboard-autodispatch-switch');
+          state.upgrades.auto=true;state.settings.autoDispatch=true;render();
+          let toggle=document.querySelector('.dashboard-autodispatch-switch');
+          const initiallyOn=!!toggle&&toggle.getAttribute('aria-checked')==='true';
+          const touchHeight=toggle?.getBoundingClientRect().height||0;
+          const careBefore=JSON.stringify(state.settings.autoCare);
+          const offlineBefore=state.settings.offlineEarnings;
+          toggle?.click();
+          const paused=state.settings.autoDispatch===false&&document.querySelector('.dashboard-autodispatch-switch')?.getAttribute('aria-checked')==='false';
+          const untouched=JSON.stringify(state.settings.autoCare)===careBefore&&state.settings.offlineEarnings===offlineBefore;
+          document.querySelector('.dashboard-autodispatch-switch')?.click();
+          const resumed=state.settings.autoDispatch===true&&document.querySelector('.dashboard-autodispatch-switch')?.getAttribute('aria-checked')==='true';
+          return {locked,initiallyOn,paused,resumed,untouched,touchHeight};
+        }finally{
+          state.upgrades=originalUpgrades;
+          state.settings=originalSettings;
+          render();save(true);
+        }
+      });
+      console.log(width+'px Dashboard Auto-Dispatch: '+JSON.stringify(auto));
+      if(!auto.locked||!auto.initiallyOn||!auto.paused||!auto.resumed||!auto.untouched||auto.touchHeight<44)
+        problems.push(width+'px Dashboard Auto-Dispatch switch invalid '+JSON.stringify(auto));
+    }
     if(route==='business'&&sub==='command'){
       // One navigation grid only: all six business destinations, no duplicated department shortcuts.
       const business=await page.evaluate(()=>({

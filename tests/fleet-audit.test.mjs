@@ -354,6 +354,18 @@ assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settin
 assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),"Dispatch logic missing");
 assert.ok(js.includes("if(action==='page')")&&js.includes("function renderMapPage()"),"Bottom navigation missing");
 console.log("PASS: Simplified Dashboard retains dispatch, requests, active rentals and bottom navigation.");
+const dashboardAutoStart=js.indexOf("function dashboardAutoDispatchToggle(){");
+const dashboardAutoEnd=js.indexOf("function renderOverview(){",dashboardAutoStart);
+assert.ok(dashboardAutoStart>0&&dashboardAutoEnd>dashboardAutoStart,"Dashboard Auto-Dispatch switch renderer missing");
+const dashboardAutoSource=js.slice(dashboardAutoStart,dashboardAutoEnd);
+for(const marker of ['data-action="toggleautodespatch"','role="switch"','aria-checked=','state.settings.autoDispatch!==false','openupgrade']){
+ assert.ok(dashboardAutoSource.includes(marker),"Dashboard Auto-Dispatch control missing "+marker);
+}
+assert.ok(js.includes('${dashboardAutoDispatchToggle()}'),"Auto-Dispatch switch must appear in the Active Rentals section");
+assert.ok(html.includes('dashboard-autodispatch-switch'),"Dashboard Auto-Dispatch control styles missing");
+assert.ok(js.includes("if(action==='toggleautodespatch'){if(!up('auto'))return;state.settings.autoDispatch="),"Auto-Dispatch switch must reuse existing action");
+console.log("PASS: Compact Dashboard Auto-Dispatch toggle reuses the existing setting without a master automation switch.");
+
 
 
 // Section 3: Fleet command shell must render live KPIs, image-backed header,

@@ -3517,6 +3517,19 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
  .dashboard-simple-heading .dashboard-rental-help{margin-left:auto}
  .dashboard-simple-count{font-size:9px}
 }
+
+/* Compact Auto-Dispatch-only switch inside the existing Dashboard Active Rentals panel. */
+.dashboard-simplified .dashboard-autodispatch{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;padding:9px 11px;border:1px solid #477fa9;border-radius:12px;background:linear-gradient(115deg,#0c3452,#122946)}
+.dashboard-autodispatch-copy{min-width:0;flex:1}
+.dashboard-autodispatch-copy b{display:block;font-size:12px;line-height:1.25;color:#f6fbff}
+.dashboard-autodispatch-copy small{display:block;margin-top:3px;font-size:10px;line-height:1.3;color:#bcd9ec}
+.dashboard-autodispatch-switch{appearance:none;display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:85px;min-height:44px;flex:none;padding:5px 11px;border:1.5px solid #7390a8;border-radius:999px;background:#293c54;color:#e9f2fb;font:900 12px/1 'Trebuchet MS','Segoe UI',sans-serif;cursor:pointer;touch-action:manipulation}
+.dashboard-autodispatch-switch.is-on{background:linear-gradient(120deg,#11654f,#148e74);border-color:#67eac0;color:#fff}
+.dashboard-autodispatch-knob{width:22px;height:22px;border-radius:50%;background:#f8fcff;box-shadow:0 1px 5px #0007;flex:none}
+.dashboard-autodispatch-switch:not(.is-on){flex-direction:row-reverse}
+.dashboard-autodispatch-switch:focus-visible,.dashboard-autodispatch-unlock:focus-visible{outline:3px solid #ffdf7f;outline-offset:3px}
+.dashboard-autodispatch-unlock{flex:none;min-height:44px}
+@media(max-width:360px){.dashboard-simplified .dashboard-autodispatch{padding:8px;gap:7px}.dashboard-autodispatch-switch{min-width:78px;padding:5px 8px}.dashboard-autodispatch-copy small{font-size:9px}}
 </style>
 <style id="ctr-dashboard-portrait-alignment-2026">
 /* Final handset portrait rules. Do not alter landscape navigation or gameplay.
@@ -5495,6 +5508,14 @@ function autoDeskControl(){
   </section>`;
 }
 
+
+function dashboardAutoDispatchToggle(){
+ const owned=up('auto'),running=owned&&state.settings.autoDispatch!==false;
+ return `<div class="dashboard-autodispatch" aria-label="Auto-Dispatch setting">
+  <div class="dashboard-autodispatch-copy"><b>⚡ Auto-Dispatch</b><small>${!owned?'Locked · Unlock in Business Upgrades':running?'ON · Incoming bookings dispatch automatically':'OFF · Manual bookings still work'}</small></div>
+  ${owned?`<button type="button" class="dashboard-autodispatch-switch ${running?'is-on':''}" data-action="toggleautodespatch" role="switch" aria-label="Auto-Dispatch" aria-checked="${running}"><span class="dashboard-autodispatch-knob" aria-hidden="true"></span><strong>${running?'ON':'OFF'}</strong></button>`:btn('openupgrade','Unlock','btn sm ghost dashboard-autodispatch-unlock')}
+ </div>`;
+}
 function renderOverview(){
  const ready=available().length, matching=state.offers.filter(o=>bestCar(o)).length;
  const helpOpen=!!document.querySelector('.dashboard-rental-help')?.open;
@@ -5511,6 +5532,7 @@ function renderOverview(){
   </section>
   <section class="card pad dashboard-simple-panel" aria-label="Active Rentals">
    <div class="dashboard-simple-heading"><div><small>CURRENT ACTIVITY</small><h2>Active rentals</h2><p>Use the Live tab below for the map and all active journeys.</p></div><b class="dashboard-simple-count">${state.rentals.length} ACTIVE</b></div>
+   ${dashboardAutoDispatchToggle()}
    ${state.rentals.length?`<div class="dashboard-simple-trips">${state.rentals.slice(0,3).map(r=>{
     const car=state.fleet.find(c=>c.id===r.carId);
     return `<div class="dashboard-trip-row"><span aria-hidden="true">🚘</span><div><b>${esc(r.customer||'Customer')}</b><small>${car?esc(typeOf(car.type).name):'Rental'} · ${esc(car?.plate||'On the road')}</small></div><div><strong>${money(r.payout)}</strong><small data-countdown-rental="${esc(r.id)}">${relativeTime(r.due)}</small></div></div>`;
