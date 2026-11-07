@@ -4549,6 +4549,75 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
   .business-shell-v11 .business-v11-nav .business-grid-label{font-size:inherit}
 }
 </style>
+
+<style id="ctr-dealership-mobile-head-fix-2026">
+/* Mobile showroom: prevent model badges from squeezing title into a skinny column. */
+@media (orientation:portrait) and (max-width:850px) {
+.dealership-v12 .dealer-pavilion{min-width:0;overflow:hidden}
+.dealership-v12 .dealer-pavilion-header{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-auto-rows:auto;
+ justify-content:stretch;
+ justify-items:stretch;
+ align-items:start!important;
+ box-sizing:border-box;
+ width:100%;min-width:0;
+ padding:13px 15px 14px!important;
+ gap:9px!important;
+ min-height:0!important;
+}
+.dealership-v12 .dealer-pavilion-header>div:first-child{
+ display:block;grid-column:1;grid-row:1;
+ width:100%;max-width:100%;min-width:0;
+ flex:none!important;
+}
+.dealership-v12 .dealer-pavilion-header .dealer-v12-kicker{
+ display:block;max-width:100%;
+ font-size:10px;line-height:1.2;letter-spacing:1px;white-space:normal;
+}
+.dealership-v12 .dealer-pavilion-header h2{
+ display:block;width:100%;max-width:100%;
+ margin:5px 0 6px;
+ font-size:clamp(21px,5.7vw,27px)!important;
+ line-height:1.13;letter-spacing:-.35px;
+ overflow-wrap:normal;word-break:normal;hyphens:none;white-space:normal;
+}
+.dealership-v12 .dealer-pavilion-header p{
+ max-width:100%;width:100%;margin:0;
+ font-size:12px;line-height:1.35;overflow-wrap:break-word;
+}
+.dealership-v12 .dealer-pavilion-header .dealer-preview-meta{
+ display:flex;grid-column:1;grid-row:2;
+ flex:none;flex-wrap:wrap;
+ align-items:center;justify-content:flex-start;
+ min-width:0;max-width:100%;width:100%;
+ margin:0;gap:7px;
+}
+.dealership-v12 .dealer-pavilion-header .dealer-preview-meta .pill{
+ width:auto;max-width:100%;margin:0;
+ padding:6px 10px;font-size:10px;line-height:1.15;
+ white-space:normal;text-align:center;
+}
+.dealership-v12 .dealer-showcase-layout{
+ display:grid;min-width:0;grid-template-columns:minmax(0,1fr)!important;
+}
+.dealership-v12 .dealer-showcase-viewport{min-width:0;width:100%}
+.dealership-v12 .dealer-v12-stage{width:100%}
+}
+@media (orientation:portrait) and (max-width:430px) {
+.dealership-v12 .dealer-pavilion-header{
+ padding:11px 12px 12px!important;gap:7px!important;
+}
+.dealership-v12 .dealer-pavilion-header h2{
+ font-size:clamp(20px,5.6vw,24px)!important;
+}
+.dealership-v12 .dealer-pavilion-header p{font-size:11px;line-height:1.33}
+.dealership-v12 .dealer-pavilion-header .dealer-preview-meta .pill{
+ padding:5px 8px;font-size:9px;
+}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp'};
 
