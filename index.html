@@ -5069,15 +5069,63 @@ if(modal==='sell'){let c=state.fleet.find(x=>x.id===modalCar);title='Sell this v
  
  return `<div class="modal-backdrop" data-action="closemodal"><div class="modal ${modal==='offline'?'modal-offline-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;
 }
+/* Smooth re-render: patch only what changed instead of replacing the whole screen, so images and
+   unchanged elements are never destroyed and recreated (that caused the periodic flash/tick). */
+function morphInto(target,html){
+ try{
+  const tpl=document.createElement('div');tpl.innerHTML=html;
+  morphKids(target,tpl);
+ }catch(err){
+  console.warn('morph failed, full render',err);
+  target.innerHTML=html;
+ }
+}
+function morphKids(from,to){
+ const want=to.childNodes;let i=0;
+ for(;i<want.length;i++){
+  const w=want[i],h=from.childNodes[i];
+  if(!h){from.appendChild(w.cloneNode(true));continue;}
+  morphNode(from,h,w);
+ }
+ while(from.childNodes.length>want.length)from.removeChild(from.lastChild);
+}
+function morphNode(parent,h,w){
+ if(h.nodeType!==w.nodeType||h.nodeType===1&&(h.localName!==w.localName||h.namespaceURI!==w.namespaceURI)){
+  parent.replaceChild(w.cloneNode(true),h);return;
+ }
+ if(h.nodeType!==1){if(h.nodeValue!==w.nodeValue)h.nodeValue=w.nodeValue;return;}
+ const tag=h.localName;
+ if(tag==='script'||tag==='style'){if(h.textContent!==w.textContent)parent.replaceChild(w.cloneNode(true),h);return;}
+ for(const a of Array.from(h.attributes)){if(!w.hasAttribute(a.name))h.removeAttribute(a.name);}
+ for(const a of Array.from(w.attributes)){
+  if(h.getAttribute(a.name)!==a.value){
+   if(a.namespaceURI)h.setAttributeNS(a.namespaceURI,a.name,a.value);else h.setAttribute(a.name,a.value);
+  }
+ }
+ if(tag==='input'){
+  if(h.type==='checkbox'||h.type==='radio'){h.checked=w.hasAttribute('checked');}
+  else{const v=w.getAttribute('value')||'';if(h.value!==v&&document.activeElement!==h)h.value=v;}
+ }else if(tag==='textarea'){
+  if(document.activeElement!==h&&h.value!==w.textContent)h.value=w.textContent;
+  return;
+ }else if(tag==='select'){
+  morphKids(h,w);
+  if(document.activeElement!==h){const sel=Array.from(w.options).findIndex(o=>o.hasAttribute('selected'));if(sel>=0)h.selectedIndex=sel;}
+  return;
+ }else if(tag==='option'){
+  h.selected=w.hasAttribute('selected');
+ }
+ morphKids(h,w);
+}
 function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const main=activePage==='overview'?renderOverview():activePage==='fleet'?renderFleet():activePage==='map'?renderMapPage():activePage==='business'?renderBusiness():activePage==='events'?renderEvents():renderProgress();
- document.getElementById('app').innerHTML=`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><header class="topbar arcade-header ${activePage==='overview'?'dashboard-header':''}">${activePage==='overview'?`<div class="dashboard-header-sky" aria-hidden="true">${renderHeroArt()}</div>`:''}
+ morphInto(document.getElementById('app'),`<div class="app"><aside class="sidebar"><div class="logo"><div class="logo-title">CAPE TOWN<br><em>RENTALS</em></div><div class="logo-sub">MODERN ARCADE EDITION · CAPE TOWN</div></div><div class="side-caption">COMPANY COMMAND</div><nav class="nav" aria-label="Main navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="nav-btn ${id===activePage?'active':''}" data-action="page" data-id="${id}"><span class="glyph">${icon}</span>${label}</button>`).join('')}</nav><div class="sidebar-foot"><div class="flex between center"><b>${weatherEffect().icon} Day ${state.day} · ${clockInfo().label}</b><span class="pill green">1× SPEED</span></div><p>${esc(state.companyName||"Coastline Rentals")} · Rep ${state.rep} · ${state.weather}<br>${state.fleet.length} cars across ${state.branches.length} branches</p><div class="divider"></div>${btn('guide','❔ How to play','btn sm block')}</div></aside><main class="main"><header class="topbar arcade-header ${activePage==='overview'?'dashboard-header':''}">${activePage==='overview'?`<div class="dashboard-header-sky" aria-hidden="true">${renderHeroArt()}</div>`:''}
 <div class="arcade-identity" aria-label="Cape Town Rentals">
  <span class="arcade-brand-icon" aria-hidden="true">${arcadeIcon("car")}</span>
  <span class="arcade-brand-text"><b>CAPE TOWN</b><strong>RENTALS</strong><small>CAR RENTAL TYCOON</small></span>
 </div>
 <div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash">💰 ${money(state.cash)}</span>${btn('dashshortcut','⚙','btn-icon arcade-settings','data-id="progress" data-sub="settings" aria-label="Settings" title="Settings"')}</div>
 <div class="arcade-page-head"><div class="arcade-page-copy"><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><span class="arcade-rep-chip" aria-label="Reputation level ${state.rep}, ${Math.floor(state.xp)} of ${repNeeded(state.rep)} experience points"><b>👑 LV ${state.rep}</b><span class="arcade-rep-meter"><i style="width:${Math.min(100,100*state.xp/Math.max(1,repNeeded(state.rep)))}%"></i></span><small>${Math.floor(state.xp)} / ${repNeeded(state.rep)} XP</small></span></div>
-</header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${arcadeIcon(id)}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`;
+</header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${arcadeIcon(id)}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`);
  lastRenderedAt=now();shouldRepaint=false;
 }
 function afterAction(){save(true);render();}
