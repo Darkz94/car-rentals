@@ -791,10 +791,15 @@ const v11code=js.slice(v11s,v11e);
 for(const token of ["staffOverhead()","branchOverhead()","bidReserve()","freeCash()","state.rentals.reduce",
  "state.loans.reduce","contractReports||{}","BRANCHES.filter","STAFF.filter","branchReport(b.id)",
  "carReady","garageCapacity()","state.history.slice(-12)","state.ledger||[]","CAR_IMAGES[typeOf(heroVehicle.type).id]",
- "renderHeroArt()","business-v11-hero","business-v11-kpi-grid","business-v11-link-grid","business-v11-branch-grid",
+ "renderHeroArt()","business-v11-hero","business-v11-kpi-grid","business-v11-branch-grid",
  "business-v11-chart","business-v11-transactions","business-v11-task","business-v11-footer",
  "data-group=\"business\"","data-id=\"finance\""]){
  assert.ok(v11code.includes(token),"Section 11 business view missing "+token);
+}
+assert.ok(!v11code.includes('business-v11-links')&&!v11code.includes('Business Departments'),
+ "Business Command Centre must not duplicate the six navigation shortcuts");
+for(const destination of ['command','upgrades','branches','contracts','staff','finance']){
+ assert.ok(v11biz.includes("['"+destination+"',"),'Missing Business navigation destination '+destination);
 }
 assert.ok(v11biz.includes("business-shell-v11")&&v11biz.includes("renderTabs('business',tabs)"),
  "Business navigation and existing sub-tabs must remain");
