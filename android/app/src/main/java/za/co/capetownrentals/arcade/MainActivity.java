@@ -3,6 +3,19 @@ package za.co.capetownrentals.arcade;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.util.TypedValue;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.content.pm.PackageInfo;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -156,6 +169,222 @@ public final class MainActivity extends Activity {
         }
     }
 
+
+    // Native update windows use the same navy, cyan and gold arcade palette as the game.
+    // The in-game WebView and its saved progress are never recreated by these dialogs.
+    private static final int ARCADE_NAVY = Color.rgb(7, 25, 53);
+    private static final int ARCADE_BLUE = Color.rgb(14, 48, 84);
+    private static final int ARCADE_CYAN = Color.rgb(101, 215, 255);
+    private static final int ARCADE_GOLD = Color.rgb(255, 205, 75);
+    private static final int ARCADE_WHITE = Color.rgb(245, 251, 255);
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    private GradientDrawable arcadeFill(int first, int second, int stroke, int radius) {
+        GradientDrawable fill = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{first, second});
+        fill.setCornerRadius(dp(radius));
+        if (stroke != Color.TRANSPARENT) fill.setStroke(dp(2), stroke);
+        return fill;
+    }
+
+    private TextView arcadeLabel(String content, int sizeSp, int color, boolean bold) {
+        TextView label = new TextView(this);
+        label.setText(content);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp);
+        label.setTextColor(color);
+        label.setTypeface(Typeface.create("sans-serif", bold ? Typeface.BOLD : Typeface.NORMAL));
+        label.setLineSpacing(dp(2), 1f);
+        return label;
+    }
+
+    private void arcadeSpace(LinearLayout container, int heightDp) {
+        View space = new View(this);
+        container.addView(space, new LinearLayout.LayoutParams(1, dp(heightDp)));
+    }
+
+    private Button arcadeButton(String caption, boolean gold) {
+        Button button = new Button(this);
+        button.setText(caption);
+        button.setAllCaps(false);
+        button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        button.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        button.setTextColor(gold ? Color.rgb(13, 39, 69) : ARCADE_WHITE);
+        button.setBackground(arcadeFill(
+            gold ? Color.rgb(255, 233, 130) : Color.rgb(20, 68, 110),
+            gold ? Color.rgb(241, 169, 36) : Color.rgb(8, 37, 74),
+            gold ? Color.rgb(255, 244, 168) : ARCADE_CYAN, 14));
+        button.setMinimumHeight(dp(49));
+        button.setMinHeight(dp(49));
+        button.setPadding(dp(7), 0, dp(7), 0);
+        button.setElevation(dp(2));
+        return button;
+    }
+
+    private static final class ArcadeUpdateContent {
+        final LinearLayout card;
+        final LinearLayout body;
+        ArcadeUpdateContent(LinearLayout card, LinearLayout body) {
+            this.card = card;
+            this.body = body;
+        }
+    }
+
+    private ArcadeUpdateContent arcadeUpdateContent() {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setBackground(arcadeFill(ARCADE_BLUE, ARCADE_NAVY, ARCADE_CYAN, 22));
+        card.setClipToOutline(true);
+
+        FrameLayout banner = new FrameLayout(this);
+        banner.setBackgroundColor(ARCADE_NAVY);
+        card.addView(banner, new LinearLayout.LayoutParams(-1, dp(122)));
+        try (InputStream input = getAssets().open("assets/cape-town-waterfront-header.webp")) {
+            ImageView photo = new ImageView(this);
+            photo.setImageBitmap(BitmapFactory.decodeStream(input));
+            photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            banner.addView(photo, new FrameLayout.LayoutParams(-1, -1));
+        } catch (Exception ex) {
+            Log.i("CapeTownRentals", "Using navy update header fallback");
+        }
+        View shade = new View(this);
+        shade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[]{0xA9051831, 0xC6071B39, 0xF0081A36}));
+        banner.addView(shade, new FrameLayout.LayoutParams(-1, -1));
+
+        LinearLayout brand = new LinearLayout(this);
+        brand.setOrientation(LinearLayout.VERTICAL);
+        brand.setGravity(Gravity.CENTER_VERTICAL);
+        brand.setPadding(dp(19), dp(12), dp(12), dp(12));
+        TextView cape = arcadeLabel("CAPE TOWN", 20, ARCADE_WHITE, true);
+        cape.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD_ITALIC));
+        TextView rentals = arcadeLabel("RENTALS", 28, ARCADE_GOLD, true);
+        rentals.setTypeface(Typeface.create("sans-serif-black", Typeface.BOLD_ITALIC));
+        TextView edition = arcadeLabel("CAR RENTAL TYCOON   •   ANDROID", 10, ARCADE_CYAN, true);
+        brand.addView(cape);
+        brand.addView(rentals);
+        arcadeSpace(brand, 5);
+        brand.addView(edition);
+        banner.addView(brand, new FrameLayout.LayoutParams(-1, -1));
+
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setPadding(dp(20), dp(18), dp(20), dp(21));
+        card.addView(body, new LinearLayout.LayoutParams(-1, -2));
+        return new ArcadeUpdateContent(card, body);
+    }
+
+    private AlertDialog showArcadeUpdateDialog(ArcadeUpdateContent content, boolean cancelable) {
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.setVerticalScrollBarEnabled(false);
+        scroll.addView(content.card, new ScrollView.LayoutParams(-1, -2));
+        AlertDialog dialog = new AlertDialog.Builder(this).setView(scroll).create();
+        dialog.setCancelable(cancelable);
+        dialog.setOnShowListener(ignored -> {
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                int width = Math.min(getResources().getDisplayMetrics().widthPixels - dp(30), dp(450));
+                window.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.dimAmount = 0.78f;
+                window.setAttributes(params);
+            }
+        });
+        dialog.show();
+        return dialog;
+    }
+
+    private String friendlyReleaseNotes(String raw) {
+        StringBuilder result = new StringBuilder();
+        for (String line : raw.split("\\r?\\n")) {
+            String text = line.trim();
+            if (text.isEmpty() || text.startsWith("Cape Town Rentals Modern Arcade") ||
+                text.startsWith("Signed APK update") || text.startsWith("Export saves") ||
+                text.startsWith("Commit ")) continue;
+            if (result.length() > 0) result.append(' ');
+            result.append(text);
+            if (result.length() >= 200) break;
+        }
+        return result.length() > 200 ? result.substring(0, 200) + "…" : result.toString();
+    }
+
+    private void showUpdateAvailable(String version, String notes, String link, long size) {
+        ArcadeUpdateContent content = arcadeUpdateContent();
+        TextView badge = arcadeLabel("✦  UPDATE AVAILABLE   " + version, 13, ARCADE_GOLD, true);
+        content.body.addView(badge);
+        arcadeSpace(content.body, 12);
+        content.body.addView(arcadeLabel("A new version is ready!", 21, ARCADE_WHITE, true));
+        arcadeSpace(content.body, 8);
+        String summary = friendlyReleaseNotes(notes);
+        content.body.addView(arcadeLabel(summary.isEmpty() ?
+            "Get the latest improvements for your Cape Town rental empire." : summary, 14,
+            Color.rgb(207, 232, 250), false));
+        arcadeSpace(content.body, 15);
+        TextView assurance = arcadeLabel("✓  YOUR SAVED GAME IS KEPT", 12, Color.rgb(139, 255, 195), true);
+        assurance.setPadding(dp(10), dp(11), dp(10), dp(11));
+        assurance.setBackground(arcadeFill(Color.rgb(9, 82, 76), Color.rgb(7, 47, 64),
+            Color.rgb(72, 222, 178), 11));
+        content.body.addView(assurance);
+        arcadeSpace(content.body, 13);
+        content.body.addView(arcadeLabel(
+            "The APK downloads inside the game. Android will ask you to confirm installation. " +
+            "For extra protection, export your JSON backup before updating.",
+            12, Color.rgb(178, 205, 225), false));
+        arcadeSpace(content.body, 17);
+
+        LinearLayout actions = new LinearLayout(this);
+        actions.setOrientation(LinearLayout.HORIZONTAL);
+        Button later = arcadeButton("LATER", false);
+        Button update = arcadeButton("UPDATE NOW", true);
+        LinearLayout.LayoutParams left = new LinearLayout.LayoutParams(0, dp(50), 1f);
+        left.rightMargin = dp(9);
+        actions.addView(later, left);
+        actions.addView(update, new LinearLayout.LayoutParams(0, dp(50), 1.35f));
+        content.body.addView(actions);
+        final AlertDialog dialog = showArcadeUpdateDialog(content, true);
+        later.setOnClickListener(view -> dialog.dismiss());
+        update.setOnClickListener(view -> {
+            dialog.dismiss();
+            startInAppUpdate(link, version, size);
+        });
+    }
+
+    private void showUpdateFailure(String link, String version, long expectedSize) {
+        ArcadeUpdateContent content = arcadeUpdateContent();
+        content.body.addView(arcadeLabel("UPDATE INTERRUPTED", 13, ARCADE_GOLD, true));
+        arcadeSpace(content.body, 9);
+        content.body.addView(arcadeLabel("The download didn't finish", 21, ARCADE_WHITE, true));
+        arcadeSpace(content.body, 9);
+        content.body.addView(arcadeLabel(
+            "Your saved game is unchanged. Try again, or download the signed update in your browser.",
+            13, Color.rgb(207, 232, 250), false));
+        arcadeSpace(content.body, 18);
+        LinearLayout actions = new LinearLayout(this);
+        actions.setOrientation(LinearLayout.HORIZONTAL);
+        Button later = arcadeButton("LATER", false);
+        Button retry = arcadeButton("TRY AGAIN", true);
+        LinearLayout.LayoutParams left = new LinearLayout.LayoutParams(0, dp(49), 1f);
+        left.rightMargin = dp(9);
+        actions.addView(later, left);
+        actions.addView(retry, new LinearLayout.LayoutParams(0, dp(49), 1f));
+        content.body.addView(actions);
+        arcadeSpace(content.body, 10);
+        Button browser = arcadeButton("OPEN IN BROWSER", false);
+        content.body.addView(browser, new LinearLayout.LayoutParams(-1, dp(49)));
+        final AlertDialog dialog = showArcadeUpdateDialog(content, true);
+        later.setOnClickListener(view -> dialog.dismiss());
+        retry.setOnClickListener(view -> { dialog.dismiss(); startInAppUpdate(link, version, expectedSize); });
+        browser.setOnClickListener(view -> {
+            dialog.dismiss();
+            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link))); }
+            catch (Exception ex) { Toast.makeText(this, "Cannot open link", Toast.LENGTH_LONG).show(); }
+        });
+    }
+
     private void checkForUpdates(boolean manual) {
         new Thread(() -> {
             HttpURLConnection connection = null;
@@ -187,14 +416,7 @@ public final class MainActivity extends Activity {
                 if(latest>installed && apk.startsWith(APK_URL_PREFIX)) {
                     final String link=apk, version=tag; final long size=apkSize;
                     final String notes=release.optString("body","Update available.");
-                    runOnUiThread(() -> new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Cape Town Rentals update")
-                        .setMessage("Version "+version+" is available.\n\n"+
-                            notes.substring(0,Math.min(notes.length(),700))+
-                            "\n\nThe update downloads inside the game. Android will then ask you to confirm the install. Your saved game is kept.")
-                        .setNegativeButton("Later",(d,w)->{})
-                        .setPositiveButton("Update now",(d,w)-> startInAppUpdate(link,version,size))
-                        .show());
+                    runOnUiThread(() -> showUpdateAvailable(version, notes, link, size));
                 } else if(manual) {
                     runOnUiThread(() -> Toast.makeText(this,"You're up to date",Toast.LENGTH_SHORT).show());
                 }
@@ -210,19 +432,28 @@ public final class MainActivity extends Activity {
 
     private void startInAppUpdate(final String link, final String version, final long expectedSize) {
         cancelDownload = false;
-        LinearLayout box = new LinearLayout(this);
-        box.setOrientation(LinearLayout.VERTICAL);
-        int pad = (int)(20 * getResources().getDisplayMetrics().density);
-        box.setPadding(pad, pad, pad, pad / 2);
-        final TextView label = new TextView(this);
-        label.setText("Downloading " + version + "…");
+        ArcadeUpdateContent content = arcadeUpdateContent();
+        content.body.addView(arcadeLabel("DOWNLOADING UPDATE", 13, ARCADE_GOLD, true));
+        arcadeSpace(content.body, 12);
+        final TextView label = arcadeLabel("Downloading " + version + "…", 17, ARCADE_WHITE, true);
         label.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.body.addView(label);
+        arcadeSpace(content.body, 17);
         final ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        bar.setMax(100); bar.setIndeterminate(true);
-        box.addView(label); box.addView(bar);
-        downloadDialog = new AlertDialog.Builder(this).setTitle("Updating Cape Town Rentals").setView(box)
-            .setCancelable(false)
-            .setNegativeButton("Cancel",(d,w)-> cancelDownload = true).show();
+        bar.setMax(100);
+        bar.setIndeterminate(true);
+        bar.setProgressTintList(ColorStateList.valueOf(ARCADE_GOLD));
+        bar.setProgressBackgroundTintList(ColorStateList.valueOf(Color.rgb(28, 64, 100)));
+        content.body.addView(bar, new LinearLayout.LayoutParams(-1, dp(14)));
+        arcadeSpace(content.body, 17);
+        Button cancel = arcadeButton("CANCEL DOWNLOAD", false);
+        content.body.addView(cancel, new LinearLayout.LayoutParams(-1, dp(49)));
+        downloadDialog = showArcadeUpdateDialog(content, false);
+        cancel.setOnClickListener(view -> {
+            cancelDownload = true;
+            cancel.setEnabled(false);
+            label.setText("Cancelling download…");
+        });
 
         new Thread(() -> {
             File dir = new File(getCacheDir(), "updates");
@@ -262,14 +493,7 @@ public final class MainActivity extends Activity {
                 part.delete(); apk.delete();
                 runOnUiThread(() -> {
                     if (downloadDialog != null) downloadDialog.dismiss();
-                    new AlertDialog.Builder(MainActivity.this).setTitle("Update could not finish")
-                        .setMessage("The in-app download failed. You can try again, or download the APK in your browser.")
-                        .setNegativeButton("Later",(d,w)->{})
-                        .setNeutralButton("Try again",(d,w)-> startInAppUpdate(link, version, expectedSize))
-                        .setPositiveButton("Open in browser",(d,w)-> {
-                            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link))); }
-                            catch (Exception e2) { Toast.makeText(MainActivity.this,"Cannot open link",Toast.LENGTH_LONG).show(); }
-                        }).show();
+                    showUpdateFailure(link, version, expectedSize);
                 });
             } finally { if (c != null) c.disconnect(); }
         }, "CTR-update-download").start();
