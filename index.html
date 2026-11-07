@@ -4258,6 +4258,201 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .dashboard-simplified .dashboard-simple-stats>div:last-child{grid-column:1/-1}
 }
 </style>
+
+<style id="ctr-dashboard-compact-cards-2026">
+/* Dashboard content density only. Do not change the separately approved header or mobile dock.
+   Keep touch actions 44px+, preserve live values, and let longer text wrap naturally. */
+@media (orientation:portrait) and (max-width:900px) {
+ .dashboard-v2.dashboard-simplified{gap:9px}
+ .dashboard-simplified .dashboard-simple-note{
+   box-sizing:border-box;
+   grid-template-columns:minmax(0,1fr) minmax(95px,30%);
+   grid-template-rows:auto;
+   gap:8px;
+   min-height:0;height:auto;
+   padding:11px 12px;
+   border-radius:16px;
+ }
+ .dashboard-simplified .dashboard-next-copy{
+   grid-column:1;grid-row:1;align-self:center;
+   min-width:0;
+ }
+ .dashboard-simplified .dashboard-next-copy small{
+   font-size:10px;line-height:1.15;letter-spacing:.2px;
+ }
+ .dashboard-simplified .dashboard-next-copy h2{
+   margin:3px 0 4px;
+   font-size:clamp(17px,4.5vw,21px);
+   line-height:1.09;font-weight:900;
+ }
+ .dashboard-simplified .dashboard-next-copy p{
+   margin:0;font-size:11px;line-height:1.25;
+ }
+ .dashboard-simplified .dashboard-next-cta{
+   grid-column:2;grid-row:1;align-self:center;justify-self:stretch;
+   min-width:0;
+ }
+ .dashboard-simplified .dashboard-next-action{
+   box-sizing:border-box;width:100%;min-height:44px;
+   padding:7px 6px;border-radius:13px;
+   font-size:11px;line-height:1.15;white-space:normal;
+ }
+ .dashboard-simplified .dashboard-simple-stats{
+   display:grid;
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   gap:6px;
+ }
+ .dashboard-simplified .dashboard-simple-stats>div,
+ .dashboard-simplified .dashboard-simple-stats>div:last-child{
+   box-sizing:border-box;
+   grid-column:auto!important;
+   display:grid;
+   grid-template-columns:24px minmax(0,1fr);
+   grid-template-rows:minmax(28px,auto) auto;
+   align-items:center;
+   column-gap:3px;row-gap:3px;
+   min-width:0;min-height:77px;
+   padding:8px 6px;
+   border-radius:14px;
+ }
+ .dashboard-simplified .dashboard-simple-stats .dashboard-stat-art{
+   position:static;float:none;
+   grid-column:1;grid-row:1;
+   display:grid;place-items:center;
+   width:23px;height:23px;
+   margin:0;
+ }
+ .dashboard-simplified .dashboard-simple-stats .dashboard-stat-art .arcade-art-icon{
+   display:block;width:23px;height:23px;
+ }
+ .dashboard-simplified .dashboard-simple-stats small{
+   grid-column:2;grid-row:1;
+   font-size:9px;line-height:1.08;
+   overflow-wrap:normal;
+   letter-spacing:0;
+ }
+ .dashboard-simplified .dashboard-simple-stats strong{
+   grid-column:1/-1;grid-row:2;
+   clear:none;
+   margin:0;font-size:clamp(16px,4.3vw,22px);
+   line-height:1.09;
+   overflow-wrap:anywhere;
+   font-variant-numeric:tabular-nums;
+ }
+ .dashboard-simplified .dashboard-desk-simple{
+   gap:8px;padding:11px 12px;
+   border-radius:16px;
+ }
+ .dashboard-simplified .dashboard-simple-heading{
+   gap:7px;align-items:flex-start;min-width:0;
+ }
+ .dashboard-simplified .dashboard-simple-heading>div{min-width:0}
+ .dashboard-simplified .dashboard-simple-heading small{
+   font-size:9px;line-height:1.1;letter-spacing:.4px;
+ }
+ .dashboard-simplified .dashboard-simple-heading h2{
+   margin:3px 0;
+   font-size:clamp(16px,4.4vw,20px);
+   line-height:1.14;
+ }
+ .dashboard-simplified .dashboard-simple-heading p{
+   margin:3px 0 0;
+   font-size:11px;line-height:1.24;
+ }
+ .dashboard-simplified .dashboard-rental-help{
+   flex:none;margin:0;
+ }
+ .dashboard-simplified .dashboard-rental-help summary{
+   min-height:44px;box-sizing:border-box;
+   display:flex;align-items:center;justify-content:center;
+   padding:7px 9px;font-size:12px;border-radius:11px;
+ }
+ .dashboard-simplified .dashboard-desk-queue{
+   gap:6px;font-size:11px;line-height:1.1;
+ }
+ .dashboard-simplified .dashboard-desk-queue span{
+   padding:5px 8px;
+ }
+ .dashboard-simplified .dashboard-rental-actions .btn{
+   width:100%;min-height:44px;
+   padding:8px 10px;
+   font-size:12px;line-height:1.15;
+   border-radius:12px;
+ }
+ .dashboard-simplified .dashboard-simple-panel{
+   gap:8px;padding:11px 12px;border-radius:16px;
+ }
+ .dashboard-simplified .dashboard-simple-count{
+   padding:6px 7px;border-radius:9px;
+   font-size:9px;
+ }
+ .dashboard-simplified .dashboard-simple-trips,
+ .dashboard-simplified .dashboard-simple-offers{
+   gap:7px;
+ }
+ .dashboard-simplified .dashboard-trip-row{
+   gap:7px;padding:8px;border-radius:10px;
+ }
+ .dashboard-simplified .dashboard-trip-row>span{font-size:18px}
+ .dashboard-simplified .dashboard-trip-row b,
+ .dashboard-simplified .dashboard-trip-row strong{font-size:11px}
+ .dashboard-simplified .dashboard-trip-row small{font-size:9px}
+ .dashboard-simplified .dashboard-simple-empty{
+   padding:9px;border-radius:10px;
+   font-size:11px;line-height:1.3;
+ }
+ .dashboard-simplified .dashboard-more-offers{
+   padding:7px 9px;border-radius:11px;
+ }
+ .dashboard-simplified .dashboard-reference-footer{gap:7px}
+ .dashboard-simplified .dashboard-reference-footer .dashboard-city-strip{
+   padding:9px 10px;border-radius:14px;
+ }
+ .dashboard-simplified .dashboard-reference-summary{gap:6px}
+ .dashboard-simplified .dashboard-reference-summary .dashboard-summary-card{
+   min-height:76px;padding:10px 7px 8px;
+   gap:3px;border-radius:14px;
+ }
+ .dashboard-simplified .dashboard-reference-summary .dashboard-summary-card small{
+   font-size:9px;line-height:1.12;
+ }
+ .dashboard-simplified .dashboard-reference-summary .dashboard-summary-card strong{
+   font-size:clamp(13px,3.75vw,19px);
+   line-height:1.1;overflow-wrap:anywhere;
+ }
+ .dashboard-simplified .dashboard-reference-summary .dashboard-summary-card>span:last-child{
+   font-size:9px;line-height:1.15;
+ }
+ .dashboard-simplified .dashboard-reference-summary .dashboard-summary-icon{
+   width:21px;height:21px;top:5px;right:5px;
+   font-size:18px;
+ }
+ /* Customer booking cards have their own actions: reduce spacing without hiding controls. */
+ .dashboard-simplified .rental-offer-v8{border-radius:12px}
+ .dashboard-simplified .rental-offer-v8-top{padding:7px}
+ .dashboard-simplified .rental-offer-v8-route{padding:6px 7px}
+ .dashboard-simplified .rental-offer-v8-finance{padding:0 7px}
+ .dashboard-simplified .rental-offer-v8-clock{padding:6px 7px 0}
+ .dashboard-simplified .rental-offer-v8-controls{padding:8px}
+ .dashboard-simplified .rental-offer-v8-button{min-height:44px}
+}
+@media (orientation:portrait) and (max-width:370px) {
+ .dashboard-simplified .dashboard-simple-note{padding:10px;grid-template-columns:minmax(0,1fr) 92px}
+ .dashboard-simplified .dashboard-next-copy h2{font-size:17px}
+ .dashboard-simplified .dashboard-next-action{font-size:10px}
+ .dashboard-simplified .dashboard-simple-stats>div{padding:7px 4px}
+ .dashboard-simplified .dashboard-simple-stats small{font-size:8.5px}
+ .dashboard-simplified .dashboard-simple-stats strong{font-size:16px}
+ .dashboard-simplified .dashboard-simple-heading h2{font-size:16px}
+}
+@media (orientation:portrait) and (max-width:330px) {
+ .dashboard-simplified .dashboard-simple-note{
+   grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;
+ }
+ .dashboard-simplified .dashboard-next-copy{grid-column:1;grid-row:1}
+ .dashboard-simplified .dashboard-next-cta{grid-column:1;grid-row:2;justify-self:end;width:min(100%,150px)}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp'};
 
