@@ -192,8 +192,12 @@ assert.match(referenceCss,/grid-template-columns:minmax\(0,30fr\) minmax\(0,35fr
 for(const [part,selector] of [['LV','.dashboard-header .arcade-rep-chip'],['Logo','.dashboard-header .arcade-identity'],['Cash and settings','.dashboard-header .topmeta'],['Dashboard ribbon','.dashboard-header .arcade-page-copy']])assert.ok(referenceCss.includes(selector),'Missing fixed header zone '+part);
 assert.match(referenceCss,/\.mobile-nav\{[\s\S]*?grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/,'Keep six evenly spaced Android navigation buttons');
 assert.match(referenceCss,/\.mobile-nav button\{[\s\S]*?min-height:72px/,'Navigation labels must not clip');
-assert.match(js,/class="dashboard-next-car"/,'Dashboard must include a real fleet vehicle illustration');
-assert.match(js,/CAR_IMAGES\.limo/,'Next move art must reuse approved limousine illustration');
+const updatedHero=js.split('function smartOverview(){')[1]?.split('function dashboardReferenceInfo(){')[0]||'';
+assert.ok(!updatedHero.includes('class="dashboard-next-car"')&&!updatedHero.includes('CAR_IMAGES.limo'),'The reference-approved compact hero must have no limousine');
+const crispCss=html.split('<style id="ctr-dashboard-crisp-layout-2026">')[1]?.split('</style>')[0]||'';
+assert.match(crispCss,/cape-town-waterfront-sharp\.svg/,'Crisp Table Mountain vector artwork must be used');
+assert.match(js,/class="dashboard-cash-value"/,'Cash balance must be contained in the gold badge');
+assert.match(crispCss,/\.dashboard-simplified \.dashboard-next-car\{display:none!important\}/,'Old hero vehicle layout must be disabled');
 // Dashboard ordering: active rentals should be seen before new booking requests.
 const homeSection=js.split('function renderOverview(){')[1]?.split('function stat(')[0]||'';
 const activeRentalPosition=homeSection.indexOf('aria-label="Active Rentals"');

@@ -4139,6 +4139,68 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .mobile-nav button{font-size:7.8px}
 }
 </style>
+
+<style id="ctr-dashboard-crisp-layout-2026">
+/* Approved portrait reference: sharp existing vector skyline, no limo, snug money badge. */
+@media (orientation:portrait) and (max-width:900px){
+.topbar.arcade-header.dashboard-header{
+ grid-template-columns:minmax(0,27fr) minmax(0,35fr) minmax(0,38fr);
+ background-image:linear-gradient(180deg,#05204c15 0%,#06173122 42%,#06112e83 100%),url("assets/cape-town-waterfront-sharp.svg");
+ background-size:cover;background-position:center;
+}
+.dashboard-header .topmeta{min-width:0;max-width:100%;width:100%;gap:3px;justify-content:flex-end}
+.dashboard-header .topmeta .chip.cash{
+ display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+ flex:1 1 0;min-width:0;max-width:100%;min-height:40px;gap:3px;
+ padding:6px 3px;border-radius:17px;overflow:hidden;white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+.dashboard-header .topmeta .chip.cash .dashboard-cash-mark{
+ display:inline-grid;place-items:center;flex:0 0 17px;width:17px;height:17px;
+ border-radius:50%;border:1px solid #ae731a;
+ color:#734710;background:linear-gradient(#ffe78b,#f4ae27);
+ font-size:12px;font-weight:950;line-height:1;
+}
+.dashboard-header .topmeta .chip.cash .dashboard-cash-value{
+ display:block;flex:0 1 auto;min-width:0;white-space:nowrap;
+ color:#172d47;font-size:clamp(9px,2.6vw,14px);
+ font-weight:950;letter-spacing:-.4px;font-variant-numeric:tabular-nums;
+}
+.dashboard-header .topmeta .arcade-settings{flex:0 0 34px;min-width:34px;width:34px;height:40px}
+.dashboard-simplified .dashboard-simple-note{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(96px,33%);
+ grid-template-rows:auto;align-items:center;gap:10px;
+ position:relative;min-height:122px;height:auto;padding:13px 14px;border-radius:20px;
+ background-image:linear-gradient(105deg,#0e315fd5,#06182eee 70%,#095080c0),url("assets/cape-town-waterfront-sharp.svg");
+ background-size:cover;background-position:center;
+}
+.dashboard-simplified .dashboard-next-car{display:none!important}
+.dashboard-simplified .dashboard-next-copy{grid-column:1;grid-row:1;min-width:0;align-self:center}
+.dashboard-simplified .dashboard-next-copy small{font-size:clamp(9px,2.4vw,11px);line-height:1.1}
+.dashboard-simplified .dashboard-next-copy h2{font-size:clamp(18px,4.8vw,27px);line-height:1.08;margin:4px 0 6px}
+.dashboard-simplified .dashboard-next-copy p{font-size:clamp(11px,2.7vw,13px);line-height:1.28;margin:0}
+.dashboard-simplified .dashboard-next-cta{grid-column:2;grid-row:1;min-width:0;justify-self:end;align-self:center}
+.dashboard-simplified .dashboard-next-action{
+ display:flex;align-items:center;justify-content:center;max-width:100%;box-sizing:border-box;
+ min-height:44px;padding:9px 11px;white-space:normal;text-align:center;font-size:clamp(10px,2.6vw,13px);
+}
+}
+@media (orientation:portrait) and (max-width:430px){
+.dashboard-simplified .dashboard-simple-note{grid-template-columns:minmax(0,1fr) 105px;gap:8px;min-height:122px;padding:12px}
+.dashboard-simplified .dashboard-next-copy h2{font-size:clamp(18px,4.9vw,22px)}
+.dashboard-simplified .dashboard-next-copy p{font-size:clamp(10.5px,2.7vw,12px)}
+.dashboard-header .topmeta .chip.cash .dashboard-cash-mark{flex-basis:15px;width:15px;height:15px;font-size:11px}
+.dashboard-header .topmeta .chip.cash .dashboard-cash-value{font-size:clamp(9px,2.65vw,12px);letter-spacing:-.35px}
+}
+@media (orientation:portrait) and (max-width:350px){
+.dashboard-simplified .dashboard-simple-note{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto}
+.dashboard-simplified .dashboard-next-copy{grid-column:1;grid-row:1}
+.dashboard-simplified .dashboard-next-cta{grid-column:1;grid-row:2;justify-self:end}
+.dashboard-header .topmeta .arcade-settings{flex-basis:28px;min-width:28px;width:28px;height:36px}
+.dashboard-header .topmeta .chip.cash{min-height:36px;padding:4px 2px;gap:2px}
+.dashboard-header .topmeta .chip.cash .dashboard-cash-mark{display:none}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp'};
 
@@ -4956,7 +5018,7 @@ function smartOverview(){
   action=btn('page','Open Fleet →','btn primary dashboard-next-action','data-id="fleet"');
  }
  return `<section class="dashboard-simple-note" aria-label="Your next move">
-  <div class="dashboard-next-car" aria-hidden="true"><img src="${CAR_IMAGES.limo}" alt="" loading="eager"></div>
+  
   <div class="dashboard-next-copy"><small>YOUR NEXT BEST MOVE</small><h2>${title}</h2><p>${message}</p></div>
   <div class="dashboard-next-cta">${action}</div>
  </section>
@@ -5811,7 +5873,7 @@ function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const mai
  <span class="arcade-brand-icon" aria-hidden="true">${arcadeIcon("car")}</span>
  <span class="arcade-brand-text"><b>CAPE TOWN</b><strong>RENTALS</strong><small>CAR RENTAL TYCOON</small></span>
 </div>
-<div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash">💰 ${money(state.cash)}</span>${btn('dashshortcut','⚙','btn-icon arcade-settings','data-id="progress" data-sub="settings" aria-label="Settings" title="Settings"')}</div>
+<div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash" aria-label="Bank balance ${money(state.cash)}" title="${money(state.cash)}"><span class="dashboard-cash-mark" aria-hidden="true">$</span><span class="dashboard-cash-value">${Math.abs(state.cash)>=1000000?compact(state.cash):money(state.cash)}</span></span>${btn('dashshortcut','⚙','btn-icon arcade-settings','data-id="progress" data-sub="settings" aria-label="Settings" title="Settings"')}</div>
 <div class="arcade-page-head"><div class="arcade-page-copy"><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><span class="arcade-rep-chip" aria-label="Reputation level ${state.rep}, ${Math.floor(state.xp)} of ${repNeeded(state.rep)} experience points"><b>👑 LV ${state.rep}</b><span class="arcade-rep-meter"><i style="width:${Math.min(100,100*state.xp/Math.max(1,repNeeded(state.rep)))}%"></i></span><small>${Math.floor(state.xp)} / ${repNeeded(state.rep)} XP</small></span></div>
 </header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${arcadeIcon(id)}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`);
  lastRenderedAt=now();shouldRepaint=false;
