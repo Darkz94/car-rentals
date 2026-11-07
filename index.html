@@ -2010,8 +2010,8 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 /* SECTION 02 POLISH — cinematic Cape Town banner, illustrated controls, portrait density. */
 .arcade-art-icon{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 2px #00132996)}
 .topbar.arcade-header.dashboard-header{
- display:grid;grid-template-columns:minmax(96px,1fr) minmax(180px,1.45fr) minmax(180px,1fr);grid-template-rows:136px 54px;
- gap:5px 10px;position:relative;isolation:isolate;min-height:225px;
+ display:grid;grid-template-columns:minmax(96px,1fr) minmax(180px,1.45fr) minmax(180px,1fr);grid-template-rows:136px;
+ gap:5px 10px;position:relative;isolation:isolate;min-height:0;
  padding:13px 14px 11px;margin:0 0 14px;border:1px solid #56c9ff;border-radius:0 0 20px 20px;
  background:linear-gradient(180deg,#1073b6 0%,#0d3768 65%,#031d46 100%);
  box-shadow:0 9px 26px #000b,inset 0 1px 0 #a6eaff63;overflow:hidden
@@ -4225,7 +4225,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 /* Symmetry pass: stable on any phone width and any system text size (nothing is clipped). */
 @media (orientation:portrait) and (max-width:900px){
 .topbar.arcade-header.dashboard-header{
- grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto auto;
+ grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;
  align-items:center;column-gap:8px;row-gap:10px;min-height:0;
  margin:0 0 14px;padding:12px 12px 16px;border-radius:0 0 22px 22px;
 }
@@ -6330,7 +6330,7 @@ function render(){const active= NAV.find(n=>n[0]===activePage)||NAV[0];const mai
  <span class="arcade-brand-text"><b>CAPE TOWN</b><strong>RENTALS</strong><small>CAR RENTAL TYCOON</small></span>
 </div>
 <div class="topmeta"><span class="chip weather">${weatherEffect().icon} ${state.weather} · Day ${state.day}</span><span class="chip cash" aria-label="Bank balance ${money(state.cash)}" title="${money(state.cash)}"><span class="dashboard-cash-mark" aria-hidden="true">$</span><span class="dashboard-cash-value">${Math.abs(state.cash)>=1000000?compact(state.cash):money(state.cash)}</span></span>${btn('dashshortcut','⚙','btn-icon arcade-settings','data-id="progress" data-sub="settings" aria-label="Settings" title="Settings"')}</div>
-<div class="arcade-page-head"><div class="arcade-page-copy"><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div><span class="arcade-rep-chip" aria-label="${repProgressAria()}"><b>👑 LV ${state.rep}</b><span class="arcade-rep-meter"><i style="width:${repProgressPercent()}%"></i></span><small>${repProgressText()}</small></span></div>
+<div class="arcade-page-head">${activePage==='overview'?'':`<div class="arcade-page-copy"><div class="eyebrow">⚡ ARCADE TYCOON · ${active[2].toUpperCase()}</div><h1>${active[2]}</h1></div>`}<span class="arcade-rep-chip" aria-label="${repProgressAria()}"><b>👑 LV ${state.rep}</b><span class="arcade-rep-meter"><i style="width:${repProgressPercent()}%"></i></span><small>${repProgressText()}</small></span></div>
 </header>${main}<footer style="display:flex;justify-content:space-between;gap:8px;color:#72909f;font-size:10px;padding:28px 2px 6px;flex-wrap:wrap"><span>© CAPE TOWN RENTALS · COASTLINE TYCOON · MODERN ARCADE EDITION</span><span>Autosaved locally · Rentals pay on return · Designed for single-player fun</span></footer></main></div><nav class="mobile-nav" aria-label="Mobile navigation">${NAV.map(([id,icon,label])=>`<button type="button" class="${id===activePage?'active':''}" data-action="page" data-id="${id}"><span>${arcadeIcon(id)}</span>${label.split(' ')[0]}</button>`).join('')}</nav>${renderModal()}`);
  lastRenderedAt=now();shouldRepaint=false;
 }

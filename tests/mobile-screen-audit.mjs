@@ -102,6 +102,25 @@ try{
       if(!auto.locked||!auto.initiallyOn||!auto.paused||!auto.resumed||!auto.untouched||auto.touchHeight<44)
         problems.push(width+'px Dashboard Auto-Dispatch switch invalid '+JSON.stringify(auto));
     }
+    if(route==='overview'){
+      const header=await page.evaluate(()=>{
+        const banner=document.querySelector('.dashboard-header');
+        return {
+          present:!!banner,
+          unwantedRibbon:!!document.querySelector('.dashboard-header .arcade-page-copy'),
+          logo:!!document.querySelector('.dashboard-header .arcade-brand-text'),
+          level:!!document.querySelector('.dashboard-header .arcade-rep-chip'),
+          cash:!!document.querySelector('.dashboard-header .chip.cash'),
+          settings:!!document.querySelector('.dashboard-header .arcade-settings'),
+          gridRows:banner?getComputedStyle(banner).gridTemplateRows:null
+        };
+      });
+      console.log(width+'px Dashboard header without redundant title: '+JSON.stringify(header));
+      if(!header.present||header.unwantedRibbon||!header.logo||!header.level||!header.cash||!header.settings)
+        problems.push(width+'px Dashboard header unexpectedly missing a primary element '+JSON.stringify(header));
+      if(header.gridRows?.trim().split(/\\s+/).length!==2)
+        problems.push(width+'px Dashboard header has unused grid row '+JSON.stringify(header));
+    }
     if(route==='business'&&sub==='command'){
       // One navigation grid only: all six business destinations, no duplicated department shortcuts.
       const business=await page.evaluate(()=>({
