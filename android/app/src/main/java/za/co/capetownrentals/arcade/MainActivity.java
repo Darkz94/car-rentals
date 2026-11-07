@@ -4,6 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.provider.Settings;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import androidx.core.content.FileProvider;
+import java.io.File;
+import java.io.FileOutputStream;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +42,10 @@ public final class MainActivity extends Activity {
     private WebView web;
     private ValueCallback<Uri[]> pendingImport;
     private String pendingText;
+    private static final String APK_URL_PREFIX = "https://github.com/Darkz94/car-rentals/releases/download/";
+    private volatile boolean cancelDownload;
+    private File pendingApk;
+    private AlertDialog downloadDialog;
 
     @Override public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -94,6 +106,7 @@ public final class MainActivity extends Activity {
             }
         });
         web.loadUrl(ORIGIN + "index.html");
+        cleanOldUpdateFiles();
         checkForUpdates(false);
     }
 
@@ -163,27 +176,25 @@ public final class MainActivity extends Activity {
                 int latest = 1000 + Integer.parseInt(tag.substring("v1.0.".length()));
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),0);
                 long installed = android.os.Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
-                String apk = "";
+                String apk = ""; long apkSize = 0;
                 JSONArray assets=release.optJSONArray("assets");
                 if(assets!=null) for(int i=0;i<assets.length();i++) {
                     JSONObject a=assets.optJSONObject(i);
                     if(a!=null && a.optString("name","").endsWith(".apk")) {
-                        apk=a.optString("browser_download_url",""); break;
+                        apk=a.optString("browser_download_url",""); apkSize=a.optLong("size",0); break;
                     }
                 }
-                if(latest>installed && apk.startsWith("https://github.com/")) {
-                    final String link=apk, version=tag;
+                if(latest>installed && apk.startsWith(APK_URL_PREFIX)) {
+                    final String link=apk, version=tag; final long size=apkSize;
                     final String notes=release.optString("body","Update available.");
                     runOnUiThread(() -> new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Cape Town Rentals update")
                         .setMessage("Version "+version+" is available.\n\n"+
                             notes.substring(0,Math.min(notes.length(),700))+
-                            "\n\nDownload the APK and approve the Android install prompt. Your saved game is preserved when updating the installed app.")
+                            "\n\nThe update downloads inside the game. Android will then ask you to confirm the install. Your saved game is kept.")
                         .setNegativeButton("Later",(d,w)->{})
-                        .setPositiveButton("Download APK",(d,w)-> {
-                            try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(link))); }
-                            catch(Exception ex) { Toast.makeText(this,"Cannot open update link",Toast.LENGTH_LONG).show(); }
-                        }).show());
+                        .setPositiveButton("Update now",(d,w)-> startInAppUpdate(link,version,size))
+                        .show());
                 } else if(manual) {
                     runOnUiThread(() -> Toast.makeText(this,"You're up to date",Toast.LENGTH_SHORT).show());
                 }
@@ -192,6 +203,112 @@ public final class MainActivity extends Activity {
                 if(manual) runOnUiThread(() -> Toast.makeText(this,"Update check unavailable",Toast.LENGTH_SHORT).show());
             } finally { if(connection!=null) connection.disconnect(); }
         },"CTR-update-check").start();
+    }
+
+
+    // ---- In-app update: download the release APK, verify it, then hand it to Android's installer ----
+
+    private void startInAppUpdate(final String link, final String version, final long expectedSize) {
+        cancelDownload = false;
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int)(20 * getResources().getDisplayMetrics().density);
+        box.setPadding(pad, pad, pad, pad / 2);
+        final TextView label = new TextView(this);
+        label.setText("Downloading " + version + "…");
+        label.setGravity(Gravity.CENTER_HORIZONTAL);
+        final ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        bar.setMax(100); bar.setIndeterminate(true);
+        box.addView(label); box.addView(bar);
+        downloadDialog = new AlertDialog.Builder(this).setTitle("Updating Cape Town Rentals").setView(box)
+            .setCancelable(false)
+            .setNegativeButton("Cancel",(d,w)-> cancelDownload = true).show();
+
+        new Thread(() -> {
+            File dir = new File(getCacheDir(), "updates");
+            File part = new File(dir, "update.apk.part"), apk = new File(dir, "update.apk");
+            HttpURLConnection c = null;
+            try {
+                if (!dir.isDirectory() && !dir.mkdirs()) throw new Exception("Cannot create update folder");
+                part.delete(); apk.delete();
+                c = (HttpURLConnection) new URL(link).openConnection();
+                c.setConnectTimeout(15000); c.setReadTimeout(30000);
+                c.setRequestProperty("User-Agent","CapeTownRentals-Android");
+                if (c.getResponseCode() != 200) throw new Exception("Server answered " + c.getResponseCode());
+                long total = c.getContentLengthLong() > 0 ? c.getContentLengthLong() : expectedSize;
+                long done = 0; int lastPct = -1;
+                try (InputStream in = c.getInputStream(); FileOutputStream out = new FileOutputStream(part)) {
+                    byte[] buf = new byte[32768]; int n;
+                    while ((n = in.read(buf)) != -1) {
+                        if (cancelDownload) { part.delete(); runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); }); return; }
+                        out.write(buf, 0, n); done += n;
+                        if (total > 0) {
+                            final int pct = (int)(done * 100 / total);
+                            if (pct != lastPct) { lastPct = pct; runOnUiThread(() -> { bar.setIndeterminate(false); bar.setProgress(pct); label.setText("Downloading " + version + "… " + pct + "%"); }); }
+                        }
+                    }
+                }
+                if (expectedSize > 0 && part.length() != expectedSize) throw new Exception("Download incomplete");
+                if (!part.renameTo(apk)) throw new Exception("Cannot save update");
+                PackageInfo archive = getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+                PackageInfo current = getPackageManager().getPackageInfo(getPackageName(), 0);
+                if (archive == null || !getPackageName().equals(archive.packageName)) throw new Exception("Not a Cape Town Rentals APK");
+                long newCode = android.os.Build.VERSION.SDK_INT >= 28 ? archive.getLongVersionCode() : archive.versionCode;
+                long curCode = android.os.Build.VERSION.SDK_INT >= 28 ? current.getLongVersionCode() : current.versionCode;
+                if (newCode <= curCode) throw new Exception("Downloaded file is not newer");
+                runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); installApk(apk); });
+            } catch (Exception ex) {
+                Log.w("CapeTownRentals", "In-app update failed: " + ex.getMessage());
+                part.delete(); apk.delete();
+                runOnUiThread(() -> {
+                    if (downloadDialog != null) downloadDialog.dismiss();
+                    new AlertDialog.Builder(MainActivity.this).setTitle("Update could not finish")
+                        .setMessage("The in-app download failed. You can try again, or download the APK in your browser.")
+                        .setNegativeButton("Later",(d,w)->{})
+                        .setNeutralButton("Try again",(d,w)-> startInAppUpdate(link, version, expectedSize))
+                        .setPositiveButton("Open in browser",(d,w)-> {
+                            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link))); }
+                            catch (Exception e2) { Toast.makeText(MainActivity.this,"Cannot open link",Toast.LENGTH_LONG).show(); }
+                        }).show();
+                });
+            } finally { if (c != null) c.disconnect(); }
+        }, "CTR-update-download").start();
+    }
+
+    private void installApk(File apk) {
+        if (!getPackageManager().canRequestPackageInstalls()) {
+            pendingApk = apk;
+            Toast.makeText(this, "Allow installs from Cape Town Rentals, then press Back to continue.", Toast.LENGTH_LONG).show();
+            try { startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName()))); }
+            catch (Exception ex) { Toast.makeText(this, "Cannot open install settings", Toast.LENGTH_LONG).show(); }
+            return;
+        }
+        try {
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".updates", apk);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        } catch (Exception ex) {
+            Log.w("CapeTownRentals", "Install launch failed: " + ex.getMessage());
+            Toast.makeText(this, "Could not start the installer", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        File apk = pendingApk;
+        if (apk != null && getPackageManager().canRequestPackageInstalls()) {
+            pendingApk = null;
+            if (apk.exists()) installApk(apk);
+        }
+    }
+
+    private void cleanOldUpdateFiles() {
+        try {
+            File[] old = new File(getCacheDir(), "updates").listFiles();
+            if (old != null) for (File f : old) f.delete();
+        } catch (Exception ignored) { }
     }
 
     @Override protected void onActivityResult(int request,int result,Intent data) {

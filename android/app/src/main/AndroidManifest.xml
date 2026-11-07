@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
   <application android:label="Cape Town Rentals" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher"
     android:theme="@android:style/Theme.Material.Light.NoActionBar"
     android:allowBackup="true" android:hardwareAccelerated="true" android:usesCleartextTraffic="false">
@@ -13,5 +14,9 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    <provider android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.updates" android:exported="false" android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/update_paths"/>
+    </provider>
   </application>
 </manifest>
