@@ -71,6 +71,25 @@ try{
     if(result.outside.length)problems.push(width+'px '+name+' panel outside viewport '+JSON.stringify(result.outside));
     if(result.narrow.length)problems.push(width+'px '+name+' compressed dealership title '+JSON.stringify(result.narrow));
     if(result.dock!==6||result.activeDock!==1)problems.push(width+'px '+name+' bottom navigation invalid '+JSON.stringify(result));
+    if(route==='business'&&sub==='contracts'){
+      // Exercise a signed contract with a large Rand total without changing saved game state.
+      const earned=await page.evaluate(()=>{
+        const grid=document.querySelector('.contract17-grid');
+        if(!grid)return {error:'Contracts grid missing'};
+        const fixture=document.createElement('article');
+        fixture.className='contract17-card signed';
+        fixture.innerHTML='<div class="contract17-card-body"><div class="contract17-count"><div><small>Returns</small><b>129</b></div><div><small>Earned</small><b>R12 345 678</b></div><div><small>Open leads</small><b>1</b></div></div></div>';
+        grid.prepend(fixture);
+        const amount=fixture.querySelector('.contract17-count>div:nth-child(2) b');
+        const range=document.createRange();range.selectNodeContents(amount);
+        const textRect=range.getBoundingClientRect(),boxRect=amount.getBoundingClientRect();
+        const layout={lineCount:range.getClientRects().length,withinBox:textRect.left>=boxRect.left-1&&textRect.right<=boxRect.right+1};
+        fixture.remove();
+        return layout;
+      });
+      console.log(width+'px contracts earned amount: '+JSON.stringify(earned));
+      if(earned.error||earned.lineCount!==1||!earned.withinBox)problems.push(width+'px contract earned amount wraps or overflows '+JSON.stringify(earned));
+    }
    }catch(err){problems.push(width+'px '+name+': '+String(err));}
   }
   if(jsErrors.length)problems.push(width+'px browser script errors: '+jsErrors.slice(0,8).join('; '));
