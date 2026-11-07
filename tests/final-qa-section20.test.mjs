@@ -194,4 +194,11 @@ assert.match(referenceCss,/\.mobile-nav\{[\s\S]*?grid-template-columns:repeat\(6
 assert.match(referenceCss,/\.mobile-nav button\{[\s\S]*?min-height:72px/,'Navigation labels must not clip');
 assert.match(js,/class="dashboard-next-car"/,'Dashboard must include a real fleet vehicle illustration');
 assert.match(js,/CAR_IMAGES\.limo/,'Next move art must reuse approved limousine illustration');
+// Dashboard ordering: active rentals should be seen before new booking requests.
+const homeSection=js.split('function renderOverview(){')[1]?.split('function stat(')[0]||'';
+const activeRentalPosition=homeSection.indexOf('aria-label="Active Rentals"');
+const customerRequestPosition=homeSection.indexOf('aria-label="Customer Requests"');
+assert.ok(activeRentalPosition>=0&&customerRequestPosition>=0&&activeRentalPosition<customerRequestPosition,'Active Rentals must be above Customer Requests on Dashboard');
+assert.match(homeSection,/state\.rentals\.slice\(0,3\)/,'The active rental list must keep showing live trips');
+assert.match(homeSection,/extraOffers\.map\(offerCard\)/,'Customer requests must remain accessible');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');

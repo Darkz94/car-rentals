@@ -4703,18 +4703,18 @@ function renderOverview(){
    <div class="dashboard-desk-queue"><span>📨 ${state.offers.length} waiting</span><span>🚗 ${matching} ready matches</span></div>
    <div class="dashboard-rental-actions">${btn('autorent','⚡ Dispatch best match','btn primary',matching?'':'disabled')}</div>
   </section>
-  <section class="card pad dashboard-simple-panel" aria-label="Customer Requests">
-   <div class="dashboard-simple-heading"><div><small>NEW BOOKINGS</small><h2>Customer requests</h2><p>Select a request below to choose a car and dispatch.</p></div><b class="dashboard-simple-count">${state.offers.length} WAITING</b></div>
-   <div class="dashboard-simple-offers">${state.offers.length?state.offers.slice(0,2).map(offerCard).join(''):'<p class="dashboard-simple-empty">Your desk is clear. New requests arrive automatically. Keep a vehicle ready.</p>'}</div>
-   ${extraOffers.length?`<details class="dashboard-more-offers" data-compact-info="dashboard-extra-offers" ${openInfoPanels.has('dashboard-extra-offers')?'open':''}><summary>Show ${extraOffers.length} more request${extraOffers.length===1?'':'s'} ⌄</summary><div class="dashboard-simple-offers">${extraOffers.map(offerCard).join('')}</div></details>`:''}
-  </section>
   <section class="card pad dashboard-simple-panel" aria-label="Active Rentals">
    <div class="dashboard-simple-heading"><div><small>CURRENT ACTIVITY</small><h2>Active rentals</h2><p>Use the Live tab below for the map and all active journeys.</p></div><b class="dashboard-simple-count">${state.rentals.length} ACTIVE</b></div>
    ${state.rentals.length?`<div class="dashboard-simple-trips">${state.rentals.slice(0,3).map(r=>{
     const car=state.fleet.find(c=>c.id===r.carId);
     return `<div class="dashboard-trip-row"><span aria-hidden="true">🚘</span><div><b>${esc(r.customer||'Customer')}</b><small>${car?esc(typeOf(car.type).name):'Rental'} · ${esc(car?.plate||'On the road')}</small></div><div><strong>${money(r.payout)}</strong><small data-countdown-rental="${esc(r.id)}">${relativeTime(r.due)}</small></div></div>`;
    }).join('')}</div>${state.rentals.length>3?'<p class="dashboard-simple-empty">More journeys are listed under Live.</p>':''}`:'<p class="dashboard-simple-empty">No cars are on the road yet. Dispatch a matching customer above to begin.</p>'}
+  </section>  <section class="card pad dashboard-simple-panel" aria-label="Customer Requests">
+   <div class="dashboard-simple-heading"><div><small>NEW BOOKINGS</small><h2>Customer requests</h2><p>Select a request below to choose a car and dispatch.</p></div><b class="dashboard-simple-count">${state.offers.length} WAITING</b></div>
+   <div class="dashboard-simple-offers">${state.offers.length?state.offers.slice(0,2).map(offerCard).join(''):'<p class="dashboard-simple-empty">Your desk is clear. New requests arrive automatically. Keep a vehicle ready.</p>'}</div>
+   ${extraOffers.length?`<details class="dashboard-more-offers" data-compact-info="dashboard-extra-offers" ${openInfoPanels.has('dashboard-extra-offers')?'open':''}><summary>Show ${extraOffers.length} more request${extraOffers.length===1?'':'s'} ⌄</summary><div class="dashboard-simple-offers">${extraOffers.map(offerCard).join('')}</div></details>`:''}
   </section>
+
  </div>`;
 }
 function stat(icon,label,value,foot,style=''){return `<div class="card stat"><div class="stat-top"><span class="label">${label}</span><span class="stat-icon">${icon}</span></div><div class="value ${style}">${value}</div><div class="tiny muted mt-12">${foot}</div></div>`;}
