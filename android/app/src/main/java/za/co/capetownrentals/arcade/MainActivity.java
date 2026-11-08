@@ -2,6 +2,10 @@ package za.co.capetownrentals.arcade;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.database.Cursor;
+import android.os.Environment;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
@@ -25,6 +29,7 @@ import android.widget.TextView;
 import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -353,7 +358,7 @@ public final class MainActivity extends Activity {
         });
     }
 
-    private void showUpdateFailure(String link, String version, long expectedSize) {
+    private void showUpdateFailure(String link, String version, long expectedSize, String reason) {
         ArcadeUpdateContent content = arcadeUpdateContent();
         content.body.addView(arcadeLabel("UPDATE INTERRUPTED", 13, ARCADE_GOLD, true));
         arcadeSpace(content.body, 9);
@@ -362,6 +367,13 @@ public final class MainActivity extends Activity {
         content.body.addView(arcadeLabel(
             "Your saved game is unchanged. Try again, or download the signed update in your browser.",
             13, Color.rgb(207, 232, 250), false));
+        if (reason != null && !reason.isEmpty()) {
+            arcadeSpace(content.body, 9);
+            String detail = reason.replace('\n', ' ').replace('\r', ' ');
+            if (detail.length() > 150) detail = detail.substring(0, 150) + "…";
+            content.body.addView(arcadeLabel("Download detail: " + detail, 11,
+                Color.rgb(168, 204, 236), false));
+        }
         arcadeSpace(content.body, 18);
         LinearLayout actions = new LinearLayout(this);
         actions.setOrientation(LinearLayout.HORIZONTAL);
@@ -409,7 +421,7 @@ public final class MainActivity extends Activity {
                 JSONArray assets=release.optJSONArray("assets");
                 if(assets!=null) for(int i=0;i<assets.length();i++) {
                     JSONObject a=assets.optJSONObject(i);
-                    if(a!=null && a.optString("name","").endsWith(".apk")) {
+                    if(a!=null && "Cape-Town-Rentals-Android.apk".equals(a.optString("name",""))) {
                         apk=a.optString("browser_download_url",""); apkSize=a.optLong("size",0); break;
                     }
                 }
@@ -479,24 +491,117 @@ public final class MainActivity extends Activity {
                         }
                     }
                 }
-                if (expectedSize > 0 && part.length() != expectedSize) throw new Exception("Download incomplete");
-                if (!part.renameTo(apk)) throw new Exception("Cannot save update");
-                PackageInfo archive = getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
-                PackageInfo current = getPackageManager().getPackageInfo(getPackageName(), 0);
-                if (archive == null || !getPackageName().equals(archive.packageName)) throw new Exception("Not a Cape Town Rentals APK");
-                long newCode = android.os.Build.VERSION.SDK_INT >= 28 ? archive.getLongVersionCode() : archive.versionCode;
-                long curCode = android.os.Build.VERSION.SDK_INT >= 28 ? current.getLongVersionCode() : current.versionCode;
-                if (newCode <= curCode) throw new Exception("Downloaded file is not newer");
-                runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); installApk(apk); });
+                finishDownloadedUpdate(part, apk, expectedSize);
             } catch (Exception ex) {
-                Log.w("CapeTownRentals", "In-app update failed: " + ex.getMessage());
+                Log.w("CapeTownRentals", "Direct update download failed: " + ex.getMessage());
                 part.delete(); apk.delete();
+                if (cancelDownload) {
+                    runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); });
+                    return;
+                }
                 runOnUiThread(() -> {
-                    if (downloadDialog != null) downloadDialog.dismiss();
-                    showUpdateFailure(link, version, expectedSize);
+                    bar.setIndeterminate(true);
+                    label.setText("Retrying with Android's download service…");
                 });
+                try {
+                    downloadWithAndroidManager(link, version, part, bar, label);
+                    if (cancelDownload) {
+                        runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); });
+                        return;
+                    }
+                    finishDownloadedUpdate(part, apk, expectedSize);
+                } catch (Exception second) {
+                    Log.w("CapeTownRentals", "Android download retry failed: " + second.getMessage());
+                    part.delete(); apk.delete();
+                    final String detail = "Direct: " + ex.getMessage() + " • Android: " + second.getMessage();
+                    runOnUiThread(() -> {
+                        if (downloadDialog != null) downloadDialog.dismiss();
+                        if (!cancelDownload) showUpdateFailure(link, version, expectedSize, detail);
+                    });
+                }
             } finally { if (c != null) c.disconnect(); }
         }, "CTR-update-download").start();
+    }
+
+    // Validate every download source before passing an APK to Android's installer.
+    private void finishDownloadedUpdate(File part, File apk, long expectedSize) throws Exception {
+        if (!part.isFile() || part.length() < 1024) throw new Exception("APK download is empty");
+        if (expectedSize > 0 && part.length() != expectedSize) throw new Exception("Download incomplete");
+        if (!part.renameTo(apk)) throw new Exception("Cannot save update");
+        PackageInfo archive = getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+        PackageInfo current = getPackageManager().getPackageInfo(getPackageName(), 0);
+        if (archive == null || !getPackageName().equals(archive.packageName))
+            throw new Exception("Not a Cape Town Rentals APK");
+        long newCode = android.os.Build.VERSION.SDK_INT >= 28 ? archive.getLongVersionCode() : archive.versionCode;
+        long curCode = android.os.Build.VERSION.SDK_INT >= 28 ? current.getLongVersionCode() : current.versionCode;
+        if (newCode <= curCode) throw new Exception("Downloaded file is not newer");
+        runOnUiThread(() -> { if (downloadDialog != null) downloadDialog.dismiss(); installApk(apk); });
+    }
+
+    // System-managed retry handles GitHub CDN redirects and transient network failures.
+    // Its temporary external copy is removed after moving bytes into our private cache.
+    private void downloadWithAndroidManager(String link, String version, File part,
+                                            ProgressBar bar, TextView label) throws Exception {
+        DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        if (manager == null) throw new Exception("Android download service unavailable");
+        File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        if (dir == null) throw new Exception("Android download folder unavailable");
+        File staging = new File(dir, "cape-town-rentals-update.apk");
+        if (staging.exists() && !staging.delete()) throw new Exception("Cannot clear previous download");
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
+        request.setTitle("Cape Town Rentals " + version);
+        request.setDescription("Signed Android game update");
+        request.setMimeType("application/vnd.android.package-archive");
+        request.setAllowedOverMetered(true);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS,
+            "cape-town-rentals-update.apk");
+        long id = manager.enqueue(request);
+        try {
+            final long start = System.currentTimeMillis();
+            while (true) {
+                if (cancelDownload) throw new Exception("Download cancelled");
+                if (System.currentTimeMillis() - start > 600000)
+                    throw new Exception("Android download service timed out");
+                try (Cursor cursor = manager.query(new DownloadManager.Query().setFilterById(id))) {
+                    if (cursor == null || !cursor.moveToFirst())
+                        throw new Exception("Android download status unavailable");
+                    int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) break;
+                    if (status == DownloadManager.STATUS_FAILED) {
+                        int reason = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
+                        throw new Exception("Android download error " + reason);
+                    }
+                    long received = cursor.getLong(cursor.getColumnIndexOrThrow(
+                        DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    long total = cursor.getLong(cursor.getColumnIndexOrThrow(
+                        DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    if (total > 0) {
+                        int pct = (int) Math.min(100, received * 100 / total);
+                        runOnUiThread(() -> {
+                            bar.setIndeterminate(false);
+                            bar.setProgress(pct);
+                            label.setText("Android download " + version + "… " + pct + "%");
+                        });
+                    }
+                }
+                Thread.sleep(600);
+            }
+            if (!staging.isFile() || staging.length() < 1024)
+                throw new Exception("Android download was empty");
+            try (FileInputStream input = new FileInputStream(staging);
+                 FileOutputStream output = new FileOutputStream(part)) {
+                byte[] bytes = new byte[32768];
+                int count;
+                while ((count = input.read(bytes)) != -1) {
+                    if (cancelDownload) throw new Exception("Download cancelled");
+                    output.write(bytes, 0, count);
+                }
+            }
+        } finally {
+            manager.remove(id);
+            if (staging.exists()) staging.delete();
+        }
     }
 
     private void installApk(File apk) {
