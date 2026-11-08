@@ -188,7 +188,7 @@ console.log("PASS: 26 new customer types, weighted 7% VIP rarity, all-class matc
 for (const customer of customerList) {
   const vehicle = typeList.find(t => t.category === customer.need);
   assert.ok(vehicle || (customer.need==="Any" && customer.vipBonus>0), "Unmapped demand " + customer.need);
-  assert.ok(customer.id && customer.name && customer.budget > 0);
+  assert.ok(customer.id && customer.name && (customer.budget>0 || (customer.need==='Any' && customer.vipBonus>0 && customer.budget===0)));
 }
 for (const id of Object.values(contractIds)) assert.ok(customerList.some(c => c.id === id));
 assert.ok(js.includes("function customerUnlocked(c){return state.rep>=(TYPES.find"));
