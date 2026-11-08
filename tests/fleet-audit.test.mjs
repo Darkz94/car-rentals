@@ -743,7 +743,7 @@ console.log("PASS: Section 7 Performance preview, tuning, eligibility, original 
 
 
 // Section 8: premium Rental Desk and Customer Offers must preserve all existing
-// 28 customers, matching, offer expiry, manual car selection and return-only payouts.
+// 54 customers, matching, offer expiry, manual car selection and return-only payouts.
 assert.ok(html.includes('id="ctr-rental-desk-section-08"'),"Section 8 visual CSS missing from offline HTML");
 const v8offerStart=js.indexOf("function offerCard(o){"),v8offerEnd=js.indexOf("\nfunction emptyState(",v8offerStart);
 const v8autoStart=js.indexOf("function autoDeskControl(){"),v8autoEnd=js.indexOf("\nfunction renderOverview(){",v8autoStart);
@@ -765,7 +765,7 @@ assert.ok(v8autoSrc.includes("up('auto')")&&v8autoSrc.includes("state.settings.a
 assert.ok(js.includes("document.getElementById('rental-offer-car-'+id)?.value||null")&&
  js.includes("startRental(id,chosen)"),"Manual car selector must connect to the existing startRental action");
 assert.ok(js.includes("data-offer-progress")&&js.includes("duration=Math.max(1,o.expires-"),"Live offer progress must update without a game balance change");
-assert.equal(customerList.length,28,"All 28 customer types must be kept");
+assert.equal(customerList.length,54,"All original 28 and 26 new customer types must be kept");
 const v8mockCar={id:"sedan-8",plate:"CA 808",type:"sedan",branch:"hq",status:"available",tune:1};
 const v8second={...v8mockCar,id:"sedan-9",plate:"CA 909"};
 const v8offer={id:"offer-8",customer:"Executive Priya",icon:"💼",need:"Sedan",budget:4000,dest:"airport",
@@ -812,7 +812,7 @@ assert.ok(v8autoFn().includes("PAUSED"),"Paused Auto-Dispatch must be distinguis
 assert.ok(js.includes("if(!car||carMatch(car,offer)<0)"),"Existing category/eligibility protection must remain");
 assert.ok(js.includes("let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds)")&&
  js.includes("state.rentals.push({id:uid('rent')"),"Real rentals must use existing duration and payout handlers");
-console.log("PASS: Section 8 rental offer art, 28 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
+console.log("PASS: Section 8 rental offer art, 54 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
 
 
 
@@ -965,7 +965,7 @@ assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReser
  js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
 console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
 
-console.log("PASS: JavaScript syntax, 17 vehicle classes, 28 customers, all assets and 73 auction scenarios.");
+console.log("PASS: JavaScript syntax, 17 vehicle classes, 54 customers, all assets and 73 auction scenarios.");
 
 
 // Section 12 dealership: premium presentation, no changes to economy or save version.
