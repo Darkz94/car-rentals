@@ -255,6 +255,36 @@ try{
       if(JSON.stringify(business.navIds)!==JSON.stringify(expected)||business.duplicateSections!==0||!business.priorities)
         problems.push(width+'px Business navigation duplicated or missing '+JSON.stringify(business));
     }
+    if(route==='business'&&sub==='staff'){
+      // Staff cards must remain genuinely compact, not just fit horizontally.
+      // Confirm benefit text, both pay amounts, employment status and Hire controls survive.
+      const staffLayout=await page.evaluate(()=>{
+        const cards=[...document.querySelectorAll('.staff-v15-grid .staff-v15-card')];
+        const widths=cards.map(card=>{
+          const rect=card.getBoundingClientRect();
+          const role=card.querySelector('.staff-v15-body h4');
+          const benefit=card.querySelector('.staff-v15-benefit b');
+          const status=card.querySelector('.staff-v15-sub');
+          const costs=card.querySelectorAll('.staff-v15-cost strong');
+          const button=card.querySelector('.staff-v15-action button');
+          const btnRect=button?.getBoundingClientRect();
+          const benefitRect=benefit?.getBoundingClientRect();
+          return {
+            height:Math.round(rect.height),left:rect.left,right:rect.right,
+            role:role?.textContent.trim(),benefit:benefit?.textContent.trim(),
+            status:status?.textContent.trim(),prices:[...costs].map(el=>el.textContent.trim()),
+            buttonHeight:btnRect?.height||0,buttonAction:button?.dataset.action,
+            benefitInCard:!!benefitRect&&benefitRect.left>=rect.left-2&&benefitRect.right<=rect.right+2
+          };
+        });
+        return {count:cards.length,cards:widths};
+      });
+      console.log(width+'px compact staff roster: '+JSON.stringify(staffLayout));
+      if(staffLayout.count!==5||staffLayout.cards.some(c=>c.height>295||c.left<-3||c.right>width+3||
+        !c.role||!c.benefit||!c.status||c.prices.length!==2||!c.benefitInCard||
+        c.buttonAction!=='hire'||c.buttonHeight<40))
+        problems.push(width+'px Staff cards too tall, clipped, or missing staff details '+JSON.stringify(staffLayout));
+    }
     if(route==='business'&&sub==='contracts'){
       // All five original and twelve new partner cards must fit Android portrait widths.
       const partnerLayout=await page.evaluate(()=>{

@@ -3160,6 +3160,42 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 @media(max-width:770px){.staff-v15-grid,.staff-v15-lower{grid-template-columns:1fr}}
 @media(max-width:640px){.staff-v15{gap:10px}.staff-v15-hero{grid-template-columns:minmax(0,1fr) 64px;padding:12px;min-height:135px;border-radius:16px}.staff-v15-hero h2{font-size:23px}.staff-v15-hero-emoji{width:62px;height:65px;font-size:34px;border-radius:17px}.staff-v15-hero p{font-size:10px}.staff-v15-progress{font-size:9px}.staff-v15-kpi{gap:6px;padding:9px;min-height:76px}.staff-v15-kpi>span{font-size:20px}.staff-v15-kpi strong{font-size:16px}.staff-v15-kpi small{font-size:8px}.staff-v15-roster,.staff-v15-payroll,.staff-v15-active{padding:12px}.staff-v15-grid{grid-template-columns:1fr}.staff-v15-portrait{height:142px}.staff-v15-avatar{width:91px;height:93px;font-size:50px}.staff-v15-body{padding:11px}}
 @media(max-width:360px){.staff-v15-kpi{gap:4px;padding:8px}.staff-v15-kpi>span{font-size:16px}.staff-v15-kpi strong{font-size:13px}}
+/* Compact Android roster: retain full employee benefits, prices, and hiring workflow. */
+@media(max-width:640px){
+ .staff-v15-roster{padding:10px}
+ .staff-v15-head{gap:6px;margin-bottom:8px}
+ .staff-v15-head h3{font-size:21px;margin:3px 0}
+ .staff-v15-head p{font-size:10px;line-height:1.35;margin:3px 0}
+ .staff-v15-filters{gap:6px;padding-bottom:8px}
+ .staff-v15-filter{min-height:38px;padding:6px 10px;font-size:11px}
+ .staff-v15-grid{grid-template-columns:minmax(0,1fr);gap:9px}
+ .staff-v15-card{display:grid;grid-template-columns:60px minmax(0,1fr);gap:7px 10px;align-items:center;position:relative;padding:10px;border-radius:14px}
+ .staff-v15-portrait{grid-column:1;grid-row:1;width:60px;height:60px;overflow:hidden;border:0;border-radius:12px}
+ .staff-v15-portrait:after{display:none}
+ .staff-v15-avatar{height:54px;width:54px;font-size:29px;border-radius:12px;box-shadow:0 4px 10px #0008}
+ .staff-v15-pill{display:none}
+ .staff-v15-body{display:contents}
+ .staff-v15-body>div:first-child{grid-column:2;grid-row:1;min-width:0}
+ .staff-v15-role{font-size:9px;letter-spacing:.5px}
+ .staff-v15-body h4{font-size:19px;line-height:1.15;margin:2px 0 3px}
+ .staff-v15-sub{font-size:11px;line-height:1.25}
+ .staff-v15-benefit{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 8px;min-height:0;padding:7px 9px;border-radius:9px}
+ .staff-v15-benefit small{font-size:9px;flex:none}
+ .staff-v15-benefit b{font-size:12px;line-height:1.25;flex:1 1 145px}
+ .staff-v15-costs{grid-column:1/-1;gap:7px}
+ .staff-v15-cost{padding:7px 8px;border-radius:9px}
+ .staff-v15-cost small{font-size:10px;line-height:1.2}
+ .staff-v15-cost strong{margin-top:3px;font-size:16px;white-space:nowrap;overflow-wrap:normal}
+ .staff-v15-action{grid-column:1/-1;gap:0;margin:0}
+ .staff-v15-action .btn{min-height:44px;padding:8px 10px;font-size:12px}
+ .staff-v15-hint{display:none}
+}
+@media(max-width:360px){
+ .staff-v15-card{grid-template-columns:56px minmax(0,1fr);padding:9px}
+ .staff-v15-portrait{width:56px;height:56px}
+ .staff-v15-avatar{width:52px;height:52px;font-size:27px}
+ .staff-v15-body h4{font-size:17px}
+}
 </style>
 
 <style id="ctr-upgrades-section-16">
