@@ -792,7 +792,7 @@ for(const token of ["item-row rental-compact","rental-compact-bottom","data-coun
 for(const token of ["state.ledger||[]","Rental returned · ","money(e.amount)","rental-return-v9","rental-returns-v9-empty"]){
  assert.ok(v9returns.includes(token),"Section 9 return history missing "+token);
 }
-assert.ok(js.includes("dashboard-simple-trips")&&js.includes("state.rentals.slice(0,3)")&&
+assert.ok(js.includes("dashboard-simple-trips")&&js.includes("dashboardSoonestRentals(3)")&&
  js.includes("function renderRecentReturns(limit=4)")&&js.includes("rental-map-rentals-v9"),
  "Active rentals remain visible on Dashboard; detailed routes and returns remain in the game");
 assert.ok(js.includes("el.parentElement?.setAttribute('aria-valuenow'"),"Live progress must update aria value");
