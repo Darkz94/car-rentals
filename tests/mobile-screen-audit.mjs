@@ -256,6 +256,18 @@ try{
         problems.push(width+'px Business navigation duplicated or missing '+JSON.stringify(business));
     }
     if(route==='business'&&sub==='contracts'){
+      // All five original and twelve new partner cards must fit Android portrait widths.
+      const partnerLayout=await page.evaluate(()=>{
+        const cards=[...document.querySelectorAll('.contract17-grid .contract17-card')];
+        const beyond=cards.map((card,i)=>{
+          const r=card.getBoundingClientRect();
+          return {index:i,left:r.left,right:r.right};
+        }).filter(box=>box.left < -3||box.right > innerWidth+3);
+        return {count:cards.length,beyond};
+      });
+      console.log(width+'px contract partner layout: '+JSON.stringify(partnerLayout));
+      if(partnerLayout.count!==17||partnerLayout.beyond.length)
+        problems.push(width+'px Contract cards missing or clipped '+JSON.stringify(partnerLayout));
       // Exercise a signed contract with a large Rand total without changing saved game state.
       const earned=await page.evaluate(()=>{
         const grid=document.querySelector('.contract17-grid');
