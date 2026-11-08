@@ -82,6 +82,28 @@ try{
       }));
       if(panel.navCount!==5||panel.selected!=='true'||!panel.ownPanel||panel.duplicateWorkshop||panel.activeLabel!=='Restoration'||!panel.cardWidth)
         problems.push(width+'px Restoration tab routing invalid '+JSON.stringify(panel));
+      const cooldown=await page.evaluate(()=>{
+        const c=state.fleet[0];
+        const priorStatus=c.status,priorRestoration=c.restoration;
+        const previouslySelected=selectedCar;
+        try{
+          const t=Date.now();
+          c.status='restoration';
+          c.restoration={stage:0,spent:3000,purchase:3000,work:{stage:0,startedAt:t-30000,dueAt:t+90000}};
+          render();
+          const root=document.querySelector('[data-restoration-work]');
+          const button=root?.closest('[data-restoration-car]')?.querySelector('[data-action="restoresalvage"]');
+          const start={found:!!root,disabled:!!button?.disabled,clock:root?.querySelector('[data-restoration-timer]')?.textContent,
+            bar:Number(root?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')||0)};
+          c.restoration.work.dueAt=t-1;
+          refreshLive();
+          const finished={buttonEnabled:!button?.disabled,buttonLabel:button?.textContent.trim(),clock:root?.querySelector('[data-restoration-timer]')?.textContent};
+          return {start,finished};
+        }finally{c.status=priorStatus;c.restoration=priorRestoration;selectedCar=previouslySelected;render();}
+      });
+      if(!cooldown.start.found||!cooldown.start.disabled||!cooldown.start.clock||cooldown.start.bar<=0||
+        !cooldown.finished.buttonEnabled||!cooldown.finished.buttonLabel?.includes('Collect')||cooldown.finished.clock!=='READY TO COLLECT')
+        problems.push(width+'px Restoration cooldown UI invalid '+JSON.stringify(cooldown));
     }
     if(route==='overview'&&!sub){
       // Exercise the Dashboard switch with a purchased Auto-Dispatch Desk.

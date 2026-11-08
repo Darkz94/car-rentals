@@ -7,3 +7,9 @@ All vehicles now track mileage after completed rental returns and store up to 60
 ## Navigation adjustment
 
 Restoration Projects now lives under **Fleet → Restoration**, in a dedicated fifth Fleet subtab. Workshop & Wash retains maintenance, servicing and automatic care; Garage retains per-vehicle mileage and history. The six primary navigation buttons remain unchanged. The Fleet subtab grid becomes three columns on narrow portrait phones. The Playwright mobile audit checks the new view at 360px and 412px.
+
+## Real-time restoration cooldowns (8 November 2026)
+
+Restoration stages now take **2, 5, 10 and 15 real-world minutes**, respectively (32 minutes of work in total, excluding time awaiting collection). Each stage is charged only when work starts. A single `restoration.work` object stores the current stage index, `startedAt` and absolute `dueAt` timestamps (milliseconds) inside the existing saved vehicle. No background service or save migration is required; after reopening, the countdown reflects elapsed time. The player manually collects a completed stage for no additional charge before beginning the next. Mechanical, bodywork and final roadworthy effects only apply at collection. Fully restored vehicles become available only after collecting stage four. Parallel vehicles each have independent deadlines. There is no accelerated paid skip, and completed stages appear in each car's service history.
+
+Countdowns and progress bars refresh through the existing live UI refresh, including enabling the Collect control at zero. Android's main app and save identifiers, economy, pre-release branch and original artwork are not changed.

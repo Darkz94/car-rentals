@@ -4780,6 +4780,21 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 @media(prefers-reduced-motion:reduce){#app .ctr-picker-chevron{transition:none}}
 </style>
 
+<style id="ctr-restoration-cooldowns-2026">
+/* Time-gated restorations — compact arcade schedule + live per-vehicle progress. */
+.ctr-restoration-timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:13px 0}
+.ctr-restoration-timeline span{min-width:0;display:grid;gap:4px;padding:9px 7px;border-radius:10px;border:1px solid #3a7193;background:linear-gradient(150deg,#173856,#0b2642)}
+.ctr-restoration-timeline b{font-size:10px;line-height:1.3;overflow-wrap:anywhere;color:#d3e9f4}
+.ctr-restoration-timeline strong{font-size:14px;color:#ffe08c}
+.ctr-restoration-job{border-radius:10px;background:#091d36;border:1px solid #2a617f;padding:8px;display:grid;gap:7px}
+.ctr-restoration-job-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ctr-restoration-job-head b{color:#f7d98a;font-size:12px}.ctr-restoration-job-head span{color:#b9d4e8;font-size:11px;white-space:nowrap}
+.ctr-restoration-progress{width:100%;height:9px;background:#07182b;border:1px solid #47708b;border-radius:9px;overflow:hidden}
+.ctr-restoration-progress i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#20b8e8,#ffe08c);transition:width .35s linear}
+.ctr-restoration-clock{font-size:12px!important;font-weight:800!important;color:#96e6fb!important}
+.ctr-salvage-card button:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:720px){.ctr-restoration-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp',suv:'assets/realistic-suv-side.webp',convertible:'assets/realistic-convertible-side.webp',shuttle:'assets/realistic-shuttle-side.webp',camper:'assets/realistic-camper-side.webp',luxsuv:'assets/realistic-luxsuv-side.webp',safari:'assets/realistic-safari-side.webp',motorhome:'assets/realistic-motorhome-side.webp',rally:'assets/realistic-rally-side.webp',grandtourer:'assets/realistic-grandtourer-side.webp',armored:'assets/realistic-armored-side.webp'};
 
@@ -5960,7 +5975,7 @@ function renderGarage(){
 }
 function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):c.status==='restoration'?'RESTORING':statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
 
-function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='auction'?'Listed at auction — cannot rent or service until sale closes.':c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':c.status==='restoration'?'Complete four rebuild stages at Workshop & Wash before this car can be rented.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
+function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='auction'?'Listed at auction — cannot rent or service until sale closes.':c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':c.status==='restoration'?'Complete all four timed rebuild stages in Fleet → Restoration before this car can be rented.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
  const ordered=fleetInGarageOrder(state.fleet),number=Math.max(0,ordered.findIndex(x=>x.id===c.id))+1;
  const status=c.status==='incident'?'RECOVERY NEEDED':c.status==='auction'?'AT AUCTION':c.status==='rented'?'ON HIRE':c.status==='transfer'?'IN TRANSIT':c.status==='restoration'?'RESTORATION PROJECT':readiness?'READY TO RENT':'NEEDS PREPARATION';
  const tone=c.status==='incident'?'danger':!parked?'road':readiness?'ready':'care';
@@ -6091,16 +6106,43 @@ function buySalvage(id){
  state.fleet.push(c);state.salvageOffers=state.salvageOffers.filter(x=>x.id!==id);selectedCar=c.id;
  notify('Restoration car purchased!');note(`${c.plate} moved to restoration yard.`);return true;
 }
+const RESTORATION_STAGE_MINUTES=[2,5,10,15];
+const RESTORATION_STAGE_NAMES=['Diagnostics','Mechanical rebuild','Bodywork restoration','Roadworthy inspection & detail'];
+function restorationStageDuration(step){return (RESTORATION_STAGE_MINUTES[step]||0)*60000;}
+function restorationWorkProgress(work,t=now()){
+ if(!work)return 0;
+ const started=Number(work.startedAt)||0,due=Number(work.dueAt)||0;
+ return Math.max(0,Math.min(100,round(100*(t-started)/Math.max(1,due-started))));
+}
 function restoreSalvage(id){
- const c=state.fleet.find(x=>x.id===id);if(!c||c.status!=='restoration'||!c.restoration)return false;
- const n=Number(c.restoration.stage);if(!Number.isInteger(n)||n<0||n>3)return false;
- const names=['Diagnostics','Mechanical rebuild','Bodywork restoration','Roadworthy inspection & detail'],cost=restorationPrice(c,n);
- if(!spend(cost,`Restore ${c.plate} · ${names[n]}`))return false;
- if(n===1){c.condition=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}
- if(n===2)c.body=100;
- if(n===3){c.clean=100;c.fuel=100;c.status='available';c.restoration.completed=now();state.stats.washes++;state.stats.filled++;}
- c.restoration.stage=n+1;c.restoration.spent+=cost;logVehicle(c,'Restoration',names[n],cost);
- note(`${c.plate}: ${names[n]} completed.`);notify(n===3?'Restored and ready for rentals!':`Restoration ${n+1}/4 complete.`);
+ const c=state.fleet.find(x=>x.id===id);
+ if(!c||c.status!=='restoration'||!c.restoration)return false;
+ const project=c.restoration,stage=Number(project.stage);
+ if(!Number.isInteger(stage)||stage<0||stage>3)return false;
+ const name=RESTORATION_STAGE_NAMES[stage],current=project.work;
+ if(current){
+  // One paid job per vehicle at a time. A finished stage must be claimed.
+  if(Number(current.stage)!==stage||!Number.isFinite(Number(current.dueAt)))return false;
+  if(now()<Number(current.dueAt)){notify('Restoration still in progress — check its countdown.');return false;}
+  // No second charge at collection: all money was paid when work started.
+  if(stage===1){c.condition=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}
+  if(stage===2)c.body=100;
+  if(stage===3){c.clean=100;c.fuel=100;c.status='available';project.completed=now();state.stats.washes++;state.stats.filled++;}
+  project.stage=stage+1;
+  delete project.work;
+  logVehicle(c,'Restoration completed',name,0);
+  note(`${c.plate}: ${name} collected after work finished.`);
+  notify(stage===3?'Restored and ready for rentals!':`${name} complete — next restoration stage unlocked.`);
+  return true;
+ }
+ const price=restorationPrice(c,stage),startedAt=now(),duration=restorationStageDuration(stage);
+ if(!duration)return false;
+ if(!spend(price,`Restore ${c.plate} · ${name}`))return false;
+ project.work={stage,startedAt,dueAt:startedAt+duration};
+ project.spent=(Number(project.spent)||0)+price;
+ logVehicle(c,'Restoration started',`${name} · ${RESTORATION_STAGE_MINUTES[stage]} minutes`,price);
+ note(`${c.plate}: ${name} started · ${RESTORATION_STAGE_MINUTES[stage]}m remaining.`);
+ notify(`${name} started! Check the Restoration timer.`);
  return true;
 }
 function carHistoryPanel(c){
@@ -6111,12 +6153,32 @@ function carHistoryPanel(c){
  ${entries.length?entries.map(x=>`<div class="ctr-history-entry"><span><b>${esc(x.kind)}</b><small>${esc(x.detail||'')}</small></span><span>${Math.max(0,round(Number(x.mileage)||0)).toLocaleString('en-ZA')} km${x.cost?' · '+money(x.cost):''}</span></div>`).join(''):'<p class="tiny muted">No new rental or service records yet.</p>'}</section>`;
 }
 function restorationPanel(){
- const active=state.fleet.filter(c=>c.status==='restoration'),offers=Array.isArray(state.salvageOffers)?state.salvageOffers:[],stages=['Diagnostics','Mechanical rebuild','Bodywork restoration','Roadworthy inspection & detail'];
- return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Buy damaged vehicles, complete four paid restoration stages, then rent or resell them.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
- <p class="tiny muted">${active.length} projects · ${offers.length} finds · ${Math.max(0,garageCapacity()-state.fleet.length)} free garage bays</p><h4>Rebuilds in progress</h4><div class="ctr-salvage-grid">
- ${active.length?active.map(c=>{const t=typeOf(c.type),n=c.restoration.stage,cost=restorationPrice(c,n);return `<article class="ctr-salvage-card"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)} · ${esc(c.plate)}</b><small>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km · Stage ${n+1}/4 · Spent ${money(c.restoration.spent)}</small>${listBtn('restoresalvage',c.id,stages[n]+' · '+money(cost),'btn primary block',freeCash()<cost?'disabled':'')}</article>`;}).join(''):'<p class="tiny muted">No active projects.</p>'}</div>
+ const active=state.fleet.filter(c=>c.status==='restoration'),offers=Array.isArray(state.salvageOffers)?state.salvageOffers:[];
+ return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Rebuild damaged vehicles over four increasingly longer stages. Pay to start work, wait for the countdown, then collect the result before continuing.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
+ <div class="ctr-restoration-timeline" aria-label="Restoration cooldown schedule">${RESTORATION_STAGE_NAMES.map((name,n)=>`<span><b>${n+1}. ${name}</b><strong>${RESTORATION_STAGE_MINUTES[n]} min</strong></span>`).join('')}</div>
+ <p class="tiny muted">${active.length} projects · ${offers.length} finds · ${Math.max(0,garageCapacity()-state.fleet.length)} free garage bays · Timers continue while the game is closed.</p>
+ <h4>Rebuilds in progress</h4><div class="ctr-salvage-grid">
+ ${active.length?active.map(c=>{
+  const t=typeOf(c.type),stage=Math.max(0,Math.min(3,Number(c.restoration?.stage)||0)),price=restorationPrice(c,stage);
+  const work=c.restoration?.work&&Number(c.restoration.work.stage)===stage?c.restoration.work:null;
+  const waiting=!!work&&now()<Number(work.dueAt),ready=!!work&&!waiting;
+  const duration=RESTORATION_STAGE_MINUTES[stage],label=RESTORATION_STAGE_NAMES[stage];
+  const action=work?(waiting?'⏳ Work in progress':'✓ Collect '+label):'Start '+label+' · '+money(price);
+  const progress=work?restorationWorkProgress(work):0;
+  return `<article class="ctr-salvage-card" data-restoration-car="${esc(c.id)}">
+  <img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)} · ${esc(c.plate)}</b>
+  <small>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km · Stage ${stage+1}/4 · Spent ${money(c.restoration.spent)}</small>
+  <div class="ctr-restoration-job" ${work?`data-restoration-work="${esc(c.id)}"`:''}>
+   <div class="ctr-restoration-job-head"><b>${label}</b><span>${duration} min</span></div>
+   ${work?`<div class="ctr-restoration-progress" role="progressbar" aria-label="${esc(label)} restoration progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i data-restoration-fill style="width:${progress}%"></i></div>
+   <small class="ctr-restoration-clock" data-restoration-timer>${ready?'READY TO COLLECT':relativeTime(Number(work.dueAt))}</small>`:
+    `<small class="ctr-restoration-clock">Ready to begin · ${duration} min · ${money(price)}</small>`}
+  </div>
+  ${listBtn('restoresalvage',c.id,action,'btn primary block',waiting||!work&&freeCash()<price?'disabled':'')}
+  </article>`;
+ }).join(''):'<p class="tiny muted">No active projects. Scout the salvage yard to start one.</p>'}</div>
  <h4>Salvage yard</h4><div class="ctr-salvage-grid">${offers.length?offers.map(o=>{const t=typeOf(o.type);return `<article class="ctr-salvage-card"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)}</b><small>${Math.max(0,round(Number(o.mileage)||0)).toLocaleString('en-ZA')} km · Engine ${round(o.condition)}% · Body ${round(o.body)}%</small><small>Retail ${money(t.price)} · Salvage ${money(o.price)}</small>${listBtn('buysalvage',o.id,'Buy project · '+money(o.price),'btn primary block',freeCash()<o.price||state.fleet.length>=garageCapacity()?'disabled':'')}</article>`;}).join(''):'<p class="tiny muted">Scout once per game day for up to three bargains.</p>'}</div>
- <p class="tiny muted">Restoration expenses are separate from ordinary workshop upgrades. Projects cannot be rented, transferred or sold before completion.</p></section>`;
+ <p class="tiny muted">No instant repairs or paid timer skips. Each car has its own countdown; other restorations may continue simultaneously. Existing upgrades and routine servicing remain separate.</p></section>`;
 }
 function renderCare(){
  const wk=up('workshop'),cw=up('carwash'),fuelDiscount=up('fuelcard');
@@ -6872,7 +6934,20 @@ document.getElementById('app').addEventListener('input',e=>{if(e.target.dataset.
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){if(modal==='importsave')pendingImportSave=null;modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){state.offlineLastActiveAt=now();save(true);}else{tick();render();}});window.addEventListener('beforeunload',()=>{state.offlineLastActiveAt=now();save(true);});
 function uiSignature(){return [state.cash,state.day,state.weather,state.rentals.map(x=>x.id).join(','),state.offers.map(x=>x.id).join(','),state.auction?.id,state.auction?.highest,state.auction?.bidder,(state.playerAuctions||[]).map(a=>[a.id,a.status,a.highest,a.bidCount].join(':')).join(','),state.fleet.map(c=>[c.status,c.branch,round(c.fuel),round(c.condition),round(c.clean),round(c.body)].join(':')).join(','),state.incidents.length,state.log[0]?.id].join('|');}
-function refreshLive(){let t=now();document.querySelectorAll('[data-countdown-event-day]').forEach(el=>{el.textContent=relativeTime(state.lastDayAt+GAME_DAY_MS);});document.querySelectorAll('[data-countdown-rental]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.countdownRental);if(r)el.textContent=relativeTime(r.due);});document.querySelectorAll('[data-rental-progress]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.rentalProgress);if(r){const p=clamp(100*(t-r.start)/Math.max(1,r.due-r.start),0,100);el.style.width=p+'%';el.parentElement?.setAttribute('aria-valuenow',String(round(p)));}});document.querySelectorAll('[data-countdown-offer]').forEach(el=>{let o=state.offers.find(x=>x.id===el.dataset.countdownOffer);if(o)el.textContent=relativeTime(o.expires);});document.querySelectorAll('[data-offer-progress]').forEach(el=>{const o=state.offers.find(x=>x.id===el.dataset.offerProgress);if(o){const duration=Math.max(1,o.expires-(o.created||o.expires-OFFER_LIFETIME_MS));const percent=clamp(100*(o.expires-t)/duration,0,100);el.style.width=percent+'%';el.closest('[role="progressbar"]')?.setAttribute('aria-valuenow',String(round(percent)));}});document.querySelectorAll('[data-contract-countdown]').forEach(el=>{let c=CONTRACTS.find(x=>x.id===el.dataset.contractCountdown);if(c)el.textContent=Math.max(0,Math.ceil((c.period*1000-(t-(state.contractLast[c.id]||0)))/1000))+'s';});document.querySelectorAll('[data-countdown-auction]').forEach(el=>{if(state.auction)el.textContent=relativeTime(state.auction.ends);});document.querySelectorAll('[data-countdown-owned-auction]').forEach(el=>{const a=(state.playerAuctions||[]).find(x=>x.id===el.dataset.countdownOwnedAuction);if(a)el.textContent=relativeTime(a.ends);});document.querySelectorAll('[data-mapcar]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.mapcar);if(r){let p=routePosition(r,t);el.setAttribute('transform',mapCarPose(r,t,state.fleet.find(c=>c.id===r.carId)?.type));}});document.querySelectorAll('[data-maptransfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.maptransfer);if(c&&c.transferDue){let r={from:c.transferFrom,dest:c.transferTo,start:c.transferDue-12000,due:c.transferDue};el.setAttribute('transform',mapCarPose(r,t,c.type));}});document.querySelectorAll('[data-countdown-transfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.countdownTransfer);if(c&&c.transferDue)el.textContent=relativeTime(c.transferDue);});if(selectedRental&&state.rentals.some(r=>r.id===selectedRental))document.querySelectorAll('.map-svg-v10').forEach(el=>el.setAttribute('viewBox',mapViewBox()));}
+function refreshLive(){let t=now();
+ document.querySelectorAll('[data-restoration-work]').forEach(el=>{
+  const c=state.fleet.find(c=>c.id===el.dataset.restorationWork);
+  const work=c?.restoration?.work;
+  if(!work)return;
+  const ready=t>=Number(work.dueAt),stage=Number(work.stage);
+  const clock=el.querySelector('[data-restoration-timer]');
+  if(clock)clock.textContent=ready?'READY TO COLLECT':relativeTime(Number(work.dueAt));
+  const fill=el.querySelector('[data-restoration-fill]');
+  const percent=restorationWorkProgress(work,t);
+  if(fill){fill.style.width=percent+'%';fill.parentElement?.setAttribute('aria-valuenow',String(percent));}
+  const button=el.closest('[data-restoration-car]')?.querySelector('button[data-action="restoresalvage"]');
+  if(button){button.disabled=!ready;if(ready)button.textContent='✓ Collect '+RESTORATION_STAGE_NAMES[stage];}
+ });document.querySelectorAll('[data-countdown-event-day]').forEach(el=>{el.textContent=relativeTime(state.lastDayAt+GAME_DAY_MS);});document.querySelectorAll('[data-countdown-rental]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.countdownRental);if(r)el.textContent=relativeTime(r.due);});document.querySelectorAll('[data-rental-progress]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.rentalProgress);if(r){const p=clamp(100*(t-r.start)/Math.max(1,r.due-r.start),0,100);el.style.width=p+'%';el.parentElement?.setAttribute('aria-valuenow',String(round(p)));}});document.querySelectorAll('[data-countdown-offer]').forEach(el=>{let o=state.offers.find(x=>x.id===el.dataset.countdownOffer);if(o)el.textContent=relativeTime(o.expires);});document.querySelectorAll('[data-offer-progress]').forEach(el=>{const o=state.offers.find(x=>x.id===el.dataset.offerProgress);if(o){const duration=Math.max(1,o.expires-(o.created||o.expires-OFFER_LIFETIME_MS));const percent=clamp(100*(o.expires-t)/duration,0,100);el.style.width=percent+'%';el.closest('[role="progressbar"]')?.setAttribute('aria-valuenow',String(round(percent)));}});document.querySelectorAll('[data-contract-countdown]').forEach(el=>{let c=CONTRACTS.find(x=>x.id===el.dataset.contractCountdown);if(c)el.textContent=Math.max(0,Math.ceil((c.period*1000-(t-(state.contractLast[c.id]||0)))/1000))+'s';});document.querySelectorAll('[data-countdown-auction]').forEach(el=>{if(state.auction)el.textContent=relativeTime(state.auction.ends);});document.querySelectorAll('[data-countdown-owned-auction]').forEach(el=>{const a=(state.playerAuctions||[]).find(x=>x.id===el.dataset.countdownOwnedAuction);if(a)el.textContent=relativeTime(a.ends);});document.querySelectorAll('[data-mapcar]').forEach(el=>{let r=state.rentals.find(x=>x.id===el.dataset.mapcar);if(r){let p=routePosition(r,t);el.setAttribute('transform',mapCarPose(r,t,state.fleet.find(c=>c.id===r.carId)?.type));}});document.querySelectorAll('[data-maptransfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.maptransfer);if(c&&c.transferDue){let r={from:c.transferFrom,dest:c.transferTo,start:c.transferDue-12000,due:c.transferDue};el.setAttribute('transform',mapCarPose(r,t,c.type));}});document.querySelectorAll('[data-countdown-transfer]').forEach(el=>{let c=state.fleet.find(x=>x.id===el.dataset.countdownTransfer);if(c&&c.transferDue)el.textContent=relativeTime(c.transferDue);});if(selectedRental&&state.rentals.some(r=>r.id===selectedRental))document.querySelectorAll('.map-svg-v10').forEach(el=>el.setAttribute('viewBox',mapViewBox()));}
 let needsRender=false;
  document.getElementById('app').addEventListener('focusout',e=>{
   if(e.target.matches('input,select,textarea')&&needsRender){queueMicrotask(()=>{if(!document.activeElement?.matches('input,select,textarea')&&needsRender){needsRender=false;render();}});}
