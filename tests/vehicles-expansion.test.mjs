@@ -48,9 +48,11 @@ assert.match(js,/function finishRental\(r\)/);
 assert.match(js,/function scheduleContractOffers\(t\)/);
 const sides=get('CAR_IMAGES','};');
 const tops=vm.runInNewContext(decl('MAP_CAR_IMAGES','};')+'\nMAP_CAR_IMAGES',{CAR_IMAGES:sides});
-for(const m of specs)for(const [direction,mapping] of [['side',sides],['topdown',tops]]){
- const file='assets/expansion-'+m.id+'-'+direction+'.svg';
- assert.equal(mapping[m.id],file);
- assert.ok(fs.existsSync(path.resolve(import.meta.dirname,'..',file)));
+for(const m of specs){
+ const side='assets/realistic-'+m.id+'-side.webp';
+ const top='assets/expansion-'+m.id+'-topdown.svg';
+ assert.equal(sides[m.id],side);
+ assert.equal(tops[m.id],top);
+ for(const file of [side,top])assert.ok(fs.existsSync(path.resolve(import.meta.dirname,'..',file)));
 }
 console.log('PASS: new fleet prices/unlocks, ten regular customers, 8 VIPs, matching, art, auctions, contracts and v3 save invariants.');

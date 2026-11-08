@@ -32,16 +32,29 @@ for(const id of ids){
  assert.notEqual(file,tops[id],'Side and top views must remain separate');
 }
 for(const id of [...added,...wave2]){
- for(const [name,paths] of [['side',sides],['topdown',tops]]){
-  const expected='assets/expansion-'+id+'-'+name+'.svg';
-  assert.equal(paths[id],expected,'Missing new sprite mapping '+expected);
-  const svg=fs.readFileSync(path.join(root,expected),'utf8');
-  assert.ok(svg.length>=2250,'New sprite too small '+expected);
-  assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
-  assert.match(svg,/<title>[^<]+<\/title>/);
-  assert.match(svg,/<linearGradient id="paint"/);
-  assert.ok(!seenHashes.has(svg),'Duplicate new vehicle sprite');seenHashes.add(svg);
- }
+ const side='assets/realistic-'+id+'-side.webp';
+ assert.equal(sides[id],side,'New realistic side mapping missing for '+id);
+ const data=fs.readFileSync(path.join(root,side));
+ assert.ok(data.length>12000,'Realistic side art suspiciously small '+side);
+ assert.equal(data.toString('ascii',0,4),'RIFF','Invalid WebP header '+side);
+ assert.equal(data.toString('ascii',8,12),'WEBP','Invalid WebP format '+side);
+ assert.equal(data.toString('ascii',12,16),'VP8X','WebP extended header expected '+side);
+ assert.ok(data[20]&0x10,'Transparency must be retained '+side);
+ const width=1+data[24]+data[25]*256+data[26]*65536;
+ const height=1+data[27]+data[28]*256+data[29]*65536;
+ assert.equal(width,900,'Unexpected side artwork width '+side);
+ assert.equal(height,300,'Unexpected side artwork height '+side);
+ const signature=data.subarray(0,128).toString('hex');
+ assert.ok(!seenHashes.has(signature),'Duplicate photo asset '+side);seenHashes.add(signature);
+ const roofFile='assets/expansion-'+id+'-topdown.svg';
+ assert.equal(tops[id],roofFile,'Overhead sprite must remain a distinct map asset '+id);
+ const svg=fs.readFileSync(path.join(root,roofFile),'utf8');
+ assert.ok(svg.length>=2250,'Top-down sprite unexpectedly small '+roofFile);
+ assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+ assert.match(svg,/<title>[^<]+<\/title>/);
+ assert.match(svg,/<linearGradient id="paint"/);
+ assert.ok(!seenHashes.has(svg),'Duplicate top-down artwork '+roofFile);seenHashes.add(svg);
+ assert.ok(fs.existsSync(path.join(root,'assets/expansion-'+id+'-side.svg')),'Original SVG retained for history '+id);
 }
 assert.match(html,/<style id="ctr-vehicle-art-section-19">/);
 assert.match(html,/function mapCarPose\(r,t=now\(\),type=''\)/);
@@ -49,4 +62,4 @@ assert.match(html,/const KEY='cape-town-rentals-coastline-v3'/);
 assert.match(html,/const SLOT_PREFIX=KEY\+'-slot-'/);
 assert.match(html,/function renderPremiumUpgrades\(\)/);
 assert.match(html,/function renderProgress\(\)/);
-console.log('PASS: Approved original 17 WebPs plus ten distinct original vector side/top pairs and v3 compatibility.');
+console.log('PASS: Approved original 17 WebPs plus ten detailed transparent WebP side views with distinct SVG roof sprites and v3 compatibility.');

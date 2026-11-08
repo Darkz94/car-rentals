@@ -27,17 +27,14 @@ for asset in roof_paths:
 assert not re.search(r'(?<![A-Za-z0-9_/])(?:assets|icons)/[A-Za-z0-9_.-]+\.(?:png|webp|svg)', standalone)
 assert "function renderPlayerAuctions()" in standalone
 assert "const KEY='cape-town-rentals-coastline-v3'" in standalone
-for id_ in ("suv", "convertible", "shuttle", "camper", "luxsuv"):
+for id_ in ("suv", "convertible", "shuttle", "camper", "luxsuv",
+            "safari", "motorhome", "rally", "grandtourer", "armored"):
     assert "id:'" + id_ + "'" in standalone
-    for direction in ("side", "topdown"):
-        file = f"assets/expansion-{id_}-{direction}.svg"
-        assert file in original and file not in standalone
-        assert (ROOT / file).is_file()
+    side = f"assets/realistic-{id_}-side.webp"
+    roof = f"assets/expansion-{id_}-topdown.svg"
+    for file in (side, roof):
+        assert file in original, f"Missing mapped art {file}"
+        assert file not in standalone, f"Standalone image was not embedded: {file}"
+        assert (ROOT / file).is_file(), f"Missing photo or roof art: {file}"
 assert "data:image/svg+xml;base64," in standalone
-for id_ in ("safari", "motorhome", "rally", "grandtourer", "armored"):
-    assert "id:'" + id_ + "'" in standalone
-    for direction in ("side", "topdown"):
-        file = f"assets/expansion-{id_}-{direction}.svg"
-        assert (ROOT / file).is_file()
-        assert file not in standalone, f"Second-wave sprite was not embedded: {file}"
-print("PASS: 17 original classes and ten new side/top-down sprite pairs embedded.")
+print("PASS: 17 original classes, ten realistic new WebP side views and ten SVG roof sprites embedded.")

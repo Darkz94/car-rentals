@@ -29,12 +29,19 @@ for(const s of specs){
  state.rep=s.lvl-1;state.fleet=[];assert.equal(unlocked(pool[0]),false);
  state.rep=s.lvl;assert.equal(unlocked(pool[0]),true);
  state.rep=2;state.fleet=[{type:s.id}];assert.equal(unlocked(pool[0]),true);
- for(const [view,mapping] of [['side',sides],['topdown',tops]]){
-  const file='assets/expansion-'+s.id+'-'+view+'.svg';assert.equal(mapping[s.id],file);
-  const svg=fs.readFileSync(path.join(root,file),'utf8');assert.ok(svg.length>=2400);
-  assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);assert.match(svg,/<title>[^<]+<\/title>/);
-  assert.match(svg,/<linearGradient id="paint"/);assert.ok(!svg.includes('<image'));
- }
+ const side='assets/realistic-'+s.id+'-side.webp';
+ assert.equal(sides[s.id],side);
+ const photo=fs.readFileSync(path.join(root,side));
+ assert.ok(photo.length>4000 && photo.toString('ascii',0,4)==='RIFF');
+ assert.equal(photo.toString('ascii',8,12),'WEBP');
+ assert.equal(photo.toString('ascii',12,16),'VP8X');
+ assert.ok(photo[20]&0x10,'Photo needs transparency');
+ const top='assets/expansion-'+s.id+'-topdown.svg';
+ assert.equal(tops[s.id],top);
+ const svg=fs.readFileSync(path.join(root,top),'utf8');
+ assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+ assert.match(svg,/<title>[^<]+<\/title>/);
+ assert.match(svg,/<linearGradient id="paint"/);
 }
 assert.ok(js.includes("const KEY='cape-town-rentals-coastline-v3'"));
 assert.ok(js.includes('const VIP_OFFER_CHANCE=.07;'));
