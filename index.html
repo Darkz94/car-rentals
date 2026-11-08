@@ -3055,7 +3055,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .branch-v14-transfer-time{border:1px solid #ffda72;background:#5a451c;color:#ffe48d;font-weight:950;padding:9px 11px;border-radius:10px;white-space:nowrap}
 .branch-v14-footer-note{display:flex;align-items:flex-start;gap:10px;border:1px solid #3c7fae;border-radius:14px;background:#0b2b4b;padding:14px;font-size:11px;line-height:1.55;color:#c7e2f4}
 .branch-v14-footer-note b{color:#fff}
-@media(max-width:1100px){.branches-v14 .branch-v14-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.branch-v14-stat-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px){.branches-v14 .branch-v14-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.branches-v14 .branch-v14-stat-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:770px){.branches-v14 .branch-v14-grid{grid-template-columns:1fr}.branches-v14 .branch-v14-map-frame .map-svg-v10{max-height:340px}.branch-v14-stat{min-height:75px}}
 @media(max-width:640px){
 .branches-v14{gap:10px}.branches-v14 .branch-v14-hero{grid-template-columns:minmax(0,1fr) 57px;min-height:138px;padding:12px;border-radius:16px}
@@ -3066,6 +3066,25 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .branch-v14-transfer-item{gap:7px;padding:7px}.branch-v14-transfer-item img{width:65px;height:46px;flex-basis:65px}.branch-v14-transfer-time{padding:8px;font-size:11px}
 }
 @media(max-width:370px){.branch-v14-card-top{gap:5px}.branch-v14-card-icon{width:44px;height:46px;flex-basis:44px;font-size:26px}.branch-v14-card-top h4{font-size:16px}.branch-v14-card-top .pill{font-size:8px}.branch-v14-stat{gap:4px}.branch-v14-stat>span{font-size:18px}.branch-v14-stat strong{font-size:14px}}
+
+/* Branch KPI mobile fix: stable 2×2 grid, legible money, no broken digits. */
+.branch-v14-money-compact{display:none}
+@media(max-width:640px){
+ .branches-v14 .branch-v14-stat-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .branches-v14 .branch-v14-stat{display:flex;align-items:center;gap:7px;min-height:106px;padding:10px 9px;box-sizing:border-box}
+ .branches-v14 .branch-v14-stat>span{flex:0 0 24px;font-size:22px}
+ .branches-v14 .branch-v14-stat>div{min-width:0;flex:1}
+ .branches-v14 .branch-v14-stat small{font-size:10px;line-height:1.25;overflow-wrap:normal;word-break:normal}
+ .branches-v14 .branch-v14-stat strong{font-size:clamp(13px,3.6vw,18px);line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap;overflow-wrap:normal;word-break:normal}
+ .branches-v14 .branch-v14-stat em{font-size:10px;line-height:1.3;overflow-wrap:normal;word-break:normal}
+ .branches-v14 .branch-v14-money-full{display:none}
+ .branches-v14 .branch-v14-money-compact{display:inline}
+}
+@media(max-width:370px){
+ .branches-v14 .branch-v14-stat{gap:5px;padding:9px 7px}
+ .branches-v14 .branch-v14-stat>span{flex-basis:21px;font-size:19px}
+ .branches-v14 .branch-v14-stat strong{font-size:13px}
+}
 </style>
 
 <style id="ctr-staff-section-15">
@@ -6056,8 +6075,8 @@ function renderBranches(){
   <div class="branch-v14-stat-row">
    <div class="branch-v14-stat"><span>📍</span><div><small>Open branches</small><strong>${openCount} / ${BRANCHES.length}</strong><em>Operating locations</em></div></div>
    <div class="branch-v14-stat"><span>🚘</span><div><small>Fleet vehicles</small><strong>${used}</strong><em>${transfers.length} transfer${transfers.length===1?'':'s'} underway</em></div></div>
-   <div class="branch-v14-stat"><span>💰</span><div><small>Branch hire income</small><strong>${money(totalRevenue)}</strong><em>${totalReturns} completed returns</em></div></div>
-   <div class="branch-v14-stat"><span>📋</span><div><small>Company branch upkeep</small><strong>${money(branchOverhead())}</strong><em>Effective cost per game day</em></div></div>
+   <div class="branch-v14-stat"><span>💰</span><div><small>Branch hire income</small><strong title="${money(totalRevenue)}"><span class="branch-v14-money-full">${money(totalRevenue)}</span><span class="branch-v14-money-compact">${compact(totalRevenue)}</span></strong><em>${totalReturns} completed returns</em></div></div>
+   <div class="branch-v14-stat"><span>📋</span><div><small>Company branch upkeep</small><strong title="${money(branchOverhead())}"><span class="branch-v14-money-full">${money(branchOverhead())}</span><span class="branch-v14-money-compact">${compact(branchOverhead())}</span></strong><em>Effective cost per game day</em></div></div>
   </div>
   <section class="branch-v14-map-panel">
    <div class="branch-v14-panel-head"><div><span class="branch-v14-kicker">CAPE TOWN · LIVE OPERATIONS</span><h3>Explore your branch network</h3><p>Uses your existing Live Map — active routes and vehicle transfers update in place.</p></div>${btn('page','View full Live Map →','btn sm ghost','data-id="map"')}</div>
