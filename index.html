@@ -5972,7 +5972,7 @@ function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.servic
   <div class="vehicle-v5-meters-title"><strong>Vehicle condition</strong><small>Live vehicle status</small></div>
   <div class="vehicle-v5-meters">${levels.map(([icon,name,value])=>`<div class="vehicle-v5-meter"><span>${icon} ${name}<b>${round(value)}%</b></span><i><em class="${value<30?'low':value<60?'mid':'good'}" style="width:${clamp(value)}%"></em></i></div>`).join('')}</div>
   <div class="vehicle-v5-info"><span>🏁 Tuning ${c.tune||0}/5 · +${(c.tune||0)*13}% base rate</span><span>🎨 ${esc(PAINTS[c.paint]?.name||'Glacier Silver')}</span></div>
- ${carHistoryPanel(c)}
+ ${typeof carHistoryPanel==='function'?carHistoryPanel(c):''}
 
  <div class="divider"></div><div class="flex between center"><div class="small muted">Prepare vehicle</div><div class="bold ${total?'':'positive'}">${total?money(total):'FREE / ALREADY READY'}</div></div><div class="grid grid-2 mt-16" style="gap:8px">${listBtn('fuel',c.id,`⛽ Refuel · ${p.fuel?money(p.fuel):'FULL'}`,'btn sm',!parked||c.fuel>=99.9?'disabled':'')}${listBtn('wash',c.id,`🫧 Wash · ${c.clean>=99.9?'CLEAN':p.wash?money(p.wash):'FREE'}`,'btn sm',!parked||c.clean>=99.9?'disabled':'')}${listBtn('service',c.id,`🔧 Service · ${c.condition>=99.9?'SERVICED':p.service?money(p.service):'FREE'}`,'btn sm',!parked||c.condition>=99.9?'disabled':'')}${listBtn('care',c.id,`✨ Prepare all · ${total?money(total):'FREE'}`,'btn sm primary',!parked||!careNeeded(c)?'disabled':'')}</div>
  <div class="divider"></div><div class="flex between center"><span class="bold">🏁 Performance tuning</span><span class="pill blue">Lv ${c.tune||0}/5</span></div><p class="small muted mt-12">Each tuning level adds 13% to rental payouts.</p><div class="mini-progress"><span style="width:${(c.tune||0)*20}%"></span></div>${listBtn('tune',c.id,c.tune>=5?'Maximum tuning reached':`Upgrade tuning · ${money(round(14000*Math.pow((c.tune||0)+1,1.65)))}`,'btn block mt-16',!parked||c.tune>=5?'disabled':'')}
@@ -6141,7 +6141,7 @@ function renderCare(){
    <div class="workshop-vehicle-list">${shown.length?shown.map(renderWorkshopVehicle).join(''):'<div class="workshop-empty">No vehicles match this filter. Choose another status to see your fleet.</div>'}</div>
    <p class="workshop-desk-counter">Showing ${shown.length} of ${state.fleet.length} vehicles · Ordered by vehicle class.</p>
   </section>
-  ${restorationPanel()}
+  ${typeof restorationPanel==='function'?restorationPanel():''}
   ${autoCareControl()}
  </div>`;
 }
