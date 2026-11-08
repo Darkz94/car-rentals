@@ -11,6 +11,7 @@ on:
       - 'icons/**'
       - 'rebuild.py'
       - 'tests/**'
+      - 'android/**'
       - '.github/workflows/fleet-integrity.yml'
   pull_request:
     branches: [main]
@@ -25,6 +26,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Verify Javascript syntax, classes, customer rules and 62 auction scenarios
         run: node tests/fleet-audit.test.mjs
+      - name: Verify Android in-app updater download and APK safeguards
+        run: node tests/android-updater.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility
         run: node tests/progress-section18.test.mjs
       - name: Verify Section 19 vehicle artwork, mapping and transparency
