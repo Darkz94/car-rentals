@@ -6151,6 +6151,7 @@ function renderCare(){
    <div class="workshop-desk-heading"><div><span class="workshop-eyebrow">YOUR VEHICLE SERVICE DESK</span><h3>Quick Maintenance</h3><p>Real-time prices, vehicle health and individual repair actions.</p></div><div class="workshop-fuel-badge"><span>⛽ FUEL PRICE</span><strong>R${Number(fuelPrice()).toFixed(2)}/L</strong><small>${fuelDiscount?'Fuel partnership discount active':'Standard rate applies'}</small></div></div>
    <div class="workshop-filterbar" aria-label="Filter vehicles by care status">${filters.map(([id,label,count])=>`<button type="button" class="workshop-filter ${active===id?'active':''}" data-action="workshopfilter" data-id="${id}" aria-pressed="${active===id}">${label}<span>${count}</span></button>`).join('')}</div>
    <p class="workshop-desk-note">Only parked vehicles can be serviced, washed, refuelled or repaired. Preparing a vehicle covers fuel, mechanical service and washing; bodywork is separate.</p>
+   <p class="workshop-desk-note">Restoring a damaged vehicle? ${btn('sub','🔨 Open Restoration','btn sm ghost','data-group="fleet" data-id="restoration"')}</p>
    <div class="workshop-vehicle-list">${shown.length?shown.map(renderWorkshopVehicle).join(''):'<div class="workshop-empty">No vehicles match this filter. Choose another status to see your fleet.</div>'}</div>
    <p class="workshop-desk-counter">Showing ${shown.length} of ${state.fleet.length} vehicles · Ordered by vehicle class.</p>
   </section>

@@ -73,7 +73,7 @@ try{
     if(result.dock!==6||result.activeDock!==1)problems.push(width+'px '+name+' bottom navigation invalid '+JSON.stringify(result));
     if(route==='fleet'&&sub==='restoration'){
       const panel=await page.evaluate(()=>({
-        navCount:document.querySelectorAll('button[data-action="sub"][data-group="fleet"]').length,
+        navCount:document.querySelectorAll('.fleet-command-tabs button[data-action="sub"][data-group="fleet"]').length,
         selected:document.querySelector('button[data-action="sub"][data-group="fleet"][data-id="restoration"]')?.getAttribute('aria-selected'),
         ownPanel:!!document.querySelector('section[aria-label="Vehicle restoration projects"]'),
         duplicateWorkshop:!!document.querySelector('.workshop-service-desk'),
