@@ -177,7 +177,7 @@ for(const vehicle of typeList){
  const ordinary={need:vehicle.category,budget:1000000,mult:1.35,contract:null};
  const basic=priceVIP(car,ordinary);
  const royale={need:"Any",budget:0,mult:1.35,contract:null,vipBonus:.75};
- assert.equal(priceVIP(car,royale),Math.round(basic*1.75),"Royal VIP premium must scale with "+vehicle.id);
+ assert.equal(priceVIP(car,royale),Math.round(vehicle.rate*1.35*1.75),"Royal VIP premium must scale with "+vehicle.id);
  assert.ok(matchVIP(car,royale)>=0,"VIP must accept "+vehicle.id);
  assert.equal(priceVIP(car,{...ordinary,budget:200}),Math.round(Math.min(320,basic)),"Ordinary quote must keep original budget cap");
 }
