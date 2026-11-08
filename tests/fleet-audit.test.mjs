@@ -932,8 +932,8 @@ assert.ok(v11biz.includes("business-shell-v11")&&v11biz.includes("renderTabs('bu
  "Business navigation and existing sub-tabs must remain");
 const businessGridStyle=html.split('<style id="ctr-business-square-nav-2026">')[1]?.split('</style>')[0]||'';
 assert.ok(businessGridStyle.includes('grid-template-columns:repeat(3,minmax(0,1fr))!important'),'Business options must form three equal columns on phones');
-assert.ok(businessGridStyle.includes('aspect-ratio:1 / 1'),'Business navigation options must be square');
-assert.ok(businessGridStyle.includes('min-height:80px!important'),'Business navigation buttons must retain touch-friendly size');
+assert.ok(businessGridStyle.includes('aspect-ratio:auto'),'Business navigation should use compact rectangles instead of height-consuming squares');
+assert.ok(businessGridStyle.includes('min-height:72px!important')&&businessGridStyle.includes('height:68px!important'),'Business navigation must be compact, retain a comfortable touch target, and shrink further on narrow phones');
 assert.ok(v11biz.includes('business-grid-icon')&&v11biz.includes('business-grid-label'),'Business buttons need separate centred icons and labels');
 for(const tab of ['command','upgrades','branches','contracts','staff','finance'])
   assert.ok(v11biz.includes("['"+tab+"','<span"),'Business tab must remain available: '+tab);
@@ -1244,7 +1244,7 @@ assert.match(auditCss('ctr-live-map-section-10'),/@media\(max-width:720px\)/,'Li
 const businessMenu=auditSource('function renderBusiness(){','function renderUpgrades(){');
 for(const tab of ['command','upgrades','branches','contracts','staff','finance'])assert.ok(businessMenu.includes("['"+tab+"'"),'Business section missing '+tab);
 assert.match(businessMenu,/renderTabs\('business',tabs\)/,'Business navigation handler missing');
-assert.match(auditCss('ctr-business-square-nav-2026'),/aspect-ratio:1 \/ 1/,'Business buttons must remain square');
+assert.match(auditCss('ctr-business-square-nav-2026'),/aspect-ratio:auto/,'Business buttons must be compact rectangles');
 for(const id of ['ctr-business-command-section-11','ctr-branches-section-14','ctr-staff-section-15','ctr-upgrades-section-16']){
  assert.match(auditCss(id),/@media\(max-width:/,'Missing responsive Business stylesheet '+id);
 }

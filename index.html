@@ -4586,18 +4586,18 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 </style>
 
 <style id="ctr-business-square-nav-2026">
-/* Business navigation only: six symmetrical square buttons in a portrait 3x2 grid.
+/* Business navigation only: six compact rectangular tiles in a portrait 3x2 grid.
    Existing data-action=sub and data-group=business handlers remain unchanged. */
 @media (max-width:900px){
   .business-shell-v11 .business-v11-nav{
-    margin:0 0 12px;
+    margin:0 0 8px;
     min-width:0;
   }
   .business-shell-v11 .business-v11-nav .tabs{
     display:grid!important;
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
     grid-auto-flow:row!important;
-    gap:9px!important;
+    gap:7px!important;
     align-items:stretch;
     justify-content:stretch;
     box-sizing:border-box;
@@ -4612,17 +4612,17 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:6px;
+    gap:3px;
     flex:none;
     width:100%;
     min-width:0;
     max-width:none;
-    min-height:80px!important;
-    height:auto;
-    aspect-ratio:1 / 1;
+    min-height:72px!important;
+    height:72px!important;
+    aspect-ratio:auto;
     box-sizing:border-box;
-    padding:9px 5px!important;
-    border-radius:16px!important;
+    padding:6px 4px!important;
+    border-radius:13px!important;
     white-space:normal!important;
     overflow:visible;
     text-align:center;
@@ -4632,7 +4632,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
   .business-shell-v11 .business-v11-nav .business-grid-icon{
     display:block;
     flex:none;
-    font-size:clamp(22px,5.6vw,29px);
+    font-size:clamp(20px,4.7vw,24px);
     line-height:1.1;
     filter:drop-shadow(0 2px 2px #0008);
   }
@@ -4640,7 +4640,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
     display:block;
     width:100%;
     min-width:0;
-    font-size:clamp(10px,2.75vw,13px);
+    font-size:clamp(10px,2.6vw,12px);
     line-height:1.2;
     font-weight:900;
     overflow-wrap:break-word;
@@ -4657,15 +4657,19 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
     outline-offset:2px;
   }
 }
+@media (max-width:480px){
+  .business-shell-v11 .business-v11-nav .tabs .tab{min-height:68px!important;height:68px!important}
+}
 @media (max-width:355px){
   .business-shell-v11 .business-v11-nav .tabs{gap:6px!important}
   .business-shell-v11 .business-v11-nav .tabs .tab{
-    gap:4px;
-    min-height:76px!important;
-    padding:6px 2px!important;
-    border-radius:13px!important;
+    gap:3px;
+    min-height:64px!important;
+    height:64px!important;
+    padding:5px 2px!important;
+    border-radius:11px!important;
   }
-  .business-shell-v11 .business-v11-nav .business-grid-icon{font-size:22px}
+  .business-shell-v11 .business-v11-nav .business-grid-icon{font-size:20px}
   .business-shell-v11 .business-v11-nav .business-grid-label{font-size:10px}
 }
 /* On desktop, retain the existing horizontal tab bar but centre the icon/label. */

@@ -285,6 +285,27 @@ try{
         duplicateSections:document.querySelectorAll('.business-v11-links').length,
         priorities:!!document.querySelector('.business-v11-tasks')
       }));
+      const tileLayout=await page.evaluate(()=>{
+        const nav=document.querySelector('.business-shell-v11 .business-v11-nav .tabs');
+        const buttons=[...nav.querySelectorAll('button[data-action="sub"][data-group="business"]')];
+        const navBox=nav.getBoundingClientRect();
+        const rects=buttons.map(b=>{const r=b.getBoundingClientRect();const label=b.querySelector('.business-grid-label');
+          const l=label?.getBoundingClientRect();return {
+            id:b.dataset.id,width:Math.round(r.width),height:Math.round(r.height),
+            left:r.left,right:r.right,top:r.top,bottom:r.bottom,
+            labelFits:!!l&&l.left>=r.left-3&&l.right<=r.right+3,
+            iconPresent:!!b.querySelector('.business-grid-icon')
+          };
+        });
+        return {count:buttons.length,gridHeight:Math.round(navBox.height),columns:getComputedStyle(nav).gridTemplateColumns,tiles:rects};
+      });
+      console.log(width+'px compact Business tiles: '+JSON.stringify(tileLayout));
+      if(tileLayout.count!==6||tileLayout.gridHeight>155||
+        tileLayout.tiles.some(t=>t.height<60||t.height>72||t.left<-2||t.right>width+2||!t.labelFits||!t.iconPresent)||
+        Math.abs(tileLayout.tiles[0].top-tileLayout.tiles[2].top)>3||
+        Math.abs(tileLayout.tiles[3].top-tileLayout.tiles[5].top)>3||
+        tileLayout.tiles[3].top<=tileLayout.tiles[0].bottom)
+        problems.push(width+'px Business navigation tiles too tall, clipped or misaligned '+JSON.stringify(tileLayout));
       const expected=['command','upgrades','branches','contracts','staff','finance'];
       if(JSON.stringify(business.navIds)!==JSON.stringify(expected)||business.duplicateSections!==0||!business.priorities)
         problems.push(width+'px Business navigation duplicated or missing '+JSON.stringify(business));
