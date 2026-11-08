@@ -160,6 +160,38 @@ try{
          !vipCard.finance.includes('VEHICLE BASED')||vipCard.finance.includes('R0'))
         problems.push(width+'px VIP booking card invalid '+JSON.stringify(vipCard));
     }
+    if(route==='overview'&&!sub){
+      // Large lifetime figures must remain readable in three columns at phone widths.
+      const amounts=await page.evaluate(()=>{
+        const oldCash=state.cash,oldEarned=state.stats.earned;
+        try{
+          state.cash=9876543;state.stats.earned=48226872;render();
+          const summary=document.querySelector('.dashboard-simplified .dashboard-reference-summary');
+          const cells=[...(summary?.querySelectorAll('.dashboard-summary-card')||[])];
+          const read=cell=>{
+            const value=cell?.querySelector('strong');
+            const compact=value?.querySelector('.dashboard-money-compact');
+            const full=value?.querySelector('.dashboard-money-full');
+            const range=document.createRange();
+            if(compact)range.selectNodeContents(compact);
+            const rect=range.getBoundingClientRect(),box=value?.getBoundingClientRect();
+            return {text:compact?.textContent?.trim(),digits:value?.getAttribute('aria-label')?.replace(/\D/g,''),
+              shown:!!compact&&getComputedStyle(compact).display!=='none',
+              fullHidden:!!full&&getComputedStyle(full).display==='none',
+              fits:!!box&&rect.width<=box.width+1&&value.scrollWidth<=value.clientWidth+1,
+              boxWidth:Math.round(box?.width||0)};
+          };
+          return {cardCount:cells.length,bank:read(cells[0]),earned:read(cells[2]),
+            columns:summary?getComputedStyle(summary).gridTemplateColumns:null};
+        }finally{state.cash=oldCash;state.stats.earned=oldEarned;render();}
+      });
+      console.log(width+'px Dashboard financial figures: '+JSON.stringify(amounts));
+      if(amounts.cardCount!==3||amounts.bank.text!=='R9.88m'||amounts.earned.text!=='R48.23m'||
+         amounts.bank.digits!=='9876543'||amounts.earned.digits!=='48226872'||
+         !amounts.bank.shown||!amounts.earned.shown||
+         !amounts.bank.fullHidden||!amounts.earned.fullHidden||!amounts.bank.fits||!amounts.earned.fits)
+        problems.push(width+'px Dashboard money values clipped or wrapped '+JSON.stringify(amounts));
+    }
     if(route==='overview'){
       const header=await page.evaluate(()=>{
         const banner=document.querySelector('.dashboard-header');
