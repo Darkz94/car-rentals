@@ -996,7 +996,7 @@ assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='h
  js.includes("modal='dealerbuy'")&&
  js.includes("if(action==='confirmbuycar')")&&
  js.includes("addCar(id,null,false,dealerBranch)"),"Purchasing must still route through original transactions");
-for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper']"]){
+for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo','Compact SUV','Convertible']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV']"]){
  assert.ok(js.includes(category),"Original dealer categories changed "+category);
 }
 assert.ok(js.includes("dealerSearch.trim().toLowerCase()"),"Dealer search must filter UI only");
