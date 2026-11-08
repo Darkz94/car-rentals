@@ -24,7 +24,7 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const address=server.address(),url='http://127.0.0.1:'+address.port+'/';
 const scenarios=[
  ['overview',null],
- ['fleet','garage'],['fleet','dealership'],['fleet','care'],['fleet','tuning'],
+ ['fleet','garage'],['fleet','dealership'],['fleet','care'],['fleet','restoration'],['fleet','tuning'],
  ['map',null],
  ['business','command'],['business','upgrades'],['business','branches'],
  ['business','contracts'],['business','staff'],['business','finance'],
@@ -71,6 +71,18 @@ try{
     if(result.outside.length)problems.push(width+'px '+name+' panel outside viewport '+JSON.stringify(result.outside));
     if(result.narrow.length)problems.push(width+'px '+name+' compressed dealership title '+JSON.stringify(result.narrow));
     if(result.dock!==6||result.activeDock!==1)problems.push(width+'px '+name+' bottom navigation invalid '+JSON.stringify(result));
+    if(route==='fleet'&&sub==='restoration'){
+      const panel=await page.evaluate(()=>({
+        navCount:document.querySelectorAll('button[data-action="sub"][data-group="fleet"]').length,
+        selected:document.querySelector('button[data-action="sub"][data-group="fleet"][data-id="restoration"]')?.getAttribute('aria-selected'),
+        ownPanel:!!document.querySelector('section[aria-label="Vehicle restoration projects"]'),
+        duplicateWorkshop:!!document.querySelector('.workshop-service-desk'),
+        activeLabel:document.querySelector('button[data-action="sub"][data-group="fleet"][data-id="restoration"] .fleet-command-tab-label')?.textContent.trim(),
+        cardWidth:document.querySelector('section[aria-label="Vehicle restoration projects"]')?.getBoundingClientRect().width
+      }));
+      if(panel.navCount!==5||panel.selected!=='true'||!panel.ownPanel||panel.duplicateWorkshop||panel.activeLabel!=='Restoration'||!panel.cardWidth)
+        problems.push(width+'px Restoration tab routing invalid '+JSON.stringify(panel));
+    }
     if(route==='overview'&&!sub){
       // Exercise the Dashboard switch with a purchased Auto-Dispatch Desk.
       // This browser's test state is restored; no production data or saved games are involved.
@@ -329,5 +341,5 @@ if(problems.length){
  for(const issue of problems)console.error('MOBILE ISSUE: '+issue);
  throw Error('Mobile screen audit found '+problems.length+' issue(s).');
 }
-assert.equal(scenarios.length,21,'Every primary tab and submenu must be checked');
-console.log('PASS: 21 views at 360px and 412px; no critical overflow, squeezed dealership heading or broken dock.');
+assert.equal(scenarios.length,22,'Every primary tab and submenu must be checked');
+console.log('PASS: 22 views at 360px and 412px; no critical overflow, squeezed dealership heading or broken dock.');

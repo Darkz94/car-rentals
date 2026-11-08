@@ -435,7 +435,7 @@ console.log("PASS: Compact Dashboard Auto-Dispatch toggle reuses the existing se
 
 
 // Section 3: Fleet command shell must render live KPIs, image-backed header,
-// all four real section routes, and exactly one working filter toolbar.
+// all five real section routes, and exactly one working filter toolbar.
 const fleetShellStart=js.indexOf("function renderFleet(){");
 const fleetShellEnd=js.indexOf("\nconst openInfoPanels",fleetShellStart);
 const garageShellStart=js.indexOf("function renderGarage(){");
@@ -468,6 +468,7 @@ const fleetContext={
  renderGarage:()=>"<p>EXISTING GARAGE CONTENT</p>",
  renderDealership:()=>"<p>EXISTING DEALERSHIP CONTENT</p>",
  renderCare:()=>"<p>EXISTING WORKSHOP CONTENT</p>",
+ restorationPanel:()=>"<p>EXISTING RESTORATION CONTENT</p>",
  renderTuning:()=>"<p>EXISTING PERFORMANCE CONTENT</p>"
 };
 const fleetFn=vm.runInNewContext(js.slice(fleetShellStart,fleetShellEnd)+"\nrenderFleet",fleetContext);
@@ -475,16 +476,16 @@ const fleetSnapshot=JSON.stringify(fleetTestState.fleet);
 const garageShell=fleetFn();
 assert.ok(garageShell.includes('src="assets/city-hatch-side.png"'),
   "Fleet header must reuse the selected vehicle artwork");
-assert.equal((garageShell.match(/class="fleet-command-tab /g)||[]).length,4,
-  "Fleet shell must have exactly four section tabs");
-for(const section of ["garage","dealership","care","tuning"])
+assert.equal((garageShell.match(/class="fleet-command-tab /g)||[]).length,5,
+  "Fleet shell must have exactly five section tabs");
+for(const section of ["garage","dealership","care","restoration","tuning"])
  assert.ok(garageShell.includes('data-group="fleet" data-id="'+section+'"'),
    "Fleet tab routing missing: "+section);
 for(const cls of ["fleet-command-banner","fleet-command-kpis","fleet-command-filters","fleet-command-content"])
  assert.ok(garageShell.includes(cls),"Fleet shell component missing: "+cls);
 assert.ok(garageShell.includes("EXISTING GARAGE CONTENT")&&garageShell.includes('data-role="garage-sort"'),
  "Garage body and live sorting must be retained in shell");
-for(const [section,label] of [["dealership","DEALERSHIP"],["care","WORKSHOP"],["tuning","PERFORMANCE"]]){
+for(const [section,label] of [["dealership","DEALERSHIP"],["care","WORKSHOP"],["restoration","RESTORATION"],["tuning","PERFORMANCE"]]){
  fleetContext.activeSub.fleet=section;
  const markup=fleetFn();
  assert.ok(markup.includes("EXISTING "+label+" CONTENT"),"Sub-tab failed to render "+section);
@@ -1226,7 +1227,7 @@ for(const page of ['overview','fleet','map','business','events']){
 assert.ok(mainScreen.includes('renderProgress()'),'Progress page renderer missing');
 
 const fleetMenu=auditSource('function renderFleet(){','const openInfoPanels=');
-for(const sub of ['garage','dealership','care','tuning'])assert.ok(fleetMenu.includes("['"+sub+"'"),'Fleet menu missing '+sub);
+for(const sub of ['garage','dealership','care','restoration','tuning'])assert.ok(fleetMenu.includes("['"+sub+"'"),'Fleet menu missing '+sub);
 assert.match(fleetMenu,/class="fleet-command-tabs"/,'Fleet navigation grid missing');
 assert.match(auditCss('ctr-fleet-shell-section-03'),/@media\(max-width:720px\)/,'Fleet requires phone breakpoint');
 assert.match(auditCss('ctr-garage-section-04'),/@media\(max-width:720px\)/,'Garage needs mobile layout');
