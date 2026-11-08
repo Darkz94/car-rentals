@@ -48,8 +48,8 @@ assert.equal(contracts.length,17,'Five original and twelve approved partners');
 assert.equal(new Set(contracts.map(c=>c.id)).size,17,'Contract IDs must be unique');
 assert.deepEqual(contracts.slice(0,5).map(c=>JSON.parse(JSON.stringify(c))),old,
  'The original five contracts must not be altered in any field');
-assert.equal(customers.length,54,'Do not change original or VIP customer roster');
-assert.equal(types.length,17,'Maintain the existing 17 vehicle classes');
+assert.equal(customers.length,64,'Preserve original 54 and ten added regular customers');
+assert.equal(types.length,22,'Preserve the 17 originals plus five additional classes');
 for(const [i,expected] of approved.entries()){
  const [id,name,need,rep,branch,premium,period,dest,customerId]=expected;
  const c=contracts[i+5];

@@ -11,10 +11,11 @@ assert.ok(side&&roof,'Both original fleet image maps must exist');
 const entries=s=>Object.fromEntries([...s.matchAll(/([a-z]+):'(assets\/[^']+)'/g)].map(m=>[m[1],m[2]]));
 const sides=entries(side),tops=entries(roof);
 const ids=["hatch","sedan","coupe","bakkie","jeep","van","classic","muscle","truck","tow","donk","limo","partybus","bus","sport","super","hyper"];
-assert.deepEqual(Object.keys(sides).sort(),ids.slice().sort(),'All 17 original class identifiers must be preserved');
-assert.deepEqual(Object.keys(tops).sort(),ids.slice().sort(),'All 17 original map identifiers must be preserved');
-assert.equal(new Set(Object.values(sides)).size,17,'Side artwork cannot be duplicated between classes');
-assert.equal(new Set(Object.values(tops)).size,17,'Top-down artwork cannot be duplicated between classes');
+const added=["suv","convertible","shuttle","camper","luxsuv"];
+assert.deepEqual(Object.keys(sides).sort(),[...ids,...added].sort(),'Original and new side art identifiers must exist');
+assert.deepEqual(Object.keys(tops).sort(),[...ids,...added].sort(),'Original and new map identifiers must exist');
+assert.equal(new Set(Object.values(sides)).size,22,'Side artwork cannot be duplicated between classes');
+assert.equal(new Set(Object.values(tops)).size,22,'Top-down artwork cannot be duplicated between classes');
 const seenHashes=new Set();
 for(const id of ids){
  const file=sides[id];
@@ -29,10 +30,22 @@ for(const id of ids){
  assert.ok(fs.existsSync(path.join(root,tops[id])),'Existing Live Map roof sprite missing: '+id);
  assert.notEqual(file,tops[id],'Side and top views must remain separate');
 }
+for(const id of added){
+ for(const [name,paths] of [['side',sides],['topdown',tops]]){
+  const expected='assets/expansion-'+id+'-'+name+'.svg';
+  assert.equal(paths[id],expected,'Missing new sprite mapping '+expected);
+  const svg=fs.readFileSync(path.join(root,expected),'utf8');
+  assert.ok(svg.length>=2250,'New sprite too small '+expected);
+  assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+  assert.match(svg,/<title>[^<]+<\/title>/);
+  assert.match(svg,/<linearGradient id="paint"/);
+  assert.ok(!seenHashes.has(svg),'Duplicate new vehicle sprite');seenHashes.add(svg);
+ }
+}
 assert.match(html,/<style id="ctr-vehicle-art-section-19">/);
 assert.match(html,/function mapCarPose\(r,t=now\(\),type=''\)/);
 assert.match(html,/const KEY='cape-town-rentals-coastline-v3'/);
 assert.match(html,/const SLOT_PREFIX=KEY\+'-slot-'/);
 assert.match(html,/function renderPremiumUpgrades\(\)/);
 assert.match(html,/function renderProgress\(\)/);
-console.log('PASS: Approved poster lineup — 17 transparent side-view WebPs, unique original class IDs, top-down map mappings and v3 saves preserved.');
+console.log('PASS: Approved original 17 WebPs plus five distinct original vector side/top pairs and v3 compatibility.');

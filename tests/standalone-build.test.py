@@ -20,11 +20,18 @@ for id_ in ids:
 match = re.search(r"const MAP_CAR_IMAGES=\{([^;]+)\};", original)
 assert match, "Missing preserved top-down map image mapping"
 roof_paths = re.findall(r"assets/[A-Za-z0-9_.-]+\.(?:webp|png|svg)", match.group(1))
-assert len(roof_paths) == 17, "Original 17 map sprites not present"
+assert len(roof_paths) == 22, "All 22 map sprites not present"
 for asset in roof_paths:
     assert (ROOT / asset).is_file(), f"Map sprite missing: {asset}"
     assert asset not in standalone, f"Map sprite not embedded: {asset}"
 assert not re.search(r'(?<![A-Za-z0-9_/])(?:assets|icons)/[A-Za-z0-9_.-]+\.(?:png|webp|svg)', standalone)
 assert "function renderPlayerAuctions()" in standalone
 assert "const KEY='cape-town-rentals-coastline-v3'" in standalone
-print("PASS: 17 approved side art assets and original top-down map sprites embedded into standalone game.")
+for id_ in ("suv", "convertible", "shuttle", "camper", "luxsuv"):
+    assert "id:'" + id_ + "'" in standalone
+    for direction in ("side", "topdown"):
+        file = f"assets/expansion-{id_}-{direction}.svg"
+        assert file in original and file not in standalone
+        assert (ROOT / file).is_file()
+assert "data:image/svg+xml;base64," in standalone
+print("PASS: 17 original classes and five new side/top-down sprite pairs embedded.")
