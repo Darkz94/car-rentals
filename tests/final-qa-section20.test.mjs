@@ -203,6 +203,6 @@ const homeSection=js.split('function renderOverview(){')[1]?.split('function sta
 const activeRentalPosition=homeSection.indexOf('aria-label="Active Rentals"');
 const customerRequestPosition=homeSection.indexOf('aria-label="Customer Requests"');
 assert.ok(activeRentalPosition>=0&&customerRequestPosition>=0&&activeRentalPosition<customerRequestPosition,'Active Rentals must be above Customer Requests on Dashboard');
-assert.match(homeSection,/state\.rentals\.slice\(0,3\)/,'The active rental list must keep showing live trips');
+assert.match(homeSection,/dashboardSoonestRentals\(3\)\.map\(r=>/,'The active rental list must show the three soonest returns');
 assert.match(homeSection,/extraOffers\.map\(offerCard\)/,'Customer requests must remain accessible');
 console.log('PASS: Section 20 v3 save rollback, rental return payment, auction settlement and guarded user actions.');
