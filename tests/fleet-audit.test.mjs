@@ -275,7 +275,7 @@ const testScript = [
 const deterministicMath = Object.create(Math);
 deterministicMath.random = () => 0;
 const successful = new Function("Math", testScript)(deterministicMath);
-assert.equal(successful, 96, "Failed auction bidding, existing-lot protection or Level 40-tier lock scenarios");
+assert.equal(successful, 4*typeList.length+8, "Failed auction bidding, existing-lot protection or Level 40-tier lock scenarios");
 // Protect the Premium Upgrade catalogue, 100-level cap, prices and garage capacity.
 const premiumPerks=vm.runInNewContext(decl("PRESTIGE_PERKS", "];") + "\nPRESTIGE_PERKS");
 assert.equal(premiumPerks.length,10,"There must be 10 Premium Upgrade categories");
