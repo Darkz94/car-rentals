@@ -72,7 +72,7 @@ assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 520
 assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
 assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
 assert.ok(js.includes("type==='truck'||type==='tow'"), "Tow Truck roof sprite must face correctly on the map");
-assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
 const donk = byId.get("donk");
 assert.ok(donk, "Missing Donk");
 assert.equal(typeList.findIndex(t => t.id === "donk"), typeList.findIndex(t => t.id === "limo")-1, "Donk belongs immediately before Limo");
@@ -87,7 +87,7 @@ assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().j
 assert.ok(!("Donk" in equivalence), "Donk uses exact-category matching");
 assert.ok(js.includes("type==='classic'||type==='donk'||type==='limo'?0"), "Donk and Limo roof art should have horizontal map orientation");
 assert.ok(js.includes("['Muscle','Donk'].includes(t.category)"), "Donk belongs in the custom/muscle dealer view");
-assert.ok(js.includes("['Donk','Limo','Muscle','Sport','Super','Hyper'].includes(t.category)"), "Donk and Limo belong in premium dealer view");
+assert.ok(js.includes("['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV'].includes(t.category)"), "Donk and Limo belong in premium dealer view");
 
 const limo=byId.get("limo");
 assert.ok(limo,"Limo class missing");
@@ -103,7 +103,7 @@ assert.ok(limo.price>donk.price&&limo.price<byId.get("muscle").price,"Limo price
 assert.ok(limo.rate>donk.rate&&limo.rate<byId.get("muscle").rate,"Limo rental rate must sit between Donk and Muscle");
 assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Limo").map(c=>c.id).sort()),["airport-vip-transfer","diplomatic-reception-guest","matric-farewell","wedding-chauffeur"],"Three dedicated Limo customers required");
 assert.ok(!("Limo" in equivalence),"Limo customers must use exact category matching");
-assert.ok(js.includes("['Hatch','Sedan','Coupe','Classic','Limo'].includes(t.category)"),"Limo must appear in executive dealership category");
+assert.ok(js.includes("['Hatch','Sedan','Coupe','Classic','Limo','Compact SUV','Convertible'].includes(t.category)"),"Limo must appear in executive dealership category");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Generic auction lots must include the Limo once Level 20 is reached");
 
 const partyBus=byId.get("partybus");
@@ -122,7 +122,7 @@ assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Party Bus").map(c=>
   ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle","university-graduation-group"],"Three dedicated Party Bus requests must exist");
 assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching");
 assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
-assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Random auction must include unlocked Party Bus models");
 
 const expectedTierLevels={"hatch":2,"sedan":2,"bakkie":2,"jeep":4,"van":5,"coupe":7,"classic":10,"tow":12,"truck":14,"donk":17,"limo":20,"muscle":22,"partybus":25,"bus":27,"sport":30,"super":35,"hyper":40};
@@ -996,7 +996,7 @@ assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='h
  js.includes("modal='dealerbuy'")&&
  js.includes("if(action==='confirmbuycar')")&&
  js.includes("addCar(id,null,false,dealerBranch)"),"Purchasing must still route through original transactions");
-for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper']"]){
+for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper']"]){
  assert.ok(js.includes(category),"Original dealer categories changed "+category);
 }
 assert.ok(js.includes("dealerSearch.trim().toLowerCase()"),"Dealer search must filter UI only");
