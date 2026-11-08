@@ -30,6 +30,8 @@ jobs:
         run: node tests/android-updater.test.mjs
       - name: Verify five new vehicle classes and ten customer types
         run: node tests/vehicles-expansion.test.mjs
+      - name: Verify wave-two vehicles and ten dedicated customers
+        run: node tests/vehicles-wave2.test.mjs
       - name: Verify all 17 contracts and fair booking rotation
         run: node tests/contracts-expansion.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility

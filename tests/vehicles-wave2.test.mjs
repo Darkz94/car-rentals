@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+const root=path.resolve(import.meta.dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const js=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)][0]?.[1];assert.ok(js);
+const decl=(name,end)=>{const a=js.indexOf('const '+name+'='),b=js.indexOf(end,a);assert.ok(a>=0&&b>a,name);return js.slice(a,b+end.length);};
+const get=(name,end)=>vm.runInNewContext(decl(name,end)+'\n'+name);
+const types=Array.from(get('TYPES','];')),customers=Array.from(get('CUSTOMER_TYPES','];')),contracts=Array.from(get('CONTRACTS','];'));
+const sides=get('CAR_IMAGES','};'),tops=vm.runInNewContext(decl('MAP_CAR_IMAGES','};')+'\nMAP_CAR_IMAGES',{CAR_IMAGES:sides});
+const hp=vm.runInNewContext('('+js.match(/function carHorsepower\(c\)\{const base=(\{[^}]+\})/)[1]+')');
+const match=vm.runInNewContext(decl('TYPES','];')+'\n'+decl('CATEGORY_EQUIVALENTS','};')+'\n'+js.slice(js.indexOf('function canServeCategory('),js.indexOf('function carMatch('))+'\ncanServeCategory');
+const unlockCode=js.match(/function customerUnlocked\(c\)\{[^\n]*\}/)?.[0];assert.ok(unlockCode);
+const state={rep:2,fleet:[]};const unlocked=vm.runInNewContext(decl('TYPES','];')+'\n'+unlockCode+'\ncustomerUnlocked',{state});
+const specs=[{"id":"safari","name":"Safari 4x4","model":"Karoo Ranger","lvl":13,"price":290000,"rate":1800,"tank":92,"hp":250},{"id":"motorhome","name":"Motorhome","model":"Winelands Wanderer","lvl":28,"price":615000,"rate":3150,"tank":130,"hp":285},{"id":"rally","name":"Rally Car","model":"Cape Apex R","lvl":29,"price":535000,"rate":3300,"tank":65,"hp":390},{"id":"grandtourer","name":"Grand Tourer","model":"Twelve Apostles GT","lvl":33,"price":835000,"rate":4950,"tank":75,"hp":460},{"id":"armored","name":"Armoured VIP SUV","model":"Citadel Sentinel","lvl":37,"price":1650000,"rate":8750,"tank":105,"hp":430}];
+
+assert.equal(types.length,27);assert.equal(customers.length,74);assert.equal(contracts.length,17);
+assert.equal(new Set(types.map(t=>t.id)).size,27);assert.equal(new Set(customers.map(c=>c.id)).size,74);
+assert.equal(customers.filter(c=>c.vipBonus).length,8);
+assert.equal(customers.filter(c=>!c.vipBonus).length,66);
+assert.equal(types.find(t=>t.id==='hyper').unlock,40);assert.equal(Math.max(...types.map(t=>t.unlock)),40);
+assert.equal(new Set(Object.values(sides)).size,27);assert.equal(new Set(Object.values(tops)).size,27);
+for(const s of specs){
+ const ty=types.find(t=>t.id===s.id);assert.ok(ty,s.id);
+ for(const [k,v] of [['name',s.name],['model',s.model],['category',s.name],['unlock',s.lvl],['price',s.price],['rate',s.rate],['tank',s.tank]])assert.equal(ty[k],v,k+' '+s.id);
+ assert.equal(hp[s.id],s.hp);
+ const pool=customers.filter(c=>c.need===s.name);assert.equal(pool.length,2);
+ assert.equal(match(s.name,s.name),true);assert.equal(match(s.name,'Jeep'),false);assert.equal(match('Any',s.name),true);
+ state.rep=s.lvl-1;state.fleet=[];assert.equal(unlocked(pool[0]),false);
+ state.rep=s.lvl;assert.equal(unlocked(pool[0]),true);
+ state.rep=2;state.fleet=[{type:s.id}];assert.equal(unlocked(pool[0]),true);
+ for(const [view,mapping] of [['side',sides],['topdown',tops]]){
+  const file='assets/expansion-'+s.id+'-'+view+'.svg';assert.equal(mapping[s.id],file);
+  const svg=fs.readFileSync(path.join(root,file),'utf8');assert.ok(svg.length>=2400);
+  assert.match(svg,/^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);assert.match(svg,/<title>[^<]+<\/title>/);
+  assert.match(svg,/<linearGradient id="paint"/);assert.ok(!svg.includes('<image'));
+ }
+}
+assert.ok(js.includes("const KEY='cape-town-rentals-coastline-v3'"));
+assert.ok(js.includes('const VIP_OFFER_CHANCE=.07;'));
+assert.ok(js.includes('const MAX_PENDING_CONTRACT_ENQUIRIES=3;'));
+assert.ok(js.includes('function finishRental(r)'));
+console.log('PASS: second-wave fleet, customer gates, unique artwork, existing game protections.');

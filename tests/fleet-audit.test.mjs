@@ -24,10 +24,10 @@ const customerList = vm.runInNewContext(customerSource + "\nCUSTOMER_TYPES");
 const contractIds = vm.runInNewContext(decl("CONTRACT_CUSTOMER_IDS", "};") + "\nCONTRACT_CUSTOMER_IDS");
 const equivalence = vm.runInNewContext(decl("CATEGORY_EQUIVALENTS", "};") + "\nCATEGORY_EQUIVALENTS");
 const byId = new Map(typeList.map(t => [t.id, t]));
-assert.equal(typeList.length, 22);
-assert.equal(byId.size, 22);
-assert.equal(customerList.length, 64);
-assert.equal(new Set(customerList.map(x => x.id)).size, 64);
+assert.equal(typeList.length, 27);
+assert.equal(byId.size, 27);
+assert.equal(customerList.length, 74);
+assert.equal(new Set(customerList.map(x => x.id)).size, 74);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
@@ -72,7 +72,7 @@ assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 520
 assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
 assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
 assert.ok(js.includes("type==='truck'||type==='tow'"), "Tow Truck roof sprite must face correctly on the map");
-assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan','Safari 4x4','Motorhome']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
 const donk = byId.get("donk");
 assert.ok(donk, "Missing Donk");
 assert.equal(typeList.findIndex(t => t.id === "donk"), typeList.findIndex(t => t.id === "limo")-1, "Donk belongs immediately before Limo");
@@ -86,8 +86,8 @@ assert.equal(horsepower.donk, 320);
 assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().join(","), "custom-car-photographer-neo,music-video-crew,show-promoter-zane");
 assert.ok(!("Donk" in equivalence), "Donk uses exact-category matching");
 assert.ok(js.includes("type==='classic'||type==='donk'||type==='limo'?0"), "Donk and Limo roof art should have horizontal map orientation");
-assert.ok(js.includes("['Muscle','Donk'].includes(t.category)"), "Donk belongs in the custom/muscle dealer view");
-assert.ok(js.includes("['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV'].includes(t.category)"), "Donk and Limo belong in premium dealer view");
+assert.ok(js.includes("['Muscle','Donk','Rally Car'].includes(t.category)"), "Donk belongs in the custom/muscle dealer view");
+assert.ok(js.includes("['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV','Rally Car','Grand Tourer','Armoured VIP SUV'].includes(t.category)"), "Donk and Limo belong in premium dealer view");
 
 const limo=byId.get("limo");
 assert.ok(limo,"Limo class missing");
@@ -122,7 +122,7 @@ assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Party Bus").map(c=>
   ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle","university-graduation-group"],"Three dedicated Party Bus requests must exist");
 assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching");
 assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
-assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
+assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan','Safari 4x4','Motorhome'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Random auction must include unlocked Party Bus models");
 
 const expectedTierLevels={"hatch":2,"sedan":2,"bakkie":2,"jeep":4,"van":5,"coupe":7,"classic":10,"tow":12,"truck":14,"donk":17,"limo":20,"muscle":22,"partybus":25,"bus":27,"sport":30,"super":35,"hyper":40};
@@ -154,14 +154,14 @@ legacyUnlockState.rep=25;legacyUnlockState.fleet.push({type:'hyper'});
 assert.equal(unlockedDemand(hyperDemand),true,"Previously owned hypercar still receives bookings before Level 40");
 assert.ok(js.includes("tierRules:40"),"New auction lots must use Level 40 unlock tiers");
 assert.ok(js.includes("!a.tierRules||a.tierRules<40"),"Pre-update Level 25 auction lots must settle normally");
-console.log("PASS: All 22 vehicle classes unlock across Levels 2-40; old fleet and auction bids protected.");
+console.log("PASS: All 27 vehicle classes unlock across Levels 2-40; old fleet and auction bids protected.");
 
 // VIP additions: all old IDs remain intact, 18 ordinary additions and 8 rare any-vehicle VIPs.
 const originalCustomerIds=["backpacker-leo","family-jacobs","contractor-dave","executive-priya","influencer-kim","logistics-co","vineyard-group","film-producer"];
 for(const id of originalCustomerIds)assert.ok(customerList.some(c=>c.id===id),"Existing customer removed: "+id);
 const vipList=customerList.filter(c=>c.vipBonus>0);
 assert.equal(vipList.length,8,"Exactly eight new VIP customers required");
-assert.equal(customerList.filter(c=>!c.vipBonus).length,56,"Original and added standard customers must total 46");
+assert.equal(customerList.filter(c=>!c.vipBonus).length,66,"Original and added standard customers must total 46");
 assert.deepEqual(Array.from(vipList.map(c=>Math.round(c.vipBonus*100)).sort((a,b)=>b-a)),[75,70,65,60,55,45,40,30]);
 assert.ok(vipList.every(c=>c.need==="Any"&&c.budget===0&&c.vipWeight>=1),"VIPs need class flexibility and positive rarity weights");
 assert.ok(vipList[0].vipWeight<vipList.at(-1).vipWeight,"Highest-paying VIP must be rarer");
@@ -172,7 +172,7 @@ assert.ok(js.includes("...(!contract&&c.vipBonus?{vipBonus:c.vipBonus}:{})"),"VI
 assert.ok(js.includes("...(!contract&&customer.vipBonus?{vipBonus:customer.vipBonus}:{})"),"Offline VIP offers must apply the same bonus");
 const destSource=decl("DEST","};");
 const destinations=vm.runInNewContext(destSource+"\nDEST");
-assert.ok(customerList.every(c=>destinations[c.dest]),"All 64 customer destinations must exist on the Live map");
+assert.ok(customerList.every(c=>destinations[c.dest]),"All 74 customer destinations must exist on the Live map");
 const matchSource=js.match(/function canServeCategory\(requested,availableCategory\)\{[^\n]*\}/)?.[0];
 const carMatchSource=js.match(/function carMatch\(car,offer\)\{[\s\S]*?\n\}/)?.[0];
 const projectedSource=js.match(/function projectedPayout\(car,offer\)\{[^\n]*\}/)?.[0];
@@ -192,7 +192,7 @@ for(const vehicle of typeList){
 }
 assert.equal(matchVIP({type:"hatch",rides:0},{need:"Tow",budget:20000,mult:1.35,contract:null}),-1,"Non-VIP requests remain category-restricted");
 assert.ok(js.includes("rental-offer-v8--vip")&&js.includes("VIP PRICING")&&js.includes("VIP BOOKING"),"VIP cards must visibly show their special price");
-console.log("PASS: 64 customers, weighted 7% VIP rarity, all-class matching and payouts.");
+console.log("PASS: 74 customers, weighted 7% VIP rarity, all-class matching and payouts.");
 
 for (const customer of customerList) {
   const vehicle = typeList.find(t => t.category === customer.need);
@@ -780,7 +780,7 @@ assert.ok(v8autoSrc.includes("up('auto')")&&v8autoSrc.includes("state.settings.a
 assert.ok(js.includes("document.getElementById('rental-offer-car-'+id)?.value||null")&&
  js.includes("startRental(id,chosen)"),"Manual car selector must connect to the existing startRental action");
 assert.ok(js.includes("data-offer-progress")&&js.includes("duration=Math.max(1,o.expires-"),"Live offer progress must update without a game balance change");
-assert.equal(customerList.length,64,"Original 54 and ten new customers retained");
+assert.equal(customerList.length,74,"Original 54 and twenty added regular customers retained");
 const v8mockCar={id:"sedan-8",plate:"CA 808",type:"sedan",branch:"hq",status:"available",tune:1};
 const v8second={...v8mockCar,id:"sedan-9",plate:"CA 909"};
 const v8offer={id:"offer-8",customer:"Executive Priya",icon:"💼",need:"Sedan",budget:4000,dest:"airport",
@@ -827,7 +827,7 @@ assert.ok(v8autoFn().includes("PAUSED"),"Paused Auto-Dispatch must be distinguis
 assert.ok(js.includes("if(!car||carMatch(car,offer)<0)"),"Existing category/eligibility protection must remain");
 assert.ok(js.includes("let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds)")&&
  js.includes("state.rentals.push({id:uid('rent')"),"Real rentals must use existing duration and payout handlers");
-console.log("PASS: Section 8 rental offer art, 64 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
+console.log("PASS: Section 8 rental offer art, 74 customer types, expiry, manual car selection, matching, budget, Auto-Dispatch and save safety.");
 
 
 
@@ -980,7 +980,7 @@ assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReser
  js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
 console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
 
-console.log("PASS: JavaScript syntax, 22 classes, 64 customers and all assets.");
+console.log("PASS: JavaScript syntax, 27 classes, 74 customers and all assets.");
 
 
 // Section 12 dealership: premium presentation, no changes to economy or save version.
@@ -996,13 +996,13 @@ assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='h
  js.includes("modal='dealerbuy'")&&
  js.includes("if(action==='confirmbuycar')")&&
  js.includes("addCar(id,null,false,dealerBranch)"),"Purchasing must still route through original transactions");
-for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo','Compact SUV','Convertible']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan']","['Muscle','Donk']","['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV']"]){
+for(const category of ["['Hatch','Sedan','Coupe','Classic','Limo','Compact SUV','Convertible']","['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan','Safari 4x4','Motorhome']","['Muscle','Donk','Rally Car']","['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV','Rally Car','Grand Tourer','Armoured VIP SUV']"]){
  assert.ok(js.includes(category),"Original dealer categories changed "+category);
 }
 assert.ok(js.includes("dealerSearch.trim().toLowerCase()"),"Dealer search must filter UI only");
-assert.equal(typeList.length,22,"All 22 vehicle classes remain available");
+assert.equal(typeList.length,27,"All 27 vehicle classes remain available");
 assert.ok(js.includes("s.version!==3")&&js.includes("function saveToSlot(n)"),"Existing save model must remain");
-console.log("PASS: Section 12 dealership visuals, 22 vehicles, category/search, comparison, purchase confirmation and save safety.");
+console.log("PASS: Section 12 dealership visuals, 27 vehicles, category/search, comparison, purchase confirmation and save safety.");
 
 
 // Section 13 Auction House visual integrity; preserve both auction engines.
