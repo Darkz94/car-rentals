@@ -58,7 +58,7 @@ for(const [i,expected] of approved.entries()){
  assert.equal(c.period,period);assert.equal(c.dest,dest);assert.equal(mapping[id],customerId);
  const t=types.find(t=>t.category===need);
  assert.ok(t,'No matching vehicle for '+name);
- assert.equal(t.unlock,rep,'A new contract must not unlock vehicles early: '+name);
+ assert.ok(t.unlock>=rep,'Contracts must not bring forward the vehicle unlock: '+name);
  assert.ok(branches.some(b=>b.id===branch),'Unknown contract branch '+branch);
  assert.ok(destinations[dest],'Unknown contract destination '+dest);
  const customer=customers.find(x=>x.id===customerId);
