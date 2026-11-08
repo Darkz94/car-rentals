@@ -34,6 +34,8 @@ jobs:
         run: node tests/vehicles-wave2.test.mjs
       - name: Verify ten distinct realistic photos and matched top-down artwork
         run: node tests/realistic-expansion-art.test.mjs
+      - name: Verify restoration and mileage feature guardrails
+        run: node tests/vehicle-restoration-history.test.mjs
       - name: Verify all 17 contracts and fair booking rotation
         run: node tests/contracts-expansion.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility

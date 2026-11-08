@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+const source=fs.readFileSync(path.resolve(import.meta.dirname,'../index.html'),'utf8');
+const js=source.split('<script>')[1]?.split('</script>')[0];
+assert.ok(js,'script exists');
+new vm.Script(js);
+for(const name of ['logVehicle','restorationPrice','findSalvage','buySalvage','restoreSalvage','carHistoryPanel','restorationPanel'])assert.ok(js.includes('function '+name+'('),name);
+for(const token of ['salvageOffers:[]','status:\'restoration\'','mileageKnown','serviceHistory','tripKm','restorationPanel()'])assert.ok(js.includes(token),token);
+assert.ok(js.includes("const KEY='cape-town-rentals-coastline-v3'"));
+console.log('PASS: salvage project, restoration stages, mileage, service history and save identifiers.');

@@ -1,0 +1,5 @@
+# Restoration Projects and Vehicle Service History
+
+Implemented together in the Fleet > Workshop & Wash and Garage screens. Salvage vehicles can be scouted once per game day (up to three currently unlocked classes), purchased with normal free-cash and garage-capacity checks, and rebuilt manually in four paid stages. The restoration status prevents renting, transfer and selling until roadworthy. Purchase prices are 17–22% of full price and stage fees are 2.5%, 8.5%, 5.5% and 3% of full price, minimum R600 each. Existing auction mechanisms and original economy remain unchanged.
+
+All vehicles now track mileage after completed rental returns and store up to 60 individual history entries for maintenance, repairs and restoration. Garage vehicle inspection displays the latest eight. Existing v3 saves get tracking without invented past distance. JSON backup remains unchanged. Vehicle resale formula, original 27 classes, map/side artwork, Android ID and signing stay intact. Phone testing still requires the user's review.
