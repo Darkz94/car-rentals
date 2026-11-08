@@ -179,6 +179,39 @@ try{
       if(header.gridRows?.trim().split(' ').filter(Boolean).length!==2)
         problems.push(width+'px Dashboard header has unused grid row '+JSON.stringify(header));
     }
+    if(route==='business'&&sub==='branches'){
+      // Regression: Branch statistics must not collapse into four narrow Android columns.
+      const branchMetrics=await page.evaluate(()=>{
+        const before=state.branchReports;
+        try{
+          state.branchReports={...before,hq:{...(before?.hq||{}),count:2860,revenue:45316820}};
+          render();
+          const row=document.querySelector('.branches-v14 .branch-v14-stat-row');
+          const cards=[...(row?.querySelectorAll('.branch-v14-stat')||[])];
+          const boxes=cards.map(el=>el.getBoundingClientRect());
+          const fits=cards.every(card=>{
+            const frame=card.getBoundingClientRect(),amount=card.querySelector('strong');
+            if(!amount)return false;
+            const value=amount.getBoundingClientRect();
+            return value.left>=frame.left-2&&value.right<=frame.right+2&&amount.scrollWidth<=amount.clientWidth+2;
+          });
+          const moneyCard=cards[2]?.querySelector('strong');
+          const full=moneyCard?.querySelector('.branch-v14-money-full');
+          const compact=moneyCard?.querySelector('.branch-v14-money-compact');
+          const onTwoRows=cards.length===4&&Math.abs(boxes[0].top-boxes[1].top)<=2&&boxes[2].top>boxes[0].bottom-2&&Math.abs(boxes[2].top-boxes[3].top)<=2;
+          return {cardCount:cards.length,onTwoRows,fits,columns:row?getComputedStyle(row).gridTemplateColumns:null,
+            fullHidden:!!full&&getComputedStyle(full).display==='none',
+            compactShown:!!compact&&getComputedStyle(compact).display!=='none',
+            exactAmount:moneyCard?.title||'',shortAmount:compact?.textContent||''};
+        }finally{
+          state.branchReports=before;render();
+        }
+      });
+      console.log(width+'px Branch KPI 2x2 mobile layout: '+JSON.stringify(branchMetrics));
+      if(!branchMetrics.onTwoRows||!branchMetrics.fits||!branchMetrics.fullHidden||!branchMetrics.compactShown||
+         branchMetrics.exactAmount.replace(/\D/g,'')!=='45316820'||!/^R45\.32m$/.test(branchMetrics.shortAmount))
+        problems.push(width+'px Branch stats overflow or wrong money label '+JSON.stringify(branchMetrics));
+    }
     if(route==='business'&&sub==='command'){
       // One navigation grid only: all six business destinations, no duplicated department shortcuts.
       const business=await page.evaluate(()=>({
