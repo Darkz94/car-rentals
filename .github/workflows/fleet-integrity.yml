@@ -85,7 +85,8 @@ jobs:
   mobile-ui:
     name: Android portrait screen audit
     needs: fleet-tests
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 supports Ubuntu 24.04, not the ubuntu-latest 26.04 runner.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
