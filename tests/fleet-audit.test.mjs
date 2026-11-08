@@ -26,8 +26,8 @@ const equivalence = vm.runInNewContext(decl("CATEGORY_EQUIVALENTS", "};") + "\nC
 const byId = new Map(typeList.map(t => [t.id, t]));
 assert.equal(typeList.length, 17);
 assert.equal(byId.size, 17);
-assert.equal(customerList.length, 28);
-assert.equal(new Set(customerList.map(x => x.id)).size, 28);
+assert.equal(customerList.length, 54);
+assert.equal(new Set(customerList.map(x => x.id)).size, 54);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
@@ -54,7 +54,7 @@ assert.equal(jeep.tank, 72);
 assert.equal(jeep.unlock, 3);
 assert.equal(horsepower.jeep, 210);
 assert.equal(customerList.filter(c => c.need === "Jeep").map(c => c.id).sort().join(","),
-  "adventure-couple,trail-explorer");
+  "adventure-couple,mountain-guide-kabelo,trail-explorer");
 assert.ok(!("Jeep" in equivalence), "Jeep uses the existing exact-category fallback");
 assert.ok(js.includes("type==='jeep'||type==='truck'"), "Jeep map direction must match top-down sprite");
 const tow = byId.get("tow");
@@ -67,7 +67,7 @@ assert.equal(tow.rate, 1650);
 assert.equal(tow.tank, 90);
 assert.equal(tow.unlock, 8);
 assert.equal(horsepower.tow, 300);
-assert.equal(customerList.filter(c => c.need === "Tow").map(c => c.id).sort().join(","), "insurance-recovery-team,roadside-rescue-nina");
+assert.equal(customerList.filter(c => c.need === "Tow").map(c => c.id).sort().join(","), "highway-recovery-crew,insurance-recovery-team,roadside-rescue-nina");
 assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 5200);
 assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
 assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
@@ -83,7 +83,7 @@ assert.equal(donk.rate, 2300);
 assert.equal(donk.tank, 68);
 assert.equal(donk.unlock, 11);
 assert.equal(horsepower.donk, 320);
-assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().join(","), "music-video-crew,show-promoter-zane");
+assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().join(","), "custom-car-photographer-neo,music-video-crew,show-promoter-zane");
 assert.ok(!("Donk" in equivalence), "Donk uses exact-category matching");
 assert.ok(js.includes("type==='classic'||type==='donk'||type==='limo'?0"), "Donk and Limo roof art should have horizontal map orientation");
 assert.ok(js.includes("['Muscle','Donk'].includes(t.category)"), "Donk belongs in the custom/muscle dealer view");
@@ -101,7 +101,7 @@ assert.equal(limo.unlock, 13);
 assert.equal(horsepower.limo,390);
 assert.ok(limo.price>donk.price&&limo.price<byId.get("muscle").price,"Limo price must sit between Donk and Muscle");
 assert.ok(limo.rate>donk.rate&&limo.rate<byId.get("muscle").rate,"Limo rental rate must sit between Donk and Muscle");
-assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Limo").map(c=>c.id).sort()),["airport-vip-transfer","matric-farewell","wedding-chauffeur"],"Three dedicated Limo customers required");
+assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Limo").map(c=>c.id).sort()),["airport-vip-transfer","diplomatic-reception-guest","matric-farewell","wedding-chauffeur"],"Three dedicated Limo customers required");
 assert.ok(!("Limo" in equivalence),"Limo customers must use exact category matching");
 assert.ok(js.includes("['Hatch','Sedan','Coupe','Classic','Limo'].includes(t.category)"),"Limo must appear in executive dealership category");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Generic auction lots must include the Limo once Level 13 is reached");
@@ -119,7 +119,7 @@ assert.equal(horsepower.partybus,300);
 assert.ok(partyBus.price>byId.get("muscle").price&&partyBus.price<byId.get("bus").price,"Party Bus purchase price should fall between Muscle and Tour Bus");
 assert.ok(partyBus.rate>byId.get("bus").rate&&partyBus.rate<byId.get("sport").rate,"Party Bus rate should fall between Tour Bus and Sports");
 assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Party Bus").map(c=>c.id).sort()),
-  ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle"],"Three dedicated Party Bus requests must exist");
+  ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle","university-graduation-group"],"Three dedicated Party Bus requests must exist");
 assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching");
 assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
 assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
@@ -147,9 +147,47 @@ assert.ok(js.includes("tierRules:25"),"New auction lots must use the new unlock 
 assert.ok(js.includes("!a.tierRules"),"Pre-update saved auction lots must settle normally");
 console.log("PASS: All 17 vehicle classes now unlock across Levels 2-25; old fleet and auction bids protected.");
 
+// VIP additions: all old IDs remain intact, 18 ordinary additions and 8 rare any-vehicle VIPs.
+const originalCustomerIds=["backpacker-leo","family-jacobs","contractor-dave","executive-priya","influencer-kim","logistics-co","vineyard-group","film-producer"];
+for(const id of originalCustomerIds)assert.ok(customerList.some(c=>c.id===id),"Existing customer removed: "+id);
+const vipList=customerList.filter(c=>c.vipBonus>0);
+assert.equal(vipList.length,8,"Exactly eight new VIP customers required");
+assert.equal(customerList.filter(c=>!c.vipBonus).length,46,"Original and added standard customers must total 46");
+assert.deepEqual(Array.from(vipList.map(c=>Math.round(c.vipBonus*100)).sort((a,b)=>b-a)),[75,70,65,60,55,45,40,30]);
+assert.ok(vipList.every(c=>c.need==="Any"&&c.budget===0&&c.vipWeight>=1),"VIPs need class flexibility and positive rarity weights");
+assert.ok(vipList[0].vipWeight<vipList.at(-1).vipWeight,"Highest-paying VIP must be rarer");
+assert.match(js,/const VIP_OFFER_CHANCE=\.07;/,"VIPs must occupy 7 percent of normal random demand");
+assert.ok(js.includes("selectRandomCustomer(CUSTOMER_TYPES.filter(customerUnlocked))"),"Live demand must use VIP rarity selection");
+assert.ok(js.includes("const customer=selectRandomCustomer(customers);"),"Offline demand must also use VIP rarity selection");
+assert.ok(js.includes("...(!contract&&c.vipBonus?{vipBonus:c.vipBonus}:{})"),"VIP premium must persist in an offer without changing v3 saves");
+assert.ok(js.includes("...(!contract&&customer.vipBonus?{vipBonus:customer.vipBonus}:{})"),"Offline VIP offers must apply the same bonus");
+const destSource=decl("DEST","};");
+const destinations=vm.runInNewContext(destSource+"\nDEST");
+assert.ok(customerList.every(c=>destinations[c.dest]),"All 54 customer destinations must exist on the Live map");
+const matchSource=js.match(/function canServeCategory\(requested,availableCategory\)\{[^\n]*\}/)?.[0];
+const carMatchSource=js.match(/function carMatch\(car,offer\)\{[\s\S]*?\n\}/)?.[0];
+const projectedSource=js.match(/function projectedPayout\(car,offer\)\{[^\n]*\}/)?.[0];
+assert.ok(matchSource&&carMatchSource&&projectedSource,"VIP match and payout functions must exist");
+const typeOfVIP=id=>typeList.find(t=>t.id===id);
+const pricingCtx={typeOf:typeOfVIP,up:()=>false,perkEffect:()=>0,difficulty:()=>({revenue:1}),weatherEffect:()=>({revenue:1}),isNight:()=>false,round:Math.round,carReady:()=>true,CONTRACTS:[],state:{rep:25,fleet:[]}};
+const priceVIP=vm.runInNewContext(projectedSource+"\nprojectedPayout",pricingCtx);
+const matchVIP=vm.runInNewContext(typeSource+"\n"+decl("CATEGORY_EQUIVALENTS","};")+"\n"+matchSource+"\n"+carMatchSource+"\ncarMatch",{...pricingCtx,projectedPayout:priceVIP});
+for(const vehicle of typeList){
+ const car={type:vehicle.id,rides:0,status:"available",fuel:100,condition:100};
+ const ordinary={need:vehicle.category,budget:1000000,mult:1.35,contract:null};
+ const basic=priceVIP(car,ordinary);
+ const royale={need:"Any",budget:0,mult:1.35,contract:null,vipBonus:.75};
+ assert.equal(priceVIP(car,royale),Math.round(basic*1.75),"Royal VIP premium must scale with "+vehicle.id);
+ assert.ok(matchVIP(car,royale)>=0,"VIP must accept "+vehicle.id);
+ assert.equal(priceVIP(car,{...ordinary,budget:200}),Math.round(Math.min(320,basic)),"Ordinary quote must keep original budget cap");
+}
+assert.equal(matchVIP({type:"hatch",rides:0},{need:"Tow",budget:20000,mult:1.35,contract:null}),-1,"Non-VIP requests remain category-restricted");
+assert.ok(js.includes("rental-offer-v8--vip")&&js.includes("VIP PRICING")&&js.includes("VIP BOOKING"),"VIP cards must visibly show their special price");
+console.log("PASS: 26 new customer types, weighted 7% VIP rarity, all-class matching and vehicle-based VIP payouts.");
+
 for (const customer of customerList) {
   const vehicle = typeList.find(t => t.category === customer.need);
-  assert.ok(vehicle, "Unmapped demand " + customer.need);
+  assert.ok(vehicle || (customer.need==="Any" && customer.vipBonus>0), "Unmapped demand " + customer.need);
   assert.ok(customer.id && customer.name && customer.budget > 0);
 }
 for (const id of Object.values(contractIds)) assert.ok(customerList.some(c => c.id === id));

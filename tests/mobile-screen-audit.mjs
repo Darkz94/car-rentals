@@ -131,6 +131,35 @@ try{
          earliest.savedOrder!==earliest.orderAfter||earliest.badge!=='4 ACTIVE')
          problems.push(width+'px Dashboard rental order invalid '+JSON.stringify(earliest));
     }
+    if(route==='overview'&&!sub){
+      // Verify the royal VIP card is legible on compact Android screens without changing production data.
+      const vipCard=await page.evaluate(()=>{
+        const oldOffers=state.offers.slice();
+        let fixture=null;
+        try{
+          const offer=newOffer(null,'royal-guest-amara');
+          if(!offer)return {error:'Royal VIP customer not generated'};
+          fixture=document.createElement('div');
+          fixture.style.width='100%';
+          fixture.innerHTML=offerCard(offer);
+          document.querySelector('.main').appendChild(fixture);
+          const card=fixture.querySelector('.rental-offer-v8--vip');
+          const meta=card?.querySelector('.rental-offer-v8-identity')?.textContent||'';
+          const finance=card?.querySelector('.rental-offer-v8-finance')?.textContent||'';
+          const box=card?.getBoundingClientRect();
+          return {exists:!!card,meta,finance,withinViewport:!!box&&box.left>=-3&&box.right<=innerWidth+3,percent:offer.vipBonus};
+        }finally{
+          if(fixture)fixture.remove();
+          state.offers=oldOffers;
+          render();
+        }
+      });
+      console.log(width+'px VIP booking card: '+JSON.stringify(vipCard));
+      if(vipCard.error||!vipCard.exists||!vipCard.withinViewport||vipCard.percent!==.75||
+         !vipCard.meta.includes('VIP BOOKING')||!vipCard.meta.includes('ANY READY VEHICLE')||
+         !vipCard.finance.includes('VEHICLE BASED')||vipCard.finance.includes('R0'))
+        problems.push(width+'px VIP booking card invalid '+JSON.stringify(vipCard));
+    }
     if(route==='overview'){
       const header=await page.evaluate(()=>{
         const banner=document.querySelector('.dashboard-header');

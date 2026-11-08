@@ -2602,6 +2602,14 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .rental-requests-v8-list{display:grid;grid-template-columns:1fr;gap:10px}
 .rental-offer-v8{min-width:0;border:1.5px solid #71b7e6;border-radius:15px;background:linear-gradient(135deg,#1b5889,#0b325d 59%,#092548);box-shadow:0 3px 0 #082545,0 9px 16px #0006;overflow:hidden}
 .rental-offer-v8--ready{border-color:#55d9c4}.rental-offer-v8--blocked{border-color:#eab86f}
+/* VIP styling stays within the existing Rental Desk arcade palette. */
+.rental-offer-v8--vip{border-color:#f6cb68;box-shadow:0 3px 0 #674821,0 8px 18px #0008}
+.rental-offer-v8--vip .rental-offer-v8-top{background:linear-gradient(105deg,#5c4b30,#214468 65%,#153455)}
+.rental-offer-v8--vip .rental-offer-v8-identity>small{color:#ffe49b}
+.rental-offer-v8--vip .rental-offer-v8-identity>span{color:#ffefc8}
+.rental-offer-v8--vip .rental-offer-v8-route>span{border-color:#c29d5c}
+.rental-offer-v8--vip .rental-offer-v8-finance strong{font-size:clamp(11px,3.4vw,15px)}
+
 .rental-offer-v8-top{display:flex;align-items:center;gap:9px;padding:10px;background:linear-gradient(105deg,#1c5b8c,#0f385e)}
 .rental-customer-v8{width:57px;height:57px;position:relative;flex:none;display:grid;place-items:center;border-radius:14px;background:radial-gradient(circle at 30% 20%,#6cf3ff,#2d82bd 42%,#143567);border:1px solid #9ee5ff;box-shadow:inset 0 2px 6px #ffffff4d,0 4px 10px #0008}
 .rental-customer-v8>span{font-size:27px;line-height:1;filter:drop-shadow(0 3px 2px #0006)}
@@ -4769,10 +4777,48 @@ const CUSTOMER_TYPES=[{id:'backpacker-leo',name:'Backpacker Leo',icon:'🎒',nee
 {id:'matric-farewell',name:'Matric Farewell Party',icon:'🎓',need:'Limo',budget:9200,dest:'waterfront'},
 {id:'birthday-bash-crew',name:'Birthday Bash Crew',icon:'🎂',need:'Party Bus',budget:9500,dest:'waterfront'},
 {id:'bachelorette-party',name:'Bachelorette Party',icon:'🥳',need:'Party Bus',budget:11500,dest:'camps'},
-{id:'corporate-celebration-shuttle',name:'Corporate Celebration Shuttle',icon:'🎊',need:'Party Bus',budget:10500,dest:'stellenbosch'}];
+{id:'corporate-celebration-shuttle',name:'Corporate Celebration Shuttle',icon:'🎊',need:'Party Bus',budget:10500,dest:'stellenbosch'},
+// 18 new ordinary customers use the existing category-based booking rules.
+{id:'stellenbosch-student-lerato',name:'Stellenbosch Student Lerato',icon:'🎓',need:'Hatch',budget:2600,dest:'stellenbosch'},
+{id:'financial-advisor-daniel',name:'Financial Advisor Daniel',icon:'💼',need:'Sedan',budget:4300,dest:'airport'},
+{id:'blouberg-surf-crew',name:'Blouberg Surf Crew',icon:'🏄',need:'Bakkie',budget:3900,dest:'camps'},
+{id:'mountain-guide-kabelo',name:'Mountain Guide Kabelo',icon:'🏔️',need:'Jeep',budget:4200,dest:'table'},
+{id:'cape-peninsula-courier',name:'Cape Peninsula Courier',icon:'📦',need:'Van',budget:4400,dest:'waterfront'},
+{id:'coastal-engagement-couple',name:'Coastal Engagement Couple',icon:'💕',need:'Coupe',budget:6100,dest:'chapman'},
+{id:'vintage-film-director',name:'Vintage Film Director',icon:'🎞️',need:'Classic',budget:7700,dest:'camps'},
+{id:'highway-recovery-crew',name:'Highway Recovery Crew',icon:'🚨',need:'Tow',budget:7000,dest:'airport'},
+{id:'construction-supply-team',name:'Construction Supply Team',icon:'🏗️',need:'Truck',budget:8300,dest:'stellenbosch'},
+{id:'custom-car-photographer-neo',name:'Custom Car Photographer Neo',icon:'🎵',need:'Donk',budget:10000,dest:'waterfront'},
+{id:'diplomatic-reception-guest',name:'Diplomatic Reception Guest',icon:'🥂',need:'Limo',budget:12400,dest:'camps'},
+{id:'cape-muscle-car-club',name:'Cape Muscle Car Club',icon:'🏁',need:'Muscle',budget:13000,dest:'chapman'},
+{id:'university-graduation-group',name:'University Graduation Group',icon:'🎉',need:'Party Bus',budget:14000,dest:'waterfront'},
+{id:'hermanus-sightseeing-group',name:'Hermanus Sightseeing Group',icon:'🐋',need:'Bus',budget:13000,dest:'hermanus'},
+{id:'coastal-driving-enthusiast',name:'Coastal Driving Enthusiast',icon:'🏎️',need:'Sport',budget:16000,dest:'chapman'},
+{id:'luxury-resort-guest',name:'Luxury Resort Guest',icon:'💎',need:'Super',budget:29000,dest:'franschhoek'},
+{id:'international-car-collector',name:'International Car Collector',icon:'⚡',need:'Hyper',budget:42000,dest:'camps'},
+{id:'conference-speaker-naledi',name:'Conference Speaker Naledi',icon:'🏛️',need:'Sedan',budget:4900,dest:'waterfront'},
+// VIPs can rent any ready vehicle; higher-paying VIPs appear less often.
+{id:'royal-guest-amara',name:'Royal Guest Amara',icon:'👑',need:'Any',budget:0,dest:'waterfront',vipBonus:0.75,vipWeight:1},
+{id:'billionaire-blake',name:'Billionaire Blake',icon:'💎',need:'Any',budget:0,dest:'franschhoek',vipBonus:0.7,vipWeight:1},
+{id:'hollywood-star-alex',name:'Hollywood Star Alex',icon:'🎬',need:'Any',budget:0,dest:'camps',vipBonus:0.65,vipWeight:2},
+{id:'motorsport-legend-max',name:'Motorsport Legend Max',icon:'🏎️',need:'Any',budget:0,dest:'chapman',vipBonus:0.6,vipWeight:2},
+{id:'pop-star-luna',name:'Pop Star Luna',icon:'🎤',need:'Any',budget:0,dest:'waterfront',vipBonus:0.55,vipWeight:3},
+{id:'ceo-victoria',name:'CEO Victoria',icon:'🏢',need:'Any',budget:0,dest:'airport',vipBonus:0.45,vipWeight:4},
+{id:'luxury-honeymoon-couple',name:'Luxury Honeymoon Couple',icon:'💍',need:'Any',budget:0,dest:'franschhoek',vipBonus:0.4,vipWeight:5},
+{id:'international-vip-guest',name:'International VIP Guest',icon:'✈️',need:'Any',budget:0,dest:'airport',vipBonus:0.3,vipWeight:7}];
 // Keep class-specific demand locked until its vehicle category is available.
 // Add new category unlock requirements here when expanding the vehicle roster.
 // Customer demand unlocks with its vehicle class; this also covers future additions.
+// VIPs make up 7% of non-contract random customer requests. VIP weight controls rarity.
+const VIP_OFFER_CHANCE=.07;
+function selectRandomCustomer(pool){
+ const regular=pool.filter(c=>!c.vipBonus),vips=pool.filter(c=>c.vipBonus);
+ if(vips.length&&Math.random()<VIP_OFFER_CHANCE){
+  let ticket=Math.random()*vips.reduce((sum,c)=>sum+c.vipWeight,0);
+  return vips.find(c=>(ticket-=c.vipWeight)<0)||vips[vips.length-1];
+ }
+ return pick(regular.length?regular:vips);
+}
 function customerUnlocked(c){return state.rep>=(TYPES.find(t=>t.category===c.need)?.unlock??2)||state.fleet.some(car=>TYPES.some(t=>t.id===car.type&&t.category===c.need));}
 const CONTRACT_CUSTOMER_IDS={hotels:'family-jacobs',build:'contractor-dave',vine:'vineyard-group',film:'influencer-kim',lux:'film-producer'};
 const STAFF=[{id:'sales',name:'Sales Agent',icon:'🤝',cost:24000,salary:300,desc:'20% more customer requests.'},{id:'mechanic',name:'Mechanic',icon:'🔧',cost:28000,salary:350,desc:'30% less vehicle wear on every return.'},{id:'driver',name:'Fleet Driver',icon:'🧑‍✈️',cost:22000,salary:300,desc:'Reduces fuel use during rentals.'},{id:'concierge',name:'Guest Concierge',icon:'🛎️',cost:35000,salary:400,desc:'Higher tips and reputation gains.'},{id:'accountant',name:'Accountant',icon:'📊',cost:38000,salary:450,desc:'Reduces loan repayment costs by 10%.'}];
@@ -4927,25 +4973,25 @@ function carReady(car){return car&&car.status==='available'&&car.condition>=35&&
 function available(){return state.fleet.filter(carReady);}
 // Single class-substitution policy for live bookings and offline simulation.
 const CATEGORY_EQUIVALENTS={Hatch:['Hatch','Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Sedan:['Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Coupe:['Coupe','Classic','Muscle','Sport','Super','Hyper'],Classic:['Classic','Sedan','Coupe'],Bakkie:['Bakkie','Van','Truck'],Van:['Van','Truck'],Truck:['Truck','Van','Bakkie'],Bus:['Bus'],Sport:['Sport','Super','Hyper','Coupe','Muscle'],Muscle:['Muscle','Sport','Super','Hyper'],Super:['Super','Hyper']};
-function canServeCategory(requested,availableCategory){return (CATEGORY_EQUIVALENTS[requested]||[requested]).includes(availableCategory);}
+function canServeCategory(requested,availableCategory){return requested==='Any'?TYPES.some(t=>t.category===availableCategory):(CATEGORY_EQUIVALENTS[requested]||[requested]).includes(availableCategory);}
 function carMatch(car,offer){let typ=typeOf(car.type);let needed=offer.need;
   if(!carReady(car))return -1;
   if(offer.contract){const contract=CONTRACTS.find(c=>c.id===offer.contract);if(contract&&contract.branch!==car.branch)return -1;}
   if(!canServeCategory(needed,typ.category))return -1;
-  let price=projectedPayout(car,offer);if(price>offer.budget*1.25)return -1;
-  return (needed===typ.category?1000:120)+Math.min(price,offer.budget)*.1-car.rides*.03;
+  let price=projectedPayout(car,offer);if(!offer.vipBonus&&price>offer.budget*1.25)return -1;
+  return offer.vipBonus?120+price*.01-car.rides*.03:(needed===typ.category?1000:120)+Math.min(price,offer.budget)*.1-car.rides*.03;
 }
 function bestCar(offer){return state.fleet.map(c=>({c,score:carMatch(c,offer)})).filter(o=>o.score>=0).sort((a,b)=>b.score-a.score)[0]?.c||null;}
-function projectedPayout(car,offer){let t=typeOf(car.type);let p=t.rate*(offer.mult||1.35)*(1+(car.tune||0)*.13)*(up('booking')?1.15:1)*(1+perkEffect('prices',.8))*difficulty().revenue*weatherEffect().revenue*(isNight()?.98:1);return round(Math.min(offer.budget*1.6,p)*(offer.contract?1+perkEffect('corporate',.5):1));}
+function projectedPayout(car,offer){let t=typeOf(car.type);let p=t.rate*(offer.mult||1.35)*(1+(car.tune||0)*.13)*(up('booking')?1.15:1)*(1+perkEffect('prices',.8))*difficulty().revenue*weatherEffect().revenue*(isNight()?.98:1);return offer.vipBonus?round(p*(1+offer.vipBonus)):round(Math.min(offer.budget*1.6,p)*(offer.contract?1+perkEffect('corporate',.5):1));}
 // Match against the base quote; hire duration scales the customer's booking budget.
 function rentalPayout(car,offer,seconds){return round(projectedPayout(car,offer)*(1+clamp(seconds,RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS)/100));}
 function estimatedRentalPayout(car,offer){return rentalPayout(car,offer,(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/2);}
 function newOffer(contract=null,forcedId=null){
  const customerId=contract?CONTRACT_CUSTOMER_IDS[contract.id]:forcedId;
- const c=customerId==null?pick(CUSTOMER_TYPES.filter(customerUnlocked)):CUSTOMER_TYPES.find(x=>x.id===customerId);
+ const c=customerId==null?selectRandomCustomer(CUSTOMER_TYPES.filter(customerUnlocked)):CUSTOMER_TYPES.find(x=>x.id===customerId);
  if(!c||!customerUnlocked(c))return null;
  let dest=c.dest;if(contract?.id==='hotels')dest='airport';if(contract?.id==='build')dest='stellenbosch';if(contract?.id==='vine')dest='franschhoek';if(contract?.id==='film')dest='camps';
- let offer={id:uid('offer'),customer:contract?contract.name:c.name,icon:contract?contract.icon:c.icon,need:contract?contract.need:c.need,budget:round(c.budget*(contract?contract.premium:1)*rand(91,120)/100*difficulty().revenue),dest,created:now(),expires:now()+OFFER_LIFETIME_MS,mult:contract?1.55*contract.premium:rand(112,175)/100,contract:contract?.id||null};
+ let offer={id:uid('offer'),customer:contract?contract.name:c.name,icon:contract?contract.icon:c.icon,need:contract?contract.need:c.need,budget:round(c.budget*(contract?contract.premium:1)*rand(91,120)/100*difficulty().revenue),dest,created:now(),expires:now()+OFFER_LIFETIME_MS,mult:contract?1.55*contract.premium:rand(112,175)/100,contract:contract?.id||null,...(!contract&&c.vipBonus?{vipBonus:c.vipBonus}:{})};
  state.offers.push(offer);if(state.offers.length>6)state.offers.shift();return offer;
 }
 function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
@@ -5258,7 +5304,7 @@ function simulateOfflineBookings(start,end){
    if(!possible.length)break;
    const car=pick(possible),type=typeOf(car.type);
    const customers=CUSTOMER_TYPES.filter(c=>customerUnlocked(c)&&canServeCategory(c.need,type.category));
-   const customer=pick(customers);
+   const customer=selectRandomCustomer(customers);
    const matchingContracts=CONTRACTS.filter(contract=>state.contracts.includes(contract.id)&&contract.branch===car.branch&&canServeCategory(contract.need,type.category));
    const contract=matchingContracts.length&&Math.random()<.26?pick(matchingContracts):null;
    const seconds=rentalSeconds(),due=simAt+seconds*1000;
@@ -5267,7 +5313,7 @@ function simulateOfflineBookings(start,end){
        icon:contract?contract.icon:customer.icon,dest:customer.dest,
        budget:Math.max(customer.budget,round(type.rate*1.55)),
        mult:contract?1.55*contract.premium:rand(112,175)/100,
-       contract:contract?.id||null};
+       contract:contract?.id||null,...(!contract&&customer.vipBonus?{vipBonus:customer.vipBonus}:{})};
    const payout=rentalPayout(car,offer,seconds);
    if(payout<=0)break;
    const rental={id:uid('offline'),carId:car.id,customer:offer.customer,icon:offer.icon,
@@ -5405,16 +5451,16 @@ function offerCard(o){
  const example=TYPES.find(t=>t.category===o.need)||TYPES.find(t=>canServeCategory(o.need,t.category));
  const shownCar=candidate?CAR_IMAGES[typeOf(candidate.type).id]:(example?CAR_IMAGES[example.id]:CAR_IMAGES.hatch);
  const connected=eligible.length?eligible.map(c=>`<option value="${esc(c.id)}" ${c.id===candidate?.id?'selected':''}>${esc(typeOf(c.type).name)} · ${esc(c.plate)} · ~${money(estimatedRentalPayout(c,o))}</option>`).join(''):'<option value="">No rental-ready matching vehicle</option>';
- const supported=TYPES.filter(t=>canServeCategory(o.need,t.category)).map(t=>t.name).join(', ');
- return `<article class="rental-offer-v8 ${matches?'rental-offer-v8--ready':'rental-offer-v8--blocked'}" data-rental-offer="${esc(o.id)}">
+ const supported=o.vipBonus?'Any of your 17 vehicle classes':TYPES.filter(t=>canServeCategory(o.need,t.category)).map(t=>t.name).join(', ');
+ return `<article class="rental-offer-v8 ${matches?'rental-offer-v8--ready':'rental-offer-v8--blocked'} ${o.vipBonus?'rental-offer-v8--vip':''}" data-rental-offer="${esc(o.id)}">
   <div class="rental-offer-v8-top">
    <div class="rental-customer-v8" aria-hidden="true"><span>${esc(o.icon||'👤')}</span><i>${arcadeIcon(o.contract?'business':'dispatch')}</i></div>
-   <div class="rental-offer-v8-identity"><small>${o.contract?'CORPORATE BOOKING':'NEW CUSTOMER REQUEST'}</small><h3>${esc(o.customer)}</h3><span>${o.contract?'CONTRACT CLIENT':'WALK-IN CUSTOMER'} · REQUIRES ${esc(o.need).toUpperCase()}</span></div>
+   <div class="rental-offer-v8-identity"><small>${o.vipBonus?'👑 VIP BOOKING · +'+round(o.vipBonus*100)+'%':o.contract?'CORPORATE BOOKING':'NEW CUSTOMER REQUEST'}</small><h3>${esc(o.customer)}</h3><span>${o.vipBonus?'VIP GUEST · ANY READY VEHICLE':o.contract?'CONTRACT CLIENT':'WALK-IN CUSTOMER · REQUIRES '+esc(o.need).toUpperCase()}</span></div>
    <span class="rental-offer-v8-badge ${matches?'matched':'unmatched'}">${matches?'✓ MATCH FOUND':'NEEDS MATCH'}</span>
   </div>
-  <div class="rental-offer-v8-route"><span><b>📍 DESTINATION</b><strong>${esc(DEST[o.dest]?.name||o.dest)}</strong></span><span><b>🚘 VEHICLE CLASS</b><strong>${esc(o.need)}</strong></span></div>
+  <div class="rental-offer-v8-route"><span><b>📍 DESTINATION</b><strong>${esc(DEST[o.dest]?.name||o.dest)}</strong></span><span><b>🚘 VEHICLE CLASS</b><strong>${o.vipBonus?'Any ready vehicle':esc(o.need)}</strong></span></div>
   <div class="rental-offer-v8-finance">
-   <div><small>CUSTOMER BUDGET</small><strong>${money(o.budget)}</strong></div>
+   <div><small>${o.vipBonus?'VIP PRICING':'CUSTOMER BUDGET'}</small><strong>${o.vipBonus?'VEHICLE BASED':money(o.budget)}</strong></div>
    <div><small>EST. RETURN PAYOUT</small><strong class="${matches?'earnings':'muted'}">${candidate?'~'+money(estimatedRentalPayout(candidate,o)):'—'}</strong></div>
    <div><small>READY MATCHES</small><strong>${matches}</strong></div>
   </div>
