@@ -6141,7 +6141,7 @@ function renderCare(){
    <div class="workshop-vehicle-list">${shown.length?shown.map(renderWorkshopVehicle).join(''):'<div class="workshop-empty">No vehicles match this filter. Choose another status to see your fleet.</div>'}</div>
    <p class="workshop-desk-counter">Showing ${shown.length} of ${state.fleet.length} vehicles · Ordered by vehicle class.</p>
   </section>
-  ${typeof restorationPanel==='function'?restorationPanel():''}
+  ${typeof restorationPanel==='function'&&typeof garageCapacity==='function'?restorationPanel():''}
   ${autoCareControl()}
  </div>`;
 }
