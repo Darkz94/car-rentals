@@ -1075,7 +1075,7 @@ const b14ctx={
  owned:id=>b14state.branches.includes(id),freeCash:()=>700000,branchOverhead:()=>3400,
  branchReport:id=>b14state.branchReports[id]||{count:0,revenue:0},typeOf:id=>({id,name:id}),
  statusMsg:status=>status.toUpperCase(),fleetInGarageOrder:cars=>[...cars],
- esc:v=>String(v),money:b14Money,relativeTime:()=>"9s",
+ esc:v=>String(v),money:b14Money,compact:x=>Math.abs(x)>=1e6?`R${(x/1e6).toFixed(2)}m`:Math.abs(x)>=1e4?`R${(x/1e3).toFixed(1)}k`:b14Money(x),relativeTime:()=>"9s",
  renderHeroArt:()=>'<svg class="hero-art"></svg>',renderMap:compact=>compact?'<div class="map-frame-v10">MAP</div>':"",
  btn:(action,label,cls,attrs="")=>'<button data-action="'+action+'" '+attrs+'>'+label+'</button>',
  listBtn:(action,id,label,cls,attrs="")=>'<button data-action="'+action+'" data-id="'+id+'" '+attrs+'>'+label+'</button>'
