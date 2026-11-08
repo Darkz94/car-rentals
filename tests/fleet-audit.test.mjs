@@ -1170,9 +1170,10 @@ for(const [name,next,tokens] of e17sections){
  for(const token of tokens)assert.ok(js.slice(s,e).includes(token),name+" missing "+token);
 }
 const e17contracts=vm.runInNewContext(decl("CONTRACTS", "];")+"\nCONTRACTS");
-assert.equal(e17contracts.length,5,"Exactly five contracts must remain");
-assert.deepEqual(Array.from(e17contracts,c=>c.period),[34,36,40,42,42],"Contract timers changed");
-assert.deepEqual(Array.from(e17contracts,c=>c.rep),[2,3,5,8,10],"Contract unlock requirements changed");
+assert.equal(e17contracts.length,17,"The five original and twelve approved contracts must remain");
+assert.deepEqual(Array.from(e17contracts.slice(0,5),c=>c.id),["hotels","build","vine","film","lux"],"Original five partner identities must not change");
+assert.deepEqual(Array.from(e17contracts.slice(0,5),c=>c.period),[34,36,40,42,42],"Existing contract timers changed");
+assert.deepEqual(Array.from(e17contracts.slice(0,5),c=>c.rep),[2,3,5,8,10],"Existing contract unlock requirements changed");
 assert.ok(js.includes("function signContract(id){let c=CONTRACTS.find")&&js.includes("state.contractLast[id]=now()")&&
  js.includes("function resolveIncident(id){let inc=state.incidents.find")&&
  js.includes("let cost=up('insurance')?450:900")&&
@@ -1182,7 +1183,7 @@ assert.ok(js.includes("function signContract(id){let c=CONTRACTS.find")&&js.incl
  js.includes("arcadeFx('DAILY REWARD'")&&
  js.includes("arcadeFx('ACHIEVEMENT UNLOCKED'")&&
  js.includes("s.version!==3"),"Existing event logic, notifications or save rules changed");
-console.log("PASS: Section 17 original five corporate clients, mission rewards, roadside fees, weather map, timers and visual notification safety.");
+console.log("PASS: Section 17 all 17 corporate clients, five original partners protected, mission rewards, roadside fees, weather map, timers and visual notification safety.");
 
 
 // Cross-tab Android layout audit (all six primary pages and their subviews).
