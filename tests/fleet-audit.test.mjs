@@ -1022,7 +1022,7 @@ assert.ok(js.includes("let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.0
  js.includes("ends:now()+75000")&&
  js.includes("ends:start+75000,nextBidAt:start+5000")&&
  js.includes("const reserve=round(getResale(car)*.85)")&&
- js.includes("if(addCar(a.type,price,true,'hq',!a.tierRules))")&&
+ js.includes("if(addCar(a.type,price,true,'hq',!a.tierRules||a.tierRules<40))")&&
  js.includes("a.status='sold';a.salePrice=amount"),
  "Original bid increments, auction durations, reserve prices and settlements must remain");
 const a13snapshot={cash:450000,rep:5,fleet:[{id:"car1",type:"hatch",status:"available",plate:"CA 123"},{id:"car2",type:"sedan",status:"auction",plate:"CA 456"}],
