@@ -343,7 +343,7 @@ const tipEnd=js.indexOf("function dashboardShortcut(",tipStart);
 const tipMarkup=js.slice(tipStart,tipEnd);
 assert.ok(dashStart>=0&&dashEnd>dashStart&&tipStart>=0&&tipEnd>tipStart,"Dashboard renderer missing");
 assert.ok(html.includes('id="ctr-design-foundation-section-01"')&&html.includes('id="ctr-dashboard-section-02"')&&html.includes('id="ctr-dashboard-simplified-2026"'),"Dashboard styling missing");
-for(const need of ["smartOverview()","dashboard-rental-desk","dashboard-rental-help","dashboard-rental-actions","state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","state.rentals.slice(0,3)","data-countdown-rental","btn('autorent'"]){
+for(const need of ["smartOverview()","dashboard-rental-desk","dashboard-rental-help","dashboard-rental-actions","state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboardSoonestRentals(3).map(r=>{","data-countdown-rental","btn('autorent'"]){
  assert.ok(dashMarkup.includes(need),"Simplified Dashboard missing "+need);
 }
 for(const removed of ["dashboardShortcut(","dashboard-city-strip","dashboard-summary","autoDeskControl()","renderMap(true)","renderLog(5)","nextActions()"]){
@@ -354,6 +354,19 @@ assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settin
 assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),"Dispatch logic missing");
 assert.ok(js.includes("if(action==='page')")&&js.includes("function renderMapPage()"),"Bottom navigation missing");
 console.log("PASS: Simplified Dashboard retains dispatch, requests, active rentals and bottom navigation.");
+
+const soonestSource=js.match(/function dashboardSoonestRentals\(limit=3\)\{[^\n]*\}/)?.[0];
+assert.ok(soonestSource,"Dashboard earliest-return sorting helper missing");
+const soonestState={rentals:[{id:"later",due:5000},{id:"earliest",due:1000},{id:"last",due:9000},{id:"middle",due:3000}]};
+const soonest=vm.runInNewContext(soonestSource+"\ndashboardSoonestRentals",{state:soonestState});
+const originalRentalOrder=soonestState.rentals.map(r=>r.id).join(",");
+assert.equal(soonest().map(r=>r.id).join(","),"earliest,middle,later","Dashboard must show the three earliest returns");
+assert.equal(soonestState.rentals.map(r=>r.id).join(","),originalRentalOrder,"Dashboard sorting must not mutate saved rental order");
+soonestState.rentals.push({id:"newSoonest",due:500});
+assert.equal(soonest().map(r=>r.id).join(","),"newSoonest,earliest,middle","New shorter rentals must move to the top");
+assert.equal(soonest(2).length,2,"Dashboard sorter must respect its requested limit");
+console.log("PASS: Dashboard Active Rentals shows earliest returns first without changing saved rental order.");
+
 const dashboardAutoStart=js.indexOf("function dashboardAutoDispatchToggle(){");
 const dashboardAutoEnd=js.indexOf("function renderOverview(){",dashboardAutoStart);
 assert.ok(dashboardAutoStart>0&&dashboardAutoEnd>dashboardAutoStart,"Dashboard Auto-Dispatch switch renderer missing");

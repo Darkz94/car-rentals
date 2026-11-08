@@ -102,6 +102,35 @@ try{
       if(!auto.locked||!auto.initiallyOn||!auto.paused||!auto.resumed||!auto.untouched||auto.touchHeight<44)
         problems.push(width+'px Dashboard Auto-Dispatch switch invalid '+JSON.stringify(auto));
     }
+    if(route==='overview'&&!sub){
+      // Temporary fixture checks actual visual order; the original game state is restored immediately.
+      const earliest=await page.evaluate(()=>{
+        const originalRentals=state.rentals;
+        try{
+          const t=Date.now(),carId=state.fleet[0]?.id;
+          if(!carId)return {error:'Starter car missing'};
+          state.rentals=[
+            {id:'sort-later',carId,customer:'Later Return',start:t-1000,due:t+180000,payout:1000},
+            {id:'sort-soonest',carId,customer:'First Return',start:t-1000,due:t+15000,payout:1000},
+            {id:'sort-last',carId,customer:'Last Return',start:t-1000,due:t+240000,payout:1000},
+            {id:'sort-middle',carId,customer:'Second Return',start:t-1000,due:t+65000,payout:1000}
+          ];
+          const savedOrder=state.rentals.map(r=>r.customer).join(',');
+          render();
+          const shown=[...document.querySelectorAll('[aria-label="Active Rentals"] .dashboard-trip-row b')].map(el=>el.textContent.trim());
+          const orderAfter=state.rentals.map(r=>r.customer).join(',');
+          const badge=document.querySelector('[aria-label="Active Rentals"] .dashboard-simple-count')?.textContent.trim();
+          return {shown,savedOrder,orderAfter,badge};
+        }finally{
+          state.rentals=originalRentals;
+          render();
+        }
+      });
+      console.log(width+'px earliest Dashboard rentals: '+JSON.stringify(earliest));
+      if(earliest.error||earliest.shown?.join(',')!=='First Return,Second Return,Later Return'||
+         earliest.savedOrder!==earliest.orderAfter||earliest.badge!=='4 ACTIVE')
+         problems.push(width+'px Dashboard rental order invalid '+JSON.stringify(earliest));
+    }
     if(route==='overview'){
       const header=await page.evaluate(()=>{
         const banner=document.querySelector('.dashboard-header');

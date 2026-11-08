@@ -5516,6 +5516,9 @@ function dashboardAutoDispatchToggle(){
   ${owned?`<button type="button" class="dashboard-autodispatch-switch ${running?'is-on':''}" data-action="toggleautodespatch" role="switch" aria-label="Auto-Dispatch" aria-checked="${running}"><span class="dashboard-autodispatch-knob" aria-hidden="true"></span><strong>${running?'ON':'OFF'}</strong></button>`:btn('openupgrade','Unlock','btn sm ghost dashboard-autodispatch-unlock')}
  </div>`;
 }
+// Dashboard display only: show rentals with the earliest scheduled returns first.
+// Copy before sorting so save order and the full Live rental list remain unchanged.
+function dashboardSoonestRentals(limit=3){return [...state.rentals].sort((a,b)=>a.due-b.due).slice(0,limit);}
 function renderOverview(){
  const ready=available().length, matching=state.offers.filter(o=>bestCar(o)).length;
  const helpOpen=!!document.querySelector('.dashboard-rental-help')?.open;
@@ -5533,7 +5536,7 @@ function renderOverview(){
   <section class="card pad dashboard-simple-panel" aria-label="Active Rentals">
    <div class="dashboard-simple-heading"><div><small>CURRENT ACTIVITY</small><h2>Active rentals</h2><p>Use the Live tab below for the map and all active journeys.</p></div><b class="dashboard-simple-count">${state.rentals.length} ACTIVE</b></div>
    ${dashboardAutoDispatchToggle()}
-   ${state.rentals.length?`<div class="dashboard-simple-trips">${state.rentals.slice(0,3).map(r=>{
+   ${state.rentals.length?`<div class="dashboard-simple-trips">${dashboardSoonestRentals(3).map(r=>{
     const car=state.fleet.find(c=>c.id===r.carId);
     return `<div class="dashboard-trip-row"><span aria-hidden="true">🚘</span><div><b>${esc(r.customer||'Customer')}</b><small>${car?esc(typeOf(car.type).name):'Rental'} · ${esc(car?.plate||'On the road')}</small></div><div><strong>${money(r.payout)}</strong><small data-countdown-rental="${esc(r.id)}">${relativeTime(r.due)}</small></div></div>`;
    }).join('')}</div>${state.rentals.length>3?'<p class="dashboard-simple-empty">More journeys are listed under Live.</p>':''}`:'<p class="dashboard-simple-empty">No cars are on the road yet. Dispatch a matching customer above to begin.</p>'}
