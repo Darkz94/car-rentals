@@ -32,6 +32,8 @@ jobs:
         run: node tests/contracts-expansion.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility
         run: node tests/progress-section18.test.mjs
+      - name: Verify three recurring achievements and legacy save migration
+        run: node tests/recurring-achievements.test.mjs
       - name: Verify Section 19 vehicle artwork, mapping and transparency
         run: node tests/vehicle-art-section19.test.mjs
       - name: Final QA save recovery and rental payout tests

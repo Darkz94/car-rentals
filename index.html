@@ -4927,6 +4927,8 @@ const CONTRACTS=[{id:'hotels',name:'V&A Waterfront Hotels',icon:'🏨',need:'Sed
  {id:'elitecollectors',name:'Elite Collector Experiences',icon:'👑',need:'Hyper',rep:25,branch:'franschhoek',premium:1.75,period:90,dest:'camps',desc:'Exclusive hypercar experiences for elite collectors.'}];
 const LOANS=[{id:'bridge',name:'Short-term Cash Boost',amount:100000,repay:120000,days:8},{id:'growth',name:'Fleet Growth Loan',amount:350000,repay:437500,days:12},{id:'expansion',name:'Business Expansion Loan',amount:1000000,repay:1360000,days:18}];
 const ACHIEVEMENTS=[{id:'first',name:'First Booking',target:1,field:'returned',reward:1000},{id:'five',name:'Rental Rookie',target:5,field:'returned',reward:5000},{id:'twenty',name:'Coastline Pro',target:20,field:'returned',reward:25000},{id:'fifty',name:'Fleet Legend',target:50,field:'returned',reward:65000},{id:'four',name:'Growing Fleet',target:4,field:'fleet',reward:6000},{id:'ten',name:'Motor Empire',target:10,field:'fleet',reward:25000},{id:'million',name:'Million-Rand Club',target:1000000,field:'earned',reward:30000},{id:'branches',name:'Coastal Expansion',target:3,field:'branches',reward:45000}];
+// Original eight trophies remain unchanged; these three can be earned again.
+const RECURRING_ACHIEVEMENTS={twenty:{target:20,reward:5000},fifty:{target:50,reward:15000},million:{target:1000000,reward:15000}};
 const KEY='cape-town-rentals-coastline-v3';
 const SLOT_PREFIX=KEY+'-slot-';
 const DIFFICULTIES={casual:{name:'Relaxed',revenue:1.18,expenses:.82,fuel:18,incident:.012,demand:.8,desc:'More earnings, cheaper upkeep and fewer incidents.'},normal:{name:'Classic',revenue:1,expenses:1,fuel:22.5,incident:.025,demand:1,desc:'Balanced business growth with meaningful decisions.'},hard:{name:'Entrepreneur',revenue:.86,expenses:1.22,fuel:28,incident:.045,demand:1.2,desc:'Tighter margins and more demanding operations.'}};
@@ -5012,8 +5014,19 @@ function restoreSlot(n){
 }
 
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
-function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],ledger:[],log:[],stats:{earned:0,spent:0,returned:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
-function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
+function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],achievementRepeats:{},ledger:[],log:[],stats:{earned:0,spent:0,returned:0,rentalRevenue:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
+// Seed existing completed trophies at today's totals: no historical repeat payouts.
+function restoreAchievementRepeats(saved){
+ const previous=saved.achievementRepeats&&typeof saved.achievementRepeats==='object'&&!Array.isArray(saved.achievementRepeats)?saved.achievementRepeats:{};
+ const repeats={...previous};
+ for(const id of Object.keys(RECURRING_ACHIEVEMENTS)){
+  if(!Array.isArray(saved.achievements)||!saved.achievements.includes(id)||Number.isFinite(repeats[id]?.baseline))continue;
+  const total=id==='million'?Number(saved.stats?.rentalRevenue)||0:Number(saved.stats?.returned)||0;
+  repeats[id]={baseline:Math.max(0,total),count:0,earned:0};
+ }
+ return repeats;
+}
+function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},achievementRepeats:restoreAchievementRepeats(s),perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
 let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',workshopFilter='all',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,staffFilter='all',dealerClass='all',dealerSearch='',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 let pendingImportSave=null;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
@@ -5104,7 +5117,7 @@ function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)ret
  if(!state.branchReports)state.branchReports={};if(!state.contractReports)state.contractReports={};
  let b=state.branchReports[branch]||{count:0,revenue:0};state.branchReports[branch]={count:b.count+1,revenue:b.revenue+payout};
  if(r.contract){let cr=state.contractReports[r.contract]||{count:0,revenue:0};state.contractReports[r.contract]={count:cr.count+1,revenue:cr.revenue+payout};}
- state.stats.returned++;awardRepXP(Math.round(10*(1+perkEffect('reputation',.75))));
+ state.stats.returned++;state.stats.rentalRevenue=(Number(state.stats.rentalRevenue)||0)+payout;awardRepXP(Math.round(10*(1+perkEffect('reputation',.75))));
  const balanced=r.balanceVersion===2;
  const tripSeconds=balanced?clamp(Number(r.seconds)||RENTAL_MIN_SECONDS,RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS):0;
  const wearScale=balanced?(0.8+tripSeconds/400):1;
@@ -5358,7 +5371,42 @@ function repProgressText(){return state.rep>=REPUTATION_MAX_LEVEL?'MAX LEVEL':Ma
 function repProgressPercent(){return state.rep>=REPUTATION_MAX_LEVEL?100:Math.min(100,100*state.xp/Math.max(1,repNeeded(state.rep)));}
 function repProgressAria(){return state.rep>=REPUTATION_MAX_LEVEL?'Reputation level '+state.rep+', maximum level':'Reputation level '+state.rep+', '+Math.floor(state.xp)+' of '+repNeeded(state.rep)+' experience points';}
 function achievementsProgress(a){return a.field==='fleet'?state.fleet.length:a.field==='branches'?state.branches.length:state.stats[a.field]||0;}
-function checkAchievements(){for(let a of ACHIEVEMENTS){if(state.achievements.includes(a.id))continue;if(achievementsProgress(a)>=a.target){state.achievements.push(a.id);earn(a.reward,`Achievement: ${a.name}`);note(`Achievement unlocked: ${a.name}! +${money(a.reward)}`);notify(`🏆 ${a.name} • +${money(a.reward)}`);arcadeFx('ACHIEVEMENT UNLOCKED',a.name,true);}}}
+function recurringAchievementValue(a){return Math.max(0,Number(a.id==='million'?state.stats.rentalRevenue:state.stats.returned)||0);}
+function checkAchievements(){
+ for(const a of ACHIEVEMENTS){
+  const repeat=RECURRING_ACHIEVEMENTS[a.id];
+  if(!state.achievements.includes(a.id)){
+   if(achievementsProgress(a)<a.target)continue;
+   state.achievements.push(a.id);
+   earn(a.reward,'Achievement: '+a.name);
+   note('Achievement unlocked: '+a.name+'! +'+money(a.reward));
+   notify('🏆 '+a.name+' • +'+money(a.reward));
+   arcadeFx('ACHIEVEMENT UNLOCKED',a.name,true);
+   if(repeat){
+    state.achievementRepeats=state.achievementRepeats||{};
+    state.achievementRepeats[a.id]={baseline:recurringAchievementValue(a),count:0,earned:0};
+   }
+   continue;
+  }
+  if(!repeat)continue;
+  state.achievementRepeats=state.achievementRepeats||{};
+  let record=state.achievementRepeats[a.id];
+  if(!record||!Number.isFinite(record.baseline)){
+   state.achievementRepeats[a.id]={baseline:recurringAchievementValue(a),count:0,earned:0};
+   continue;
+  }
+  const cycles=Math.floor(Math.max(0,recurringAchievementValue(a)-record.baseline)/repeat.target);
+  if(cycles<=0)continue;
+  const reward=cycles*repeat.reward;
+  record.baseline+=cycles*repeat.target;
+  record.count=Math.max(0,Math.floor(Number(record.count)||0))+cycles;
+  record.earned=Math.max(0,Number(record.earned)||0)+reward;
+  earn(reward,'Recurring achievement: '+a.name+' x'+cycles);
+  note(a.name+' repeated '+cycles+' time'+(cycles===1?'':'s')+'! +'+money(reward));
+  notify('🏆 '+a.name+' repeat'+(cycles===1?'':'s')+' • +'+money(reward));
+  arcadeFx('ACHIEVEMENT REPEATED',a.name+' x'+cycles,true);
+ }
+}
 function gameDay(){state.day++;state.daily=null;dailyRecord();let missed=false;
  const total=staffOverhead()+branchOverhead();
  if(total>0){let paid=Math.min(freeCash(),total);state.cash-=paid;state.stats.spent+=paid;
@@ -6311,20 +6359,28 @@ function renderProgress(){
  const tabs=[['milestones','🏆 Achievements'],['premium','🌟 Premium Upgrades'],['stats','📊 Statistics'],['roadmap','🗺️ Career Roadmap'],['settings','⚙️ Saves & Settings']];
  const done=ACHIEVEMENTS.filter(a=>state.achievements.includes(a.id)).length, premiumLevels=PRESTIGE_PERKS.reduce((n,p)=>n+perkLevel(p[0]),0);
  return '<div class="fadein progress18"><section class="progress18-hero"><div class="progress18-hero-art" aria-hidden="true">'+renderHeroArt()+'</div><div><span class="progress18-eyebrow">CAPE TOWN RENTALS · PROGRESS</span><h2>Your legacy starts here</h2><p>Track your reputation, claim the achievements you have already earned automatically and keep your company progress safe.</p></div><span class="progress18-hero-icon" aria-hidden="true">🏆</span></section>'+
- '<div class="progress18-kpis"><div class="progress18-kpi"><span>👑</span><div><small>Reputation</small><strong>LV '+state.rep+'</strong><em>'+repProgressText()+'</em></div></div><div class="progress18-kpi"><span>🏆</span><div><small>Achievements</small><strong>'+done+' / '+ACHIEVEMENTS.length+'</strong><em>Cash rewards paid on unlock</em></div></div><div class="progress18-kpi"><span>💰</span><div><small>Lifetime income</small><strong>'+money(state.stats.earned)+'</strong><em>Earnings and rewards</em></div></div><div class="progress18-kpi"><span>🌟</span><div><small>Premium levels</small><strong>'+premiumLevels+' / '+(PRESTIGE_PERKS.length*PREMIUM_MAX_LEVEL)+'</strong><em>Permanent perks</em></div></div></div>'+
+ '<div class="progress18-kpis"><div class="progress18-kpi"><span>👑</span><div><small>Reputation</small><strong>LV '+state.rep+'</strong><em>'+repProgressText()+'</em></div></div><div class="progress18-kpi"><span>🏆</span><div><small>Achievements</small><strong>'+done+' / '+ACHIEVEMENTS.length+'</strong><em>Original trophies and recurring bonuses</em></div></div><div class="progress18-kpi"><span>💰</span><div><small>Lifetime income</small><strong>'+money(state.stats.earned)+'</strong><em>Earnings and rewards</em></div></div><div class="progress18-kpi"><span>🌟</span><div><small>Premium levels</small><strong>'+premiumLevels+' / '+(PRESTIGE_PERKS.length*PREMIUM_MAX_LEVEL)+'</strong><em>Permanent perks</em></div></div></div>'+
  '<div>'+renderTabs('progress',tabs)+'</div>'+(activeSub.progress==='milestones'?renderMilestones():activeSub.progress==='premium'?renderPremiumUpgrades():activeSub.progress==='stats'?renderStats():activeSub.progress==='roadmap'?renderRoadmap():renderSettings())+'</div>';
 }
 function renderMilestones(){
  const earned=ACHIEVEMENTS.filter(a=>state.achievements.includes(a.id)).length, xpNeed=repNeeded(state.rep);
  const cards=ACHIEVEMENTS.map(a=>{
-  const completed=state.achievements.includes(a.id),v=Math.max(0,Number(achievementsProgress(a))||0),percent=completed?100:clamp(100*v/Math.max(1,a.target));
-  const status=completed?'COMPLETED':v>0?'IN PROGRESS':'LOCKED';
-  const desc=a.field==='fleet'?'Vehicles currently owned':a.field==='branches'?'Branches currently open':a.field==='earned'?'Lifetime business income':'Completed rental returns';
+  const completed=state.achievements.includes(a.id),repeat=RECURRING_ACHIEVEMENTS[a.id]||null;
+  const recurring=completed&&!!repeat;
+  const record=recurring?(state.achievementRepeats?.[a.id]||{baseline:recurringAchievementValue(a),count:0,earned:0}):null;
+  const count=recurring?Math.max(0,Math.floor(Number(record.count)||0)):0;
+  const v=recurring?Math.max(0,recurringAchievementValue(a)-record.baseline):Math.max(0,Number(achievementsProgress(a))||0);
+  const target=recurring?repeat.target:a.target,value=Math.min(v,target);
+  const percent=recurring?clamp(100*value/Math.max(1,target)):completed?100:clamp(100*value/Math.max(1,target));
+  const status=recurring?'REPEAT '+(count+1):completed?'COMPLETED':v>0?'IN PROGRESS':'LOCKED';
+  const desc=recurring?(a.id==='million'?'Rental revenue this round':'Rental returns this round'):a.field==='fleet'?'Vehicles currently owned':a.field==='branches'?'Branches currently open':a.field==='earned'?'Lifetime business income':'Completed rental returns';
   const icon=completed?'🏆':a.field==='branches'?'🏢':a.field==='fleet'?'🚘':a.field==='earned'?'💰':'🎖️';
-  return '<article class="progress18-achievement '+(completed?'complete':v>0?'':'locked')+'"><div class="progress18-achievement-title"><span class="progress18-achievement-icon" aria-hidden="true">'+icon+'</span><div><b>'+esc(a.name)+'</b><small>'+desc+'</small></div></div><div class="progress18-card-footer"><span class="progress18-pill '+(completed?'complete':v?'gold':'locked')+'">'+status+'</span><strong>🎁 '+money(a.reward)+'</strong></div><div class="progress18-track" role="progressbar" aria-label="'+esc(a.name)+' progress" aria-valuemin="0" aria-valuemax="'+a.target+'" aria-valuenow="'+Math.min(a.target,v)+'"><i style="width:'+percent+'%"></i></div><div class="progress18-card-footer"><span>'+Math.min(v,a.target).toLocaleString('en-ZA')+' / '+a.target.toLocaleString('en-ZA')+'</span><span>'+(completed?'Reward already credited':'Automatically awarded at goal')+'</span></div></article>';
+  const reward=recurring?repeat.reward:a.reward;
+  const footer=recurring?count+' repeats · '+money(record.earned||0)+' earned':completed?'Reward already credited':'Automatically awarded at goal';
+  return '<article class="progress18-achievement '+(completed?'complete':v>0?'':'locked')+'"><div class="progress18-achievement-title"><span class="progress18-achievement-icon" aria-hidden="true">'+icon+'</span><div><b>'+esc(a.name)+(repeat?' 🔁':'')+'</b><small>'+desc+'</small></div></div><div class="progress18-card-footer"><span class="progress18-pill '+(recurring?'gold':completed?'complete':v?'gold':'locked')+'">'+status+'</span><strong>🎁 '+money(reward)+'</strong></div><div class="progress18-track" role="progressbar" aria-label="'+esc(a.name)+' progress" aria-valuemin="0" aria-valuemax="'+target+'" aria-valuenow="'+value+'"><i style="width:'+percent+'%"></i></div><div class="progress18-card-footer"><span>'+value.toLocaleString('en-ZA')+' / '+target.toLocaleString('en-ZA')+'</span><span>'+footer+'</span></div></article>';
  }).join('');
  return '<section class="progress18-reputation"><div class="progress18-reputation-line"><div><span class="progress18-eyebrow">YOUR COMPANY REPUTATION</span><strong>👑 LEVEL '+state.rep+'</strong><div><small>Higher reputation opens the existing vehicles and contracts.</small></div></div><span class="progress18-pill gold">'+repProgressText()+'</span></div><div class="progress18-track" role="progressbar" aria-label="Reputation experience" aria-valuemin="0" aria-valuemax="'+xpNeed+'" aria-valuenow="'+(state.rep>=REPUTATION_MAX_LEVEL?xpNeed:Math.min(xpNeed,Math.floor(state.xp)))+'"><i style="width:'+repProgressPercent()+'%"></i></div></section>'+
- '<section class="progress18-panel"><div class="progress18-panel-head"><div><span class="progress18-eyebrow">THE TROPHY ROOM</span><h3>Company achievements</h3><p>These are your original eight achievements with the same milestones and one-time cash rewards.</p></div><span class="progress18-pill gold">🏆 '+earned+' / '+ACHIEVEMENTS.length+' complete</span></div><div class="progress18-cards">'+cards+'</div></section>';
+ '<section class="progress18-panel"><div class="progress18-panel-head"><div><span class="progress18-eyebrow">THE TROPHY ROOM</span><h3>Company achievements</h3><p>Five achievements are permanent trophies. Three repeat automatically for smaller cash bonuses.</p></div><span class="progress18-pill gold">🏆 '+earned+' / '+ACHIEVEMENTS.length+' complete</span></div><div class="progress18-cards">'+cards+'</div></section>';
 }
 
 function renderPremiumUpgrades(){
