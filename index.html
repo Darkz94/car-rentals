@@ -4807,6 +4807,69 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .ctr-salvage-card button:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:720px){.ctr-restoration-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+
+<style id="ctr-live-map-immersive-2026">
+/* Live tab: immersive map-first layout. Other game pages keep their standard header and metrics. */
+#app .main.main-live-focus>.topbar,#app .main.main-live-focus>footer{display:none!important}
+#app .main.main-live-focus{padding-top:0!important}
+#app .live-map-focused-2026{display:block;min-width:0;margin:0}
+#app .live-map-focused-2026 .map-command-2026{position:relative;padding:0!important;border:0;background:none;box-shadow:none;overflow:visible}
+#app .live-map-focused-2026 .map-frame-v10{position:relative;overflow:hidden;isolation:isolate;width:100%;border:2px solid #62ccfa;border-radius:17px;background:radial-gradient(ellipse at 20% 20%,#11618b,#071936);box-shadow:inset 0 0 40px #0008,0 0 0 1px #73d8ff4d,0 14px 32px #0009}
+#app .live-map-focused-2026 .map-svg-v10{display:block;width:100%;height:clamp(530px,calc(100dvh - 32px),820px)!important;min-height:530px!important;max-height:none!important;touch-action:manipulation}
+#app .live-map-focused-2026 .live-map-toolbar-2026{position:absolute;z-index:9;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:7px;pointer-events:none}
+#app .live-map-focused-2026 .live-map-toolbar-2026>*{pointer-events:auto}
+#app .live-map-focused-2026 .live-map-telemetry-2026{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid #5cd4f1a8;border-radius:12px;padding:8px 11px;background:#081c36e8;box-shadow:0 3px 13px #0007;backdrop-filter:blur(5px)}
+#app .live-map-telemetry-2026 strong{display:flex;align-items:center;gap:7px;color:#ffe3a0;font-weight:1000;font-size:11px;letter-spacing:1px}
+#app .live-map-telemetry-2026 strong i{width:8px;height:8px;flex:none;border-radius:50%;background:#32f4b5;box-shadow:0 0 0 3px #2bdbb72a,0 0 12px #22fbad}
+#app .live-map-telemetry-2026 span{font-size:10px;font-weight:800;color:#d7f5ff}
+#app .live-map-focused-2026 .live-map-themes-v10{display:flex;flex-wrap:nowrap;gap:3px;margin:0;padding:3px;border:1px solid #63b8e8a8;border-radius:11px;background:#071d36ea;box-shadow:0 3px 13px #0007;backdrop-filter:blur(5px)}
+#app .live-map-focused-2026 .live-map-themes-v10 .btn{min-height:31px!important;padding:5px 9px!important;font-size:10px;border-radius:8px;white-space:nowrap}
+#app .live-map-focused-2026 .map-frame-v10 .map-overlay-v10{top:68px!important;left:12px!important;right:auto!important;max-width:calc(100% - 100px);z-index:4}
+#app .live-map-focused-2026 .map-frame-v10 .map-overlay-v10 .pill{padding:7px 10px;font-size:10px}
+#app .live-map-focused-2026 .map-frame-v10 .map-control-v10{top:auto!important;bottom:62px!important;right:12px!important;left:auto!important;display:flex;flex-direction:column;gap:6px;z-index:8}
+#app .live-map-focused-2026 .map-frame-v10 .map-control-v10 button{width:43px;min-width:43px;height:43px;min-height:43px;border-radius:12px}
+#app .live-map-focused-2026 .map-frame-v10 .map-legend-v10{left:10px;right:10px;bottom:8px;z-index:5;border-color:#3fc9ef8c;box-shadow:0 2px 15px #0008}
+#app .live-map-focused-2026 .map-frame-v10 .map-route-v10{stroke-dasharray:12 8;animation:ctr-live-roadflow-2026 7s linear infinite;stroke-opacity:.94}
+#app .live-map-focused-2026 .map-frame-v10 .map-route-v10.selected{stroke-width:6.8;filter:drop-shadow(0 0 6px #ffe08c)}
+#app .live-map-focused-2026 .map-frame-v10 .map-car-v10.selected>circle:first-child{animation:ctr-live-marker-2026 2.2s ease-in-out infinite}
+#app .live-map-focused-2026 .map-frame-v10 .map-node-v10.selected>circle:nth-child(2){stroke:#ffe08c;stroke-width:5;filter:drop-shadow(0 0 8px #ffe08c)}
+#app .live-map-focused-2026 .map-frame-v10 .map-node-v10 text{font-size:14px;fill:#f5fcff;stroke:#0a2945;stroke-width:4}
+#app .live-map-focused-2026 .map-frame-v10 .map-car-label-v10{font-size:11px}
+#app .live-map-focused-2026 .live-map-focus-v10{margin-top:8px}
+#app .live-map-focused-2026 .live-map-activity-toggle-2026{margin-top:11px;border:1px solid #3c9fcb;border-radius:12px;background:linear-gradient(145deg,#0e3154,#091e38);overflow:hidden}
+#app .live-map-activity-toggle-2026>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 15px;color:#ffe2a1;cursor:pointer;font-size:12px;font-weight:900}
+#app .live-map-activity-toggle-2026>summary::-webkit-details-marker{display:none}
+#app .live-map-activity-toggle-2026>summary span{margin-left:auto;color:#a7e4f2;font-size:10px;white-space:nowrap}
+#app .live-map-activity-toggle-2026>summary b{font-size:18px;color:#9fe6ff}
+#app .live-map-activity-toggle-2026[open]>summary b{transform:rotate(180deg)}
+#app .live-map-activity-toggle-2026>.live-map-lower-v10{padding:0 10px 10px}
+#app .live-map-activity-toggle-2026>.live-map-details-v10{margin:0 10px 10px}
+@keyframes ctr-live-roadflow-2026{to{stroke-dashoffset:-80}}
+@keyframes ctr-live-marker-2026{50%{opacity:.56;stroke-width:6}}
+@media(max-width:760px){
+ #app .main.main-live-focus{padding:4px 6px calc(98px + env(safe-area-inset-bottom,0px))!important}
+ #app .live-map-focused-2026 .map-svg-v10{height:calc(100dvh - 115px)!important;min-height:440px!important}
+ #app .live-map-focused-2026 .live-map-toolbar-2026{top:9px;left:9px;right:9px;gap:5px}
+ #app .live-map-focused-2026 .live-map-telemetry-2026{padding:7px 8px;gap:5px}
+ #app .live-map-focused-2026 .live-map-telemetry-2026 strong{font-size:10px;letter-spacing:.5px}
+ #app .live-map-focused-2026 .live-map-telemetry-2026 span{font-size:9px}
+ #app .live-map-focused-2026 .live-map-themes-v10 .btn{min-height:29px!important;padding:4px 6px!important;font-size:9px}
+ #app .live-map-focused-2026 .map-frame-v10 .map-overlay-v10{top:86px!important;left:9px!important}
+ #app .live-map-focused-2026 .map-frame-v10 .map-control-v10{right:8px!important;bottom:58px!important}
+ #app .live-map-focused-2026 .map-frame-v10 .map-control-v10 button{height:39px;min-height:39px;width:39px;min-width:39px}
+ #app .live-map-focused-2026 .map-frame-v10 .map-node-v10 text{font-size:15px}
+ #app .live-map-activity-toggle-2026>summary{padding:11px;font-size:11px}
+ #app .live-map-activity-toggle-2026>summary span{font-size:9px}
+}
+@media(max-width:390px){
+ #app .live-map-focused-2026 .live-map-toolbar-2026{flex-direction:column;align-items:flex-start}
+ #app .live-map-focused-2026 .map-frame-v10 .map-overlay-v10{top:94px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #app .live-map-focused-2026 .map-frame-v10 .map-route-v10,
+ #app .live-map-focused-2026 .map-frame-v10 .map-car-v10.selected>circle:first-child{animation:none!important}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp',suv:'assets/realistic-suv-side.webp',convertible:'assets/realistic-convertible-side.webp',shuttle:'assets/realistic-shuttle-side.webp',camper:'assets/realistic-camper-side.webp',luxsuv:'assets/realistic-luxsuv-side.webp',safari:'assets/realistic-safari-side.webp',motorhome:'assets/realistic-motorhome-side.webp',rally:'assets/realistic-rally-side.webp',grandtourer:'assets/realistic-grandtourer-side.webp',armored:'assets/realistic-armored-side.webp'};
 
