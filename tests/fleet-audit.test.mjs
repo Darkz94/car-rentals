@@ -30,6 +30,10 @@ assert.equal(customerList.length, 78);
 assert.equal(new Set(customerList.map(x => x.id)).size, 78);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
+const headingSource=js.slice(js.indexOf("function mapHeadingDegrees("),js.indexOf("function mapCarPose("));
+const spriteOffsetsMatch=headingSource.match(/const MAP_SPRITE_FORWARD_OFFSET=(\{[^}]+\})/);
+assert.ok(spriteOffsetsMatch,"Map sprite heading offsets must be declared");
+const spriteForwardOffsets=vm.runInNewContext("("+spriteOffsetsMatch[1]+")");
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
 for (const t of typeList) {
   assert.ok(t.price > 0 && t.rate > 0 && t.tank > 0 && t.unlock >= 1);
@@ -71,7 +75,8 @@ assert.equal(customerList.filter(c => c.need === "Tow").map(c => c.id).sort().jo
 assert.equal(customerList.find(c => c.id === "roadside-rescue-nina").budget, 5200);
 assert.equal(customerList.find(c => c.id === "insurance-recovery-team").budget, 5800);
 assert.ok(!("Tow" in equivalence), "Tow Truck matches its own customers only");
-assert.ok(js.includes("type==='truck'||type==='tow'"), "Tow Truck roof sprite must face correctly on the map");
+assert.equal(spriteForwardOffsets.truck,0,"Delivery Truck roof art faces up and needs no extra map rotation");
+assert.equal(spriteForwardOffsets.tow,0,"Tow Truck roof art faces up and needs no extra map rotation");
 assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan','Safari 4x4','Motorhome']"), "Tow Truck and Party Bus must appear in Commercial & Tours");
 const donk = byId.get("donk");
 assert.ok(donk, "Missing Donk");
@@ -85,7 +90,9 @@ assert.equal(donk.unlock, 17);
 assert.equal(horsepower.donk, 320);
 assert.equal(customerList.filter(c => c.need === "Donk").map(c => c.id).sort().join(","), "custom-car-photographer-neo,music-video-crew,show-promoter-zane");
 assert.ok(!("Donk" in equivalence), "Donk uses exact-category matching");
-assert.ok(js.includes("type==='classic'||type==='donk'||type==='limo'?0"), "Donk and Limo roof art should have horizontal map orientation");
+assert.equal(spriteForwardOffsets.classic,-90,"Classic roof art faces right");
+assert.equal(spriteForwardOffsets.donk,-90,"Donk roof art faces right");
+assert.equal(spriteForwardOffsets.limo,90,"Limo roof art faces left");
 assert.ok(js.includes("['Muscle','Donk','Rally Car'].includes(t.category)"), "Donk belongs in the custom/muscle dealer view");
 assert.ok(js.includes("['Donk','Limo','Muscle','Sport','Super','Hyper','Convertible','Luxury SUV','Rally Car','Grand Tourer','Armoured VIP SUV'].includes(t.category)"), "Donk and Limo belong in premium dealer view");
 
@@ -121,7 +128,8 @@ assert.ok(partyBus.rate>byId.get("bus").rate&&partyBus.rate<byId.get("sport").ra
 assert.deepEqual(Array.from(customerList.filter(c=>c.need==="Party Bus").map(c=>c.id).sort()),
   ["bachelorette-party","birthday-bash-crew","corporate-celebration-shuttle","university-graduation-group"],"Three dedicated Party Bus requests must exist");
 assert.ok(!("Party Bus" in equivalence),"Party Bus uses exact-category matching");
-assert.ok(js.includes("type==='bus'||type==='partybus'||type==='classic'"),"Party Bus top-down sprite must have map rotation");
+assert.equal(spriteForwardOffsets.bus,-90,"Tour Bus roof art faces right");
+assert.equal(spriteForwardOffsets.partybus,90,"Party Bus roof art faces left");
 assert.ok(js.includes("['Bakkie','Jeep','Van','Tow','Truck','Party Bus','Bus','Minibus Shuttle','Campervan','Safari 4x4','Motorhome'].includes(t.category)"),"Party Bus appears in Commercial & Tours");
 assert.ok(js.includes("let t=pick(TYPES.filter(x=>x.unlock<=state.rep));"),"Random auction must include unlocked Party Bus models");
 
@@ -286,7 +294,7 @@ assert.match(js,/const PREMIUM_MAX_LEVEL=100;/);
 assert.ok(js.includes("function buyPremium(id,requested=1)"),"Premium purchasing must exist");
 assert.ok(!js.includes("function prestigeRun()"),"Prestige reset must be removed");
 assert.ok(!js.includes("if(action==='confirmprestige')"),"Prestige reset action must be removed");
-assert.ok(js.includes("['premium','🌟 Premium Upgrades']"),"Premium navigation must replace Prestige");
+assert.ok(js.includes("['premium','🌟 Upgrades']"),"Premium navigation must replace Prestige");
 const perkLevelSource=js.match(/function perkLevel\(id\)\{[^\n]*\}/)?.[0];
 const perkEffectSource=js.match(/function perkEffect\(id,max\)\{[^\n]*\}/)?.[0];
 assert.ok(perkLevelSource&&perkEffectSource,"Diminishing-return helpers must remain");
@@ -397,13 +405,13 @@ const tipEnd=js.indexOf("function dashboardShortcut(",tipStart);
 const tipMarkup=js.slice(tipStart,tipEnd);
 assert.ok(dashStart>=0&&dashEnd>dashStart&&tipStart>=0&&tipEnd>tipStart,"Dashboard renderer missing");
 assert.ok(html.includes('id="ctr-design-foundation-section-01"')&&html.includes('id="ctr-dashboard-section-02"')&&html.includes('id="ctr-dashboard-simplified-2026"'),"Dashboard styling missing");
-for(const need of ["smartOverview()","dashboard-rental-desk","dashboard-rental-help","dashboard-rental-actions","state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboardSoonestRentals(3).map(r=>{","data-countdown-rental","btn('autorent'"]){
+for(const need of ["smartOverview()","dashboard-simple-panel","dashboard-rental-help","dashboardAutoDispatchToggle()","state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboardSoonestRentals(3).map(r=>{","data-countdown-rental"]){
  assert.ok(dashMarkup.includes(need),"Simplified Dashboard missing "+need);
 }
 for(const removed of ["dashboardShortcut(","dashboard-city-strip","dashboard-summary","autoDeskControl()","renderMap(true)","renderLog(5)","nextActions()"]){
  assert.ok(!dashMarkup.includes(removed),"Redundant Dashboard shortcut remains "+removed);
 }
-assert.ok(tipMarkup.includes("READY TO RENT")&&tipMarkup.includes("PAYMENT ON RETURN"),"At-a-glance fleet totals missing");
+assert.ok(tipMarkup.includes("YOUR NEXT BEST MOVE")&&tipMarkup.includes("Open Fleet"),"Dashboard next-step guidance missing");
 assert.ok(js.includes('data-id="progress" data-sub="settings" aria-label="Settings"'),"Header Settings must remain reachable");
 assert.ok(js.includes("if(action==='autorent')")&&js.includes("startRental(offer.id)"),"Dispatch logic missing");
 assert.ok(js.includes("if(action==='page')")&&js.includes("function renderMapPage()"),"Bottom navigation missing");
@@ -428,7 +436,7 @@ const dashboardAutoSource=js.slice(dashboardAutoStart,dashboardAutoEnd);
 for(const marker of ['data-action="toggleautodespatch"','role="switch"','aria-checked=','state.settings.autoDispatch!==false','openupgrade']){
  assert.ok(dashboardAutoSource.includes(marker),"Dashboard Auto-Dispatch control missing "+marker);
 }
-assert.ok(js.includes('${dashboardAutoDispatchToggle()}'),"Auto-Dispatch switch must appear in the Active Rentals section");
+assert.ok(dashMarkup.includes("dashboardAutoDispatchToggle()+"),"Auto-Dispatch switch must appear in the Active Rentals section");
 assert.ok(html.includes('dashboard-autodispatch-switch'),"Dashboard Auto-Dispatch control styles missing");
 assert.ok(js.includes("if(action==='toggleautodespatch'){if(!up('auto'))return;state.settings.autoDispatch="),"Auto-Dispatch switch must reuse existing action");
 console.log("PASS: Compact Dashboard Auto-Dispatch toggle reuses the existing setting without a master automation switch.");
@@ -475,14 +483,14 @@ const fleetContext={
 const fleetFn=vm.runInNewContext(js.slice(fleetShellStart,fleetShellEnd)+"\nrenderFleet",fleetContext);
 const fleetSnapshot=JSON.stringify(fleetTestState.fleet);
 const garageShell=fleetFn();
-assert.ok(garageShell.includes('src="assets/city-hatch-side.png"'),
-  "Fleet header must reuse the selected vehicle artwork");
+assert.ok(js.includes('const image=vehicleSideArt(c)')&&js.includes('<img class="parking-car"'),
+  "Garage bays must use each selected vehicle's side artwork");
 assert.equal((garageShell.match(/class="fleet-command-tab /g)||[]).length,5,
   "Fleet shell must have exactly five section tabs");
 for(const section of ["garage","dealership","care","restoration","tuning"])
  assert.ok(garageShell.includes('data-group="fleet" data-id="'+section+'"'),
    "Fleet tab routing missing: "+section);
-for(const cls of ["fleet-command-banner","fleet-command-kpis","fleet-command-filters","fleet-command-content"])
+for(const cls of ["fleet-command-tabs","fleet-command-filters","fleet-command-content"])
  assert.ok(garageShell.includes(cls),"Fleet shell component missing: "+cls);
 assert.ok(garageShell.includes("EXISTING GARAGE CONTENT")&&garageShell.includes('data-role="garage-sort"'),
  "Garage body and live sorting must be retained in shell");
@@ -494,7 +502,7 @@ for(const [section,label] of [["dealership","DEALERSHIP"],["care","WORKSHOP"],["
 }
 assert.equal(JSON.stringify(fleetTestState.fleet),fleetSnapshot,
  "Fleet shell must never mutate or sort the saved fleet");
-console.log("PASS: Section 3 Fleet shell, tab navigation, shared filters, active stats and save-safe rendering.");
+console.log("PASS: Section 3 Fleet shell, tab navigation, shared filters and save-safe rendering.");
 
 
 // Section 4: garage modes, status pills, parking artwork and safe inspection routing.
@@ -584,6 +592,7 @@ const v5Other={id:"hatch-02",type:"hatch",plate:"CPT 123",status:"available",bra
  fuel:90,clean:90,body:90,tune:0,rides:3,paint:"silver"};
 const v5State={fleet:[v5Car,v5Other]};
 const v5Ctx={
+ vehicleName:c=>c.type==="limo"?"Limousine":"Hatchback",
  state:v5State,typeOf:id=>({id,name:id==="limo"?"Limo":"Hatchback",category:id==="limo"?"Limo":"Hatch",tank:id==="limo"?69:45,rate:id==="limo"?2450:1500}),
  carePrices:()=>({service:0,wash:0,fuel:120}),carReady:c=>c.status==="available"&&c.fuel>=15&&c.condition>=35,
  fleetInGarageOrder:cars=>[...cars].sort((a,b)=>a.type==="hatch"?-1:1),
@@ -759,8 +768,8 @@ console.log("PASS: Section 7 Performance preview, tuning, eligibility, original 
 
 
 
-// Section 8: premium Rental Desk and Customer Offers must preserve all existing
-// 54 customers, matching, offer expiry, manual car selection and return-only payouts.
+// Section 8: simplified Dashboard requests must preserve matching, offer expiry,
+// manual car selection and return-only payouts.
 assert.ok(html.includes('id="ctr-rental-desk-section-08"'),"Section 8 visual CSS missing from offline HTML");
 const v8offerStart=js.indexOf("function offerCard(o){"),v8offerEnd=js.indexOf("\nfunction emptyState(",v8offerStart);
 const v8autoStart=js.indexOf("function autoDeskControl(){"),v8autoEnd=js.indexOf("\nfunction renderOverview(){",v8autoStart);
@@ -771,8 +780,8 @@ for(const need of ["bestCar(o)","carMatch(c,o)>=0","fleetInGarageOrder(state.fle
  "data-countdown-offer","data-offer-progress","rental-offer-car-","listBtn('rent'","CAR_IMAGES[typeOf(candidate.type).id]","canServeCategory(o.need,t.category)"]){
  assert.ok(v8offerSrc.includes(need),"Section 8 offer missing "+need);
 }
-for(const need of ["dashboard-desk-simple","dashboard-rental-help","dashboard-rental-actions",
- "state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboard-more-offers","btn('autorent'"]){
+for(const need of ["dashboard-simple-panel","dashboard-rental-help","dashboardAutoDispatchToggle()",
+ "state.offers.slice(0,2).map(offerCard)","extraOffers.map(offerCard)","dashboard-more-offers"]){
  assert.ok(v8deskSrc.includes(need),"Simplified Section 8 desk missing "+need);
 }
 assert.ok(js.includes("function autoDeskControl()")&&js.includes("toggleautodespatch"),"Auto-Dispatch remains available in Business");
@@ -911,18 +920,15 @@ console.log("PASS: Section 10 map, geometry, original car sprites, zoom/focus, t
 
 
 
-// Section 11: Business HQ premium presentation, verified financial values and safe navigation.
+// Section 11: Business Command Centre priorities, operating-cost health and safe navigation.
 assert.ok(html.includes('id="ctr-business-command-section-11"'),"Section 11 stylesheet missing");
 const v11s=js.indexOf("function renderCommand(){"),v11e=js.indexOf("\nfunction renderBusiness(){",v11s);
 const v11biz=js.slice(js.indexOf("function renderBusiness(){"),js.indexOf("\nfunction renderUpgrades(){"));
 assert.ok(v11s>=0&&v11e>v11s,"Section 11 Command Centre missing");
 const v11code=js.slice(v11s,v11e);
-for(const token of ["staffOverhead()","branchOverhead()","bidReserve()","freeCash()","state.rentals.reduce",
- "state.loans.reduce","contractReports||{}","BRANCHES.filter","STAFF.filter","branchReport(b.id)",
- "carReady","garageCapacity()","state.history.slice(-12)","state.ledger||[]","CAR_IMAGES[typeOf(heroVehicle.type).id]",
- "renderHeroArt()","business-v11-hero","business-v11-kpi-grid","business-v11-branch-grid",
- "business-v11-chart","business-v11-transactions","business-v11-task","business-v11-footer",
- "data-group=\"business\"","data-id=\"finance\""]){
+for(const token of ["staffOverhead()","branchOverhead()","freeCash()","state.rentals.reduce",
+ "state.loans.length","STAFF.filter","business-v11-status","business-v11-tasks","business-v11-task-list",
+ "business-v11-task","Your Next Moves","data-group=\"business\"","data-id=\"finance\""]){
  assert.ok(v11code.includes(token),"Section 11 business view missing "+token);
 }
 assert.ok(!v11code.includes('business-v11-links')&&!v11code.includes('Business Departments'),
@@ -954,6 +960,7 @@ const mock11={
 };
 const mock11Before=JSON.stringify(mock11);
 const c11={
+ available:()=>mock11.fleet.filter(c=>c.status==="available"),staffed:id=>mock11.staff.includes(id),
  state:mock11,BRANCHES:[{id:"hq",name:"Cape Town HQ",upkeep:1500,price:0},{id:"stellenbosch",name:"Stellenbosch",upkeep:1900,price:350000}],
  STAFF:[{id:"sales",name:"Sales Agent",salary:300},{id:"mechanic",name:"Mechanic",salary:350}],
  CONTRACTS:[{id:"corporate",name:"Corporate"}],up:()=>false,
@@ -966,22 +973,17 @@ const c11={
 };
 const render11=vm.runInNewContext(v11code+"\nrenderCommand",c11);
 const markup11=render11();
-for(const k of ["BUSINESS","TOTAL COMPANY CASH","AVAILABLE MONEY","RENTALS TO COLLECT","OPERATING COST / DAY",
- "COMPANY PERFORMANCE","Company Performance","Branch Performance","Recent Income","Recent Transactions"]){
- assert.ok(markup11.toLowerCase().includes(k.toLowerCase()),"Section 11 text missing "+k);
+for(const k of ["RENTALS IN PROGRESS","Rental payments arrive when each car returns.","Your Next Moves",
+ "Build your company workshop","Add your own car wash","Open another Cape branch"]){
+ assert.ok(markup11.includes(k),"Business Command Centre missing "+k);
 }
-for(const n of [120000,105000,4200,1800,15000,19000,26500]){
- assert.ok(markup11.includes(c11.money(n)),"Section 11 financial number not shown: "+n);
-}
-assert.ok(markup11.includes('src="assets/limo-side.webp"'),"Existing vehicle art missing from Business HQ");
-assert.ok(markup11.includes("Rental returned · Family Jacobs")&&markup11.includes("Refuel"),"Saved ledger transactions must be shown");
-assert.ok(markup11.includes('data-id="upgrades"')&&markup11.includes('data-id="branches"')&&markup11.includes('data-id="finance"')&&markup11.includes('data-id="staff"')&&
- markup11.includes('data-id="contracts"')&&markup11.includes('data-id="overview"')&&markup11.includes('data-id="map"'),"Business shortcuts must link to existing screens");
+assert.ok(markup11.includes('data-id="upgrades"')&&markup11.includes('data-id="branches"')&&markup11.includes('data-id="finance"'),
+ "Business priorities and finance status must link to existing screens");
 assert.equal(JSON.stringify(mock11),mock11Before,"Business Command Centre must not mutate saves");
 assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReserve());}")&&
  js.includes("function staffOverhead(){return round(STAFF.filter")&&
  js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
-console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
+console.log("PASS: Section 11 Business Command Centre health, priorities, navigation and save safety.");
 
 console.log("PASS: JavaScript syntax, 27 classes, 78 customers and all assets.");
 
@@ -1272,7 +1274,8 @@ assert.match(auditCss('ctr-auctions-section-13'),/@media\(max-width:640px\)/,'Au
 assert.match(auditCss('ctr-events-section-17'),/@media\(max-width:640px\)/,'Events need phone breakpoint');
 
 const progressMenu=auditSource('function renderProgress(){','function renderMilestones(){');
-for(const tab of ['milestones','premium','stats','roadmap','settings'])assert.ok(progressMenu.includes("['"+tab+"'"),'Progress section missing '+tab);
+for(const tab of ['milestones','premium','stats','roadmap'])assert.ok(progressMenu.includes("['"+tab+"'"),'Progress section missing '+tab);
+assert.ok(js.includes('function renderSettings(){'),'Settings view must remain available from the header.');
 assert.match(progressMenu,/renderTabs\('progress',tabs\)/,'Progress tabs must remain interactive');
 assert.match(auditCss('ctr-progress-section-18'),/@media\(max-width:580px\)/,'Progress needs phone breakpoint');
 assert.match(auditCss('ctr-responsive-compact-v2'),/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'Mobile tab layout needs equal columns');

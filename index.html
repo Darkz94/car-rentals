@@ -6041,7 +6041,7 @@ function mapHeadingDegrees(r,t=now(),car=null){
  if(Math.hypot(dx,dy)<.001){const origin=DEST[r.from]||DEST.hq,target=DEST[r.dest]||DEST.airport;dx=(target.x-origin.x)*(progress<.5?1:-1);dy=(target.y-origin.y)*(progress<.5?1:-1);}
  // Existing top-down assets have differing native front directions. Keep the nose
  // of each sprite aligned with the actual route, independently of the arrow marker.
- const MAP_SPRITE_FORWARD_OFFSET={sedan:90,coupe:-90,classic:-90,donk:-90,limo:90,partybus:90,bus:-90,sport:90,super:90,van:-90};
+ const MAP_SPRITE_FORWARD_OFFSET={truck:0,tow:0,sedan:90,coupe:-90,classic:-90,donk:-90,limo:90,partybus:90,bus:-90,sport:90,super:90,van:-90};
  const spriteOffset=car?.editionId&&editionOf(car.editionId)?90:(MAP_SPRITE_FORWARD_OFFSET[car?.type]||0);
  return Math.atan2(dy,dx*mapMarkerYScale())*180/Math.PI+90+spriteOffset;
 }
