@@ -161,7 +161,7 @@ const originalCustomerIds=["backpacker-leo","family-jacobs","contractor-dave","e
 for(const id of originalCustomerIds)assert.ok(customerList.some(c=>c.id===id),"Existing customer removed: "+id);
 const vipList=customerList.filter(c=>c.vipBonus>0);
 assert.equal(vipList.length,8,"Exactly eight new VIP customers required");
-assert.equal(customerList.filter(c=>!c.vipBonus).length,66,"Original and added standard customers must total 46");
+assert.equal(customerList.filter(c=>!c.vipBonus).length,70,"All original regular customers plus four new regional customers must remain");
 assert.deepEqual(Array.from(vipList.map(c=>Math.round(c.vipBonus*100)).sort((a,b)=>b-a)),[75,70,65,60,55,45,40,30]);
 assert.ok(vipList.every(c=>c.need==="Any"&&c.budget===0&&c.vipWeight>=1),"VIPs need class flexibility and positive rarity weights");
 assert.ok(vipList[0].vipWeight<vipList.at(-1).vipWeight,"Highest-paying VIP must be rarer");
