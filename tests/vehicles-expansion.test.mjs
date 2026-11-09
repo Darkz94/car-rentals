@@ -19,7 +19,7 @@ assert.equal(new Set(customers.map(c=>c.id)).size,78);
 for(const spec of specs){
  const car=types.find(t=>t.id===spec.id);assert.ok(car);
  for(const [key,val] of Object.entries(spec))assert.equal(car[key],val,key+' for '+spec.id);
- assert.equal(customers.filter(c=>c.need===spec.category).length,2);
+ assert.equal(customers.filter(c=>c.need===spec.category).length,spec.category==='Compact SUV'||spec.category==='Convertible'||spec.category==='Minibus Shuttle'?3:2);
 }
 for(const c of regular){
  const found=customers.find(x=>x.id===c.id);assert.ok(found&&!found.vipBonus);
