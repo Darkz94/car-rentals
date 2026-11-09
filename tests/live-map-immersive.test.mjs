@@ -38,7 +38,7 @@ assert.ok(html.includes('id="ctr-live-map-immersive-2026"'));
 assert.ok(html.includes('#app .main.main-live-focus>.topbar'));
 assert.ok(js.includes("main-live-focus")&&js.includes("mapPanX=0"));
 assert.ok(js.includes('liveMapDrag')&&js.includes('liveMapSuppressClickUntil'));
-assert.ok(js.includes('map-landscape-fx-2026')&&js.includes('preserveAspectRatio='));
+assert.ok(html.includes('#app .live-map-focused-2026 .map-frame-v10')&&js.includes('preserveAspectRatio='));
 const camSrc=slice('function mapViewBox(){','function renderMap(compact=false){');
 const cameraCtx={state,mapZoom:1,mapPanX:0,mapFocus:'hq',selectedRental:null,DEST:destinations,activePage:'map',
  window:{innerWidth:360,innerHeight:800},mapPortraitLive:()=>cameraCtx.activePage==='map'&&cameraCtx.window.innerWidth<=760,clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),routePosition:()=>({x:275,y:100})};
