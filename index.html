@@ -3042,8 +3042,15 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .branch-v14-finance-row strong{font-size:13px;color:#fff;text-align:right}
 .branch-v14-finance-row.revenue strong{color:#88fbd0}
 .branch-v14-finance-row.cost strong{color:#ffdc82}
-.branch-v14-fleet{padding:0 12px;display:grid;gap:7px}
-.branch-v14-fleet-heading{display:flex;justify-content:space-between;align-items:center;gap:6px;color:#d7e9fb;font-weight:900;font-size:11px}
+.branch-v14-fleet{padding:0 12px;display:block;min-width:0}
+.branch-v14-fleet-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:46px;padding:9px 11px;cursor:pointer;list-style:none;color:#d7e9fb;font-weight:900;font-size:12px;background:#071c36;border:1px solid #346c95;border-radius:11px}
+.branch-v14-fleet-heading::-webkit-details-marker{display:none}
+.branch-v14-fleet-heading:hover,.branch-v14-fleet-heading:focus-visible{border-color:#84d7ff;background:#103251}
+.branch-v14-fleet-heading:focus-visible{outline:2px solid #f7d76c;outline-offset:2px}
+.branch-v14-fleet-count{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:#aadaf5}
+.branch-v14-fleet-caret{font-size:20px;line-height:1;display:inline-block;transition:transform .16s ease}
+.branch-v14-fleet[open] .branch-v14-fleet-caret{transform:rotate(180deg)}
+.branch-v14-fleet-list{display:grid;gap:7px;padding:9px 0 3px}
 .branch-v14-car{display:flex;align-items:center;gap:8px;min-width:0;background:#071c36;border:1px solid #346c95;border-radius:10px;padding:6px 8px}
 .branch-v14-car img{width:66px;height:46px;flex:0 0 66px;object-fit:contain;filter:drop-shadow(0 5px 4px #0008)}
 .branch-v14-car-data{min-width:0;flex:1}
@@ -6412,9 +6419,12 @@ function renderBranches(){
      <p class="branch-v14-card-desc">${esc(b.desc)}</p>
      <div class="branch-v14-card-values"><div class="branch-v14-value"><small>Assigned</small><strong>${operational?cars.length:'—'}</strong></div><div class="branch-v14-value"><small>On hire</small><strong>${operational?onHire:'—'}</strong></div><div class="branch-v14-value"><small>Returned</small><strong>${operational?report.count:'—'}</strong></div></div>
      <div class="branch-v14-finance"><div class="branch-v14-finance-row revenue"><span>Lifetime rental revenue</span><strong>${operational?money(report.revenue):'Not operating'}</strong></div><div class="branch-v14-finance-row cost"><span>Base upkeep / game day</span><strong>${money(b.upkeep)}</strong></div><div class="branch-v14-finance-row"><span>${operational?'Opening price':'Unlock this branch'}</span><strong>${money(b.price)}</strong></div></div>
-     ${operational?`<div class="branch-v14-fleet"><div class="branch-v14-fleet-heading"><span>🚗 Assigned vehicles</span><span>${cars.length} vehicle${cars.length===1?'':'s'}</span></div>
+     ${operational?`<details class="branch-v14-fleet" data-compact-info="branch-vehicles-${esc(b.id)}" ${openInfoPanels.has('branch-vehicles-'+b.id)?'open':''}>
+        <summary class="branch-v14-fleet-heading"><span>🚗 Assigned vehicles</span><span class="branch-v14-fleet-count">${cars.length} vehicle${cars.length===1?'':'s'} <span class="branch-v14-fleet-caret" aria-hidden="true">⌄</span></span></summary>
+        <div class="branch-v14-fleet-list">
         ${cars.length?fleetInGarageOrder(cars).map(c=>`<div class="branch-v14-car"><img src="${CAR_IMAGES[c.type]}" alt="${esc(typeOf(c.type).name)} side view" loading="lazy"><div class="branch-v14-car-data"><b>${esc(typeOf(c.type).name)}</b><small>${esc(c.plate)}</small></div><span class="pill ${c.status==='available'?'green':c.status==='transfer'?'blue':c.status==='incident'?'red':'orange'}">${statusMsg(c.status)}</span></div>`).join(''):'<div class="branch-v14-empty">No vehicles assigned. Buy at the Dealership or transfer a parked car.</div>'}
-      </div>
+        </div>
+      </details>
       <div class="branch-v14-transfer-form"><label>Move an available vehicle here
         <select data-role="branch-transfer-select" data-id="${b.id}" ${free.length?'':'disabled'}><option value="">${free.length?'Select parked vehicle':'No eligible parked vehicles'}</option>${fleetInGarageOrder(free).map(c=>`<option value="${esc(c.id)}">${esc(typeOf(c.type).name)} · ${esc(c.plate)} · ${esc(DEST[c.branch]?.name||c.branch)}</option>`).join('')}</select></label>
         ${listBtn('branchtransfer',b.id,'🚚 Transfer here · 12s','btn primary block',free.length?'':'disabled')}

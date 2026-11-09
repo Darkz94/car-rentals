@@ -278,6 +278,42 @@ try{
          branchMetrics.exactAmount.replace(/\D/g,'')!=='45316820'||!/^R45\.32m$/.test(branchMetrics.shortAmount))
         problems.push(width+'px Branch stats overflow or wrong money label '+JSON.stringify(branchMetrics));
     }
+    if(route==='business'&&sub==='branches'){
+      // A large fleet must not push the next location below 26 expanded vehicle cards.
+      // Exercise native dropdown open/close and persistence across normal game renders.
+      const dropdown=await page.evaluate(()=>{
+        const originalFleet=state.fleet,key='branch-vehicles-hq',wasExpanded=openInfoPanels.has(key);
+        try{
+          const seed=originalFleet[0];
+          if(!seed)return {error:'No starter vehicle'};
+          state.fleet=Array.from({length:26},(_,i)=>({...seed,id:'branch-dropdown-fixture-'+i,plate:'CA '+(100+i)+'-999',branch:'hq',status:i%2?'rented':'available'}));
+          openInfoPanels.delete(key);
+          render();
+          const details=document.querySelector('.branch-v14-fleet[data-compact-info="branch-vehicles-hq"]');
+          const summary=details?.querySelector('summary');
+          const initial={collapsed:details?.open===false,count:summary?.textContent.includes('26 vehicles'),height:Math.round(details?.getBoundingClientRect().height||0),
+            cars:details?.querySelectorAll('.branch-v14-car').length,branchPurchase:!!document.querySelector('.branch-v14-lock-actions button[data-action="branch"]')};
+          summary?.click();
+          const opened={expanded:details?.open===true,height:Math.round(details?.getBoundingClientRect().height||0)};
+          render();
+          const again=document.querySelector('.branch-v14-fleet[data-compact-info="branch-vehicles-hq"]');
+          const persisted=again?.open===true;
+          again?.querySelector('summary')?.click();
+          const closedAgain=again?.open===false;
+          render();
+          return {initial,opened,persisted,closedAgain};
+        }finally{
+          state.fleet=originalFleet;
+          if(wasExpanded)openInfoPanels.add(key);else openInfoPanels.delete(key);
+          render();
+        }
+      });
+      console.log(width+'px Branch assigned vehicle dropdown: '+JSON.stringify(dropdown));
+      if(dropdown.error||!dropdown.initial.collapsed||!dropdown.initial.count||dropdown.initial.cars!==26||
+        !dropdown.initial.branchPurchase||dropdown.initial.height>80||!dropdown.opened.expanded||
+        dropdown.opened.height<500||!dropdown.persisted||!dropdown.closedAgain)
+        problems.push(width+'px Branch assigned vehicles dropdown failed '+JSON.stringify(dropdown));
+    }
     if(route==='business'&&sub==='command'){
       // One navigation grid only: all six business destinations, no duplicated department shortcuts.
       const business=await page.evaluate(()=>({

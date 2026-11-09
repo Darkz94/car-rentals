@@ -1086,7 +1086,7 @@ const b14state={cash:750000,branches:["hq","stellenbosch"],fleet:[
 const b14saved=JSON.stringify(b14state);
 const b14Money=x=>"R"+Math.round(x).toLocaleString("en-ZA");
 const b14ctx={
- state:b14state,BRANCHES:b14Branches,DEST:{hq:{name:"Cape Town HQ"},stellenbosch:{name:"Stellenbosch"},franschhoek:{name:"Franschhoek"}},
+ state:b14state,openInfoPanels:new Set(),BRANCHES:b14Branches,DEST:{hq:{name:"Cape Town HQ"},stellenbosch:{name:"Stellenbosch"},franschhoek:{name:"Franschhoek"}},
  CAR_IMAGES:{sedan:"assets/executive-sedan-side.webp",hatch:"assets/city-hatch-side.png",bakkie:"assets/adventure-bakkie-side.png"},
  owned:id=>b14state.branches.includes(id),freeCash:()=>700000,branchOverhead:()=>3400,
  branchReport:id=>b14state.branchReports[id]||{count:0,revenue:0},typeOf:id=>({id,name:id}),
@@ -1109,8 +1109,19 @@ assert.ok(b14Markup.includes('data-role="branch-transfer-select" data-id="hq"')&
  "Only open branches should offer vehicle transfers");
 assert.ok(!b14Markup.includes('data-role="branch-transfer-select" data-id="franschhoek"'),
  "Locked branches must not expose transfer controls");
+assert.ok(b14Markup.includes('<details class="branch-v14-fleet" data-compact-info="branch-vehicles-hq" >'),"HQ vehicle dropdown must initially be collapsed");
+assert.ok(b14Markup.includes('<details class="branch-v14-fleet" data-compact-info="branch-vehicles-stellenbosch" >'),"Each owned branch must have a separate collapsed dropdown");
+assert.ok(b14Markup.includes('<summary class="branch-v14-fleet-heading">'),"Native dropdown summary must remain accessible");
+assert.ok(b14Markup.includes('2 vehicles')&&b14Markup.includes('1 vehicle'),"Dropdown summary must show each branch's assigned vehicle count");
+b14ctx.openInfoPanels.add('branch-vehicles-hq');
+const b14Open=b14Render();
+assert.ok(b14Open.includes('data-compact-info="branch-vehicles-hq" open'),"Expanded HQ dropdown must survive a screen re-render");
+assert.ok(b14Open.includes('data-compact-info="branch-vehicles-stellenbosch" >'),"Expanding HQ must not expand other branches");
+b14ctx.openInfoPanels.delete('branch-vehicles-hq');
+assert.ok(b14Render().includes('data-compact-info="branch-vehicles-hq" >'),"Closing a branch dropdown should persist between renders");
+assert.ok(js.includes("e.target.closest('details[data-compact-info] > summary')"),"Reuse existing dropdown toggle event handling");
 assert.equal(JSON.stringify(b14state),b14saved,"Rendering branch network must not modify saved game data");
-console.log("PASS: Section 14 Branch Network, map reuse, vehicle assignments, accurate money, 12s transfers and save safety.");
+console.log("PASS: Section 14 Branch Network, collapsed vehicle dropdowns, independent expanded state, 12s transfers and save safety.");
 
 
 // Section 15 Staff: exact roles, payment formulas, UI state and saved-game preservation.
