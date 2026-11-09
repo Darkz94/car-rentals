@@ -56,7 +56,7 @@ assert.equal(horsepower.jeep, 210);
 assert.equal(customerList.filter(c => c.need === "Jeep").map(c => c.id).sort().join(","),
   "adventure-couple,mountain-guide-kabelo,trail-explorer");
 assert.ok(!("Jeep" in equivalence), "Jeep uses the existing exact-category fallback");
-assert.ok(js.includes("type==='jeep'||type==='truck'"), "Jeep map direction must match top-down sprite");
+assert.ok(js.includes('function mapHeadingDegrees(')&&js.includes('map-direction-v11'),'Vehicle travel direction must use heading calculations and clear nose arrows');
 const tow = byId.get("tow");
 assert.ok(tow, "Missing Tow Truck");
 assert.equal(typeList.findIndex(t => t.id === "tow"), typeList.findIndex(t => t.id === "classic")+1, "Tow Truck follows Classic");
@@ -898,7 +898,7 @@ assert.ok(js.includes("document.querySelectorAll('[data-maptransfer]')")&&js.inc
 assert.ok(js.includes("const DEST={hq:{name:'Cape Town HQ',x:242,y:234}"),"Original destination coordinates changed");
 assert.ok(js.includes("start:c.transferDue-12000,due:c.transferDue"),"12-second transfers changed");
 const state10={rentals:[{id:"r",customer:"Demo",carId:"car",from:"hq",dest:"airport",start:100000,due:180000}],fleet:[{id:"car",type:"sedan",plate:"CA 111"}]};
-const ctx10={state:state10,DEST:{hq:{name:"HQ",x:242,y:234},airport:{name:"Airport",x:540,y:279}},mapZoom:1.5,mapFocus:"airport",selectedRental:null,now:()=>140000,routePosition:()=>({x:420,y:255}),clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),esc:v=>String(v),owned:()=>false,MAP_CAR_IMAGES:{sedan:"assets/executive-sedan-topdown.webp",hatch:"assets/city-hatch-topdown.png"},mapCarPose:()=> "translate(420 255) rotate(0)",effectiveMapNight:()=>false,relativeTime:()=> "40s"};
+const ctx10={state:state10,DEST:{hq:{name:"HQ",x:242,y:234},airport:{name:"Airport",x:540,y:279}},mapZoom:1.5,mapFocus:"airport",selectedRental:null,now:()=>140000,routePosition:()=>({x:420,y:255}),clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),esc:v=>String(v),owned:()=>false,MAP_CAR_IMAGES:{sedan:"assets/executive-sedan-topdown.webp",hatch:"assets/city-hatch-topdown.png"},mapCarPose:()=> "translate(420 255)",mapPortraitLive:()=>false,effectiveMapNight:()=>false,relativeTime:()=> "40s"};
 const funcs10=vm.runInNewContext(map10+"\n({mapViewBox,renderMap})",ctx10),snapshot10=JSON.stringify(state10);
 const vb10=funcs10.mapViewBox().split(" ").map(Number);assert.equal(vb10.length,4);assert.ok(vb10[0]>=0&&vb10[1]>=0&&vb10[2]<1000&&vb10[3]<620);
 const markup10=funcs10.renderMap(false);
