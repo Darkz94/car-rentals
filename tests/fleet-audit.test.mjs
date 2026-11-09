@@ -26,8 +26,8 @@ const equivalence = vm.runInNewContext(decl("CATEGORY_EQUIVALENTS", "};") + "\nC
 const byId = new Map(typeList.map(t => [t.id, t]));
 assert.equal(typeList.length, 27);
 assert.equal(byId.size, 27);
-assert.equal(customerList.length, 74);
-assert.equal(new Set(customerList.map(x => x.id)).size, 74);
+assert.equal(customerList.length, 78);
+assert.equal(new Set(customerList.map(x => x.id)).size, 78);
 
 const sides = js.slice(js.indexOf("const CAR_IMAGES="), js.indexOf("const MAP_CAR_IMAGES="));
 const roof = js.slice(js.indexOf("const MAP_CAR_IMAGES="), js.indexOf("function createCapeCarArt"));
@@ -172,7 +172,7 @@ assert.ok(js.includes("...(!contract&&c.vipBonus?{vipBonus:c.vipBonus}:{})"),"VI
 assert.ok(js.includes("...(!contract&&customer.vipBonus?{vipBonus:customer.vipBonus}:{})"),"Offline VIP offers must apply the same bonus");
 const destSource=decl("DEST","};");
 const destinations=vm.runInNewContext(destSource+"\nDEST");
-assert.ok(customerList.every(c=>destinations[c.dest]),"All 74 customer destinations must exist on the Live map");
+assert.ok(customerList.every(c=>destinations[c.dest]),"All 78 customer destinations must exist on the Live map");
 const matchSource=js.match(/function canServeCategory\(requested,availableCategory\)\{[^\n]*\}/)?.[0];
 const carMatchSource=js.match(/function carMatch\(car,offer\)\{[\s\S]*?\n\}/)?.[0];
 const projectedSource=js.match(/function projectedPayout\(car,offer\)\{[^\n]*\}/)?.[0];
@@ -781,7 +781,7 @@ assert.ok(v8autoSrc.includes("up('auto')")&&v8autoSrc.includes("state.settings.a
 assert.ok(js.includes("document.getElementById('rental-offer-car-'+id)?.value||null")&&
  js.includes("startRental(id,chosen)"),"Manual car selector must connect to the existing startRental action");
 assert.ok(js.includes("data-offer-progress")&&js.includes("duration=Math.max(1,o.expires-"),"Live offer progress must update without a game balance change");
-assert.equal(customerList.length,74,"Original 54 and twenty added regular customers retained");
+assert.equal(customerList.length,78,"All original 74 customers plus four regional customers retained");
 const v8mockCar={id:"sedan-8",plate:"CA 808",type:"sedan",branch:"hq",status:"available",tune:1};
 const v8second={...v8mockCar,id:"sedan-9",plate:"CA 909"};
 const v8offer={id:"offer-8",customer:"Executive Priya",icon:"💼",need:"Sedan",budget:4000,dest:"airport",
