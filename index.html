@@ -2283,6 +2283,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 .garage-bay-ident h3{font-size:15px;line-height:1.12;font-weight:950;margin:3px 0 4px;color:#fff}
 .garage-bay-ident .car-plate{font-size:10px}
 .garage-bay-branch{align-self:start;font-size:9px;color:#c5e5f8;text-align:right;max-width:48%;overflow-wrap:anywhere}
+.garage-bay-mileage{display:flex;flex-wrap:wrap;align-items:center;gap:4px 9px;margin-top:9px;padding:7px 9px;border-radius:9px;background:#0b2941;border:1px solid #38628a;color:#addffa;font-size:10px}.garage-bay-mileage strong{color:#fff4ce;font-size:14px;white-space:nowrap}.garage-bay-mileage small{flex-basis:100%;color:#addffa;font-size:10px}
 .garage-bay-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:11px 0}
 .garage-bay-health{min-width:0;background:#081e40;border:1px solid #315f88;border-radius:8px;padding:6px 5px}
 .garage-bay-health>div{display:flex;justify-content:space-between;gap:3px;font-size:9px;font-weight:750;color:#d7ebfa;min-width:0;align-items:center}
@@ -4930,6 +4931,35 @@ const TYPES=[
 {id:'grandtourer',name:'Grand Tourer',model:'Twelve Apostles GT',category:'Grand Tourer',price:835000,rate:4950,tank:75,unlock:33,desc:'Long-bonnet luxury grand touring coupe with sweeping glass and elegant trim.',icon:'🏎️'},
 {id:'armored',name:'Armoured VIP SUV',model:'Citadel Sentinel',category:'Armoured VIP SUV',price:1650000,rate:8750,tank:105,unlock:37,desc:'Reinforced high-security executive SUV with protected glazing and discreet armour.',icon:'🛡️'}];
 const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521}};
+
+/* Approximate road kilometres one way; rental odometers count branch-to-destination-to-branch. */
+const ROUTE_DISTANCE_KM={
+ hq:{hq:12,waterfront:3,camps:8,table:5,chapman:25,airport:20,stellenbosch:50,franschhoek:75,hermanus:120},
+ stellenbosch:{hq:50,waterfront:49,camps:51,table:49,chapman:75,airport:35,stellenbosch:12,franschhoek:31,hermanus:94},
+ franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93}
+};
+function rentalRoundTripKm(from,dest){
+ const oneWay=ROUTE_DISTANCE_KM[from]?.[dest];
+ return Number.isFinite(oneWay)&&oneWay>0?round(2*oneWay):null;
+}
+const OVERHAUL_INTERVAL_KM=400000;
+function nextOverhaulKm(car){
+ const last=Math.max(0,Number(car?.lastOverhaulMileage)||0);
+ return (Math.floor(last/OVERHAUL_INTERVAL_KM)+1)*OVERHAUL_INTERVAL_KM;
+}
+function overhaulDue(car){return !!car&&Math.max(0,Number(car.mileage)||0)>=nextOverhaulKm(car);}
+function odometerLabel(car){return Math.max(0,round(Number(car?.mileage)||0)).toLocaleString('en-ZA')+' km';}
+function queueMileageOverhaul(car){
+ if(!car||car.status!=='available'||!overhaulDue(car))return false;
+ if(car.restoration&&Number(car.restoration.stage)===4)
+  car.restorationHistory=[...(Array.isArray(car.restorationHistory)?car.restorationHistory:[]),{...car.restoration}].slice(-8);
+ car.restoration={kind:'overhaul',stage:0,spent:0,purchase:0,started:now(),requiredAtMileage:car.mileage};
+ car.status='restoration';
+ logVehicle(car,'Major overhaul required','400,000 km service interval reached');
+ note(`${car.plate} requires a 400,000 km overhaul or sale.`,'bad');
+ notify(`🔧 ${car.plate} needs a full overhaul! Fleet → Restoration.`,'bad');
+ return true;
+}
 const BRANCHES=[{id:'hq',name:'Cape Town HQ',price:0,upkeep:1500,desc:'Your flagship city location.'},{id:'stellenbosch',name:'Stellenbosch',price:350000,upkeep:1900,desc:'Access wine-estate and weekend bookings.'},{id:'franschhoek',name:'Franschhoek',price:600000,upkeep:2500,desc:'Unlock luxury wine and scenic-tour demand.'}];
 const CUSTOMER_TYPES=[{id:'backpacker-leo',name:'Backpacker Leo',icon:'🎒',need:'Hatch',budget:1800,dest:'camps'},{id:'family-jacobs',name:'Family Jacobs',icon:'👨‍👩‍👧',need:'Sedan',budget:2600,dest:'waterfront'},{id:'contractor-dave',name:'Contractor Dave',icon:'🦺',need:'Bakkie',budget:3000,dest:'airport'},{id:'executive-priya',name:'Executive Priya',icon:'💼',need:'Sedan',budget:4000,dest:'airport'},{id:'influencer-kim',name:'Influencer Kim',icon:'📸',need:'Sport',budget:13500,dest:'chapman'},{id:'logistics-co',name:'Logistics Co.',icon:'📦',need:'Truck',budget:6200,dest:'stellenbosch'},{id:'vineyard-group',name:'Vineyard Group',icon:'🍇',need:'Bus',budget:7500,dest:'franschhoek'},{id:'film-producer',name:'Film Producer',icon:'🎬',need:'Super',budget:25000,dest:'camps'}, {id:'tourist-maya',name:'Tourist Maya',icon:'🌴',need:'Hatch',budget:2800,dest:'table'}, {id:'wedding-party',name:'Wedding Party',icon:'💍',need:'Coupe',budget:4500,dest:'franschhoek'},
 {id:'muscle-enthusiast',name:'Muscle Enthusiast',icon:'🔥',need:'Muscle',budget:9000,dest:'chapman'},
@@ -5185,7 +5215,7 @@ function exportLedger(){
 
 function spend(amount,label){amount=round(amount);if(amount<0||!Number.isFinite(amount)||freeCash()<amount){notify('Not enough unreserved cash for that yet.','bad');return false;}state.cash-=amount;state.stats.spent+=amount;if(amount>0)state.ledger.unshift({t:now(),amount:-amount,label});state.ledger=state.ledger.slice(0,80);return true;}
 function earn(amount,label){amount=round(amount);if(!Number.isFinite(amount)||amount<0)return;state.cash+=amount;state.stats.earned+=amount;state.stats.best=Math.max(state.stats.best,amount);state.ledger.unshift({t:now(),amount,label});state.ledger=state.ledger.slice(0,80);state.history.push(amount);state.history=state.history.slice(-18);if(amount>0)arcadeFx('CASH IN',money(amount));}
-function carReady(car){return car&&car.status==='available'&&car.condition>=35&&car.fuel>=15;}
+function carReady(car){return car&&car.status==='available'&&!overhaulDue(car)&&car.condition>=35&&car.fuel>=15;}
 function available(){return state.fleet.filter(carReady);}
 // Single class-substitution policy for live bookings and offline simulation.
 const CATEGORY_EQUIVALENTS={Hatch:['Hatch','Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Sedan:['Sedan','Coupe','Classic','Muscle','Sport','Super','Hyper'],Coupe:['Coupe','Classic','Muscle','Sport','Super','Hyper'],Classic:['Classic','Sedan','Coupe'],Bakkie:['Bakkie','Van','Truck'],Van:['Van','Truck'],Truck:['Truck','Van','Bakkie'],Bus:['Bus'],Sport:['Sport','Super','Hyper','Coupe','Muscle'],Muscle:['Muscle','Sport','Super','Hyper'],Super:['Super','Hyper']};
@@ -5214,7 +5244,7 @@ function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offer
 function routePosition(r,t=now()){let src=DEST[r.from]||DEST.hq,to=DEST[r.dest]||DEST.airport;let prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2;let x=src.x+(to.x-src.x)*u,y=src.y+(to.y-src.y)*u-38*Math.sin(Math.PI*u);return {x,y,progress:prog};}
 function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
- let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,balanceVersion:2,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${formatTripTime(seconds)} • ${money(payout)} on return`);return true;
+ let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,tripKm:rentalRoundTripKm(car.branch,offer.dest),balanceVersion:2,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${formatTripTime(seconds)} • ${money(payout)} on return`);return true;
 }
 function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)return;
  let base=clamp((1+(state.rep/20)*.3)*((staffed('concierge')?1.15:1))*(1+perkEffect('tips',1)),1,2.4);
@@ -5232,10 +5262,11 @@ function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)ret
  let wear=rand(2,6)*wearScale*(staffed('mechanic')?.7:1)*(1-perkEffect('safety',.65))*difficulty().expenses,
      fuel=(balanced?Math.min(32,rand(8,19)*(1+tripSeconds/250)):rand(8,19))*(staffed('driver')?.7:1)*(1-perkEffect('fuel',.45)),
      dirty=rand(10,24)*dirtScale*weatherEffect().dirt;
- car.condition=clamp(car.condition-wear);car.clean=clamp(car.clean-dirty);car.fuel=clamp(car.fuel-fuel);car.body=clamp((car.body??100)-rand(0,3)*(state.weather==='Rainy'?1.5:1));car.parts=car.parts||Object.fromEntries(CAR_PARTS.map(([k])=>[k,car.condition]));for(let [key] of CAR_PARTS)car.parts[key]=clamp(car.parts[key]-wear*rand(6,13)/10);car.rides=(car.rides||0)+1;const tripKm=Math.max(5,round((Number(r.seconds)||90)/2.8));car.mileage=Math.max(0,round(Number(car.mileage)||0))+tripKm;car.serviceHistory=Array.isArray(car.serviceHistory)?car.serviceHistory:[];car.serviceHistory.unshift({at:now(),kind:'Rental return',detail:`${r.customer} · ${tripKm} km`,cost:0,mileage:car.mileage});car.serviceHistory=car.serviceHistory.slice(0,60);car.status='available';
+ car.condition=clamp(car.condition-wear);car.clean=clamp(car.clean-dirty);car.fuel=clamp(car.fuel-fuel);car.body=clamp((car.body??100)-rand(0,3)*(state.weather==='Rainy'?1.5:1));car.parts=car.parts||Object.fromEntries(CAR_PARTS.map(([k])=>[k,car.condition]));for(let [key] of CAR_PARTS)car.parts[key]=clamp(car.parts[key]-wear*rand(6,13)/10);car.rides=(car.rides||0)+1;const tripKm=Math.max(5,round(Number(r.tripKm)||rentalRoundTripKm(r.from,r.dest)||((Number(r.seconds)||90)/2.8)));car.mileage=Math.max(0,round(Number(car.mileage)||0))+tripKm;car.serviceHistory=Array.isArray(car.serviceHistory)?car.serviceHistory:[];car.serviceHistory.unshift({at:now(),kind:'Rental return',detail:`${r.customer} · ${tripKm} km`,cost:0,mileage:car.mileage});car.serviceHistory=car.serviceHistory.slice(0,60);car.status='available';
  let chance=(up('gps')?.45:1)*(1-perkEffect('safety',.65))*weatherEffect().incidents*(isNight()?1.2:1)*(car.condition<55?1.65:1)*difficulty().incident;
  if(Math.random()<chance){car.status='incident';car.condition=clamp(car.condition-rand(15,28));let x={id:uid('incident'),carId:car.id,name:pick(['Flat tyre','Pothole damage','Mechanical fault','Minor collision']),fee:900,when:now()};state.incidents.unshift(x);note(`Roadside assistance needed for ${car.plate}.`, 'bad');notify(`⚠️ Incident: ${car.plate} needs roadside help.`,'bad');}
  else{note(`${car.plate} returned • ${money(r.payout+tip)} deposited.`);notify(`+${money(r.payout+tip)} · ${car.plate} returned!`);}
+ if(car.status==='available')queueMileageOverhaul(car);
  checkAchievements();
 }
 function restoreFinished(){let due=state.rentals.filter(r=>r.due<=now());if(due.length){state.rentals=state.rentals.filter(r=>r.due>now());due.forEach(finishRental);save(true);}}
@@ -5260,7 +5291,7 @@ function bulkCare(mode){let candidates=state.fleet.filter(c=>c.status==='availab
  for(let c of candidates){if(mode==='service'||mode==='prepare'){if(c.condition<99.9||c.body<99.9){c.condition=100;c.body=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}}if(mode==='wash'||mode==='prepare'){if(c.clean<99.9){c.clean=100;state.stats.washes++;}}if(mode==='fuel'||mode==='prepare'){if(c.fuel<99.9){c.fuel=100;state.stats.filled++;}}}
  for(const c of candidates)if(typeof logVehicle==='function')logVehicle(c,'Fleet maintenance',`Fleet-wide ${mode}`);note(`${candidates.length} vehicles ${mode==='prepare'?'fully prepared':mode==='service'?'serviced':mode==='wash'?'washed':'refuelled'} for ${total?money(total):'FREE'}.`);notify(`${candidates.length} cars ready · ${total?money(total):'FREE'}!`);return true;
 }
-function sellCar(id){let c=state.fleet.find(x=>x.id===id);if(!c){notify('Car not found.','bad');return false;}if(c.status!=='available'){notify('Only parked vehicles can be sold.','bad');return false;}if(state.fleet.length<=1){notify('Keep at least one car so your rental business can operate.','bad');return false;}
+function sellCar(id){let c=state.fleet.find(x=>x.id===id);if(!c){notify('Car not found.','bad');return false;}if(c.status!=='available'&&!(c.status==='restoration'&&c.restoration?.kind==='overhaul')){notify('Only parked or mileage-overhaul vehicles can be sold.','bad');return false;}if(state.fleet.length<=1){notify('Keep at least one car so your rental business can operate.','bad');return false;}
  let value=getResale(c);state.cash+=value;state.ledger.unshift({t:now(),amount:value,label:`Car sold · ${c.plate}`});state.ledger=state.ledger.slice(0,80);state.stats.sales=(state.stats.sales||0)+value;state.fleet=state.fleet.filter(x=>x.id!==id);selectedCar=state.fleet[0]?.id||null;modal=null;modalCar=null;note(`${typeOf(c.type).name} ${c.plate} sold for ${money(value)}.`);notify(`Sold ${c.plate} for ${money(value)}.`);return true;}
 
 function service(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status!=='available'){notify('Vehicle must be parked before servicing.','bad');return false;}if(c.condition>=99.9){notify('This vehicle is already fully serviced.');return true;}
@@ -5271,7 +5302,7 @@ function fillFuel(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status
  let cost=carePrices(c).fuel;if(!spend(cost,`Refuelled ${c.plate}`))return false;c.fuel=100;state.stats.filled++;if(typeof logVehicle==='function')logVehicle(c,'Refuel','Tank filled',cost);note(`${c.plate} refuelled for ${money(cost)}.`);notify(`Tank full • ${money(cost)} ⛽`);return true;}
 function allCare(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status!=='available')return notify('Vehicle must be parked to prepare.','bad');let p=carePrices(c),cost=p.service+p.wash+p.fuel;if(!careNeeded(c))return notify('Already fully prepared.');if(!spend(cost,`Full preparation · ${c.plate}`))return false;if(c.condition<99.9){c.condition=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}if(c.clean<99.9){c.clean=100;state.stats.washes++;}if(c.fuel<99.9){c.fuel=100;state.stats.filled++;}if(typeof logVehicle==='function')logVehicle(c,'Full preparation','Mechanical, washing and fuel',cost);note(`${c.plate} fully prepared for ${cost?money(cost):'FREE'}.`);notify(`Car ready for rent · ${cost?money(cost):'FREE'}`);return true;}
 function tune(carId){let c=state.fleet.find(x=>x.id===carId);if(!c||c.status!=='available')return notify('Park the vehicle before upgrading.','bad');if(c.tune>=5)return notify('Vehicle already has maximum tuning.');let cost=round(14000*Math.pow(c.tune+1,1.65));if(!spend(cost,`Performance tuning • ${c.plate}`))return;c.tune++;note(`${c.plate} tuned to level ${c.tune}/5.`);notify(`Tuning upgraded! +13% booking value`);}
-function resolveIncident(id){let inc=state.incidents.find(x=>x.id===id);if(!inc)return;let c=state.fleet.find(x=>x.id===inc.carId);let cost=up('insurance')?450:900;if(!spend(cost,`Roadside assistance • ${c?.plate||'vehicle'}`))return;state.incidents=state.incidents.filter(x=>x.id!==id);if(c)c.status='available';note(`Roadside recovery completed. ${c?.plate||'Vehicle'} back at garage. Repair any damage in Fleet.`);notify(`Roadside recovery complete • ${money(cost)}`);}
+function resolveIncident(id){let inc=state.incidents.find(x=>x.id===id);if(!inc)return;let c=state.fleet.find(x=>x.id===inc.carId);let cost=up('insurance')?450:900;if(!spend(cost,`Roadside assistance • ${c?.plate||'vehicle'}`))return;state.incidents=state.incidents.filter(x=>x.id!==id);if(c){c.status='available';queueMileageOverhaul(c);}note(`Roadside recovery completed. ${c?.plate||'Vehicle'} back at garage. Repair any damage in Fleet.`);notify(`Roadside recovery complete • ${money(cost)}`);}
 function buyUpgrade(id){let x=UPGRADES.find(v=>v.id===id);if(!x||up(id))return;if(!spend(x.price,`Business upgrade • ${x.name}`))return;state.upgrades[id]=true;note(`${x.name} purchased. ${x.subtitle}.`);notify(`Unlocked: ${x.name}!`);}
 const AUTO_CARE_ROWS=[
  ['autofuel','⛽','Auto-refuel','Fills tanks below 75%. Fuel is always charged.'],
@@ -5295,6 +5326,7 @@ function autoCareVehicle(c){
    }
  }
  if(c.status!=='available')return !!actions.length;
+ if(queueMileageOverhaul(c))return true;
  let p=carePrices(c);
  if(up('autofuel')&&careSwitch('autofuel')&&c.fuel<75){
    if(autoCareSpend(p.fuel,`Automatic refuelling · ${c.plate}`)){
@@ -5568,7 +5600,7 @@ function simulateOfflineBookings(start,end){
    const payout=rentalPayout(car,offer,seconds);
    if(payout<=0)break;
    const rental={id:uid('offline'),carId:car.id,customer:offer.customer,icon:offer.icon,
-      from:car.branch,dest:offer.dest,start:simAt,due,payout,seconds,balanceVersion:2,contract:offer.contract};
+      from:car.branch,dest:offer.dest,start:simAt,due,payout,seconds,tripKm:rentalRoundTripKm(car.branch,offer.dest),balanceVersion:2,contract:offer.contract};
    car.status='rented';
    // Reuse return bookkeeping, wear, incident chance, reputation, achievement rewards and reports.
    finishRental(rental);
@@ -5705,7 +5737,7 @@ function rentalCard(r){
   <div class="rental-compact-route rental-trip-v9-route"><div><small>DEPARTURE</small><strong>${esc(origin)}</strong></div><span>➜</span><div><small>DESTINATION</small><strong>${esc(destination)}</strong></div></div>
   <div class="rental-trip-v9-details"><div><small>TIME TO RETURN</small><strong class="rental-compact-eta"><span data-countdown-rental="${esc(r.id)}">${relativeTime(r.due)}</span></strong></div><div><small>TRIP DURATION</small><strong>${formatTripTime(duration)}</strong></div><div><small>BOOKING TYPE</small><strong>${r.contract?'CORPORATE':'CUSTOMER'}</strong></div></div>
   <div class="rental-trip-v9-timeline"><div><b>RETURN JOURNEY</b><span>${round(progress)}% COMPLETE</span></div>
-   <div class="rental-compact-bottom"><div class="mini-progress rental-compact-progress" role="progressbar" aria-label="Rental progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${round(progress)}"><span data-rental-progress="${esc(r.id)}" style="width:${progress}%"></span></div><span class="rental-compact-duration">${formatTripTime(duration)} trip</span></div></div>
+   <div class="rental-compact-bottom"><div class="mini-progress rental-compact-progress" role="progressbar" aria-label="Rental progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${round(progress)}"><span data-rental-progress="${esc(r.id)}" style="width:${progress}%"></span></div><span class="rental-compact-duration">${formatTripTime(duration)} · ${r.tripKm||rentalRoundTripKm(r.from,r.dest)||'—'} km return</span></div></div>
   <div class="rental-trip-v9-footer"><div><b>💳 PAID WHEN RETURNED</b><small>Cash is credited after this trip finishes.</small></div>${btn('page','TRACK ON MAP','btn rental-trip-v9-track','data-id="map"')}</div>
  </div></article>`;
 }
@@ -5937,7 +5969,7 @@ function compactInfoPanel(id,title,desc){return `<section class="compact-info-pa
 function featureHeading(icon,title,desc){return compactInfoPanel("feature-"+title,icon+" "+title,desc);}
 function garageBayCard(c,index){
  const t=typeOf(c.type),chosen=c.id===selectedCar,ready=carReady(c),onRoad=['rented','transfer'].includes(c.status),broken=c.status==='incident',listed=c.status==='auction';
- const status=c.status==='restoration'?'RESTORING':listed?'AT AUCTION':onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
+ const status=c.status==='restoration'?(c.restoration?.kind==='overhaul'?'OVERHAUL DUE':'RESTORING'):listed?'AT AUCTION':onRoad?(c.status==='rented'?'ON HIRE':'IN TRANSIT'):broken?'RECOVERY NEEDED':ready?'READY TO RENT':'NEEDS ATTENTION';
  const tone=broken?'danger':onRoad||listed?'road':ready?'ready':'care';
  const category=esc(t.category||'Vehicle'),where=esc(DEST[c.branch]?.name||c.branch);
  const image=CAR_IMAGES[t.id],search=esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase());
@@ -5952,6 +5984,7 @@ function garageBayCard(c,index){
     ${onRoad?'<div class="bay-out-tag">VEHICLE CURRENTLY AWAY</div>':''}
   </div>
   <div class="parking-info"><div class="garage-bay-ident"><div><span class="garage-bay-category">${category}</span><h3>${esc(t.name)}</h3><span class="car-plate">${esc(c.plate)}</span></div><span class="garage-bay-branch">📍 ${where}</span></div>
+   <div class="garage-bay-mileage"><span>🛣️ MILEAGE</span><strong>${odometerLabel(c)}</strong><small>${c.status==='restoration'&&c.restoration?.kind==='overhaul'?'🔧 Overhaul required':'Next at '+nextOverhaulKm(c).toLocaleString('en-ZA')+' km'}</small></div>
    <div class="garage-bay-health-grid">${health}</div>
    <div class="garage-bay-bottom"><div><small>BASE RENTAL</small><strong>${money(round(t.rate*(1+(c.tune||0)*.13)))}</strong></div>${listBtn('selectcar',c.id,chosen?'✓ Inspecting':'Inspect →',`btn ${chosen?'primary':'ghost'}`)}</div>
   </div>
@@ -5984,17 +6017,17 @@ function renderGarage(){
  <div id="garage-inspection-anchor" class="grid two-thirds garage-inspection-grid garage-inspection-v4"><section class="card pad garage-ops-card"><details class="garage-ops-details" data-compact-info="garage-operations" ${openInfoPanels.has('garage-operations')?'open':''}><summary>⚙️ Fleet operations <span>ⓘ Info ⌄</span></summary><div class="garage-ops-content"><div class="garage-summary-row"><span>🟢 ${available().length} ready</span><span>🚙 ${state.rentals.length} on hire</span><span>🛠️ ${attention} need care</span></div><div class="notice mt-16">${up('workshop')?'✓ Servicing and body repairs are FREE':'🔧 Workshop upgrade makes mechanical maintenance free.'}</div><div class="notice mt-12">${up('carwash')?'✓ Washing is FREE':'🫧 Company Car Wash makes washing free.'}</div><div class="notice mt-12">⛽ Fuel remains chargeable. ${up('fuelcard')?'Your fuel partnership gives 25% off.':''}</div>${btn('sub','View workshop upgrades','btn ghost mt-16',`data-group="fleet" data-id="care"`)}</div></details></section>
  <section class="grid" style="align-content:start">${c?renderCarDetails(c):'<div class="card pad">No vehicle selected.</div>'}</section></div>`;
 }
-function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):c.status==='restoration'?'RESTORING':statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
+function fleetCard(c){let t=typeOf(c.type),ready=carReady(c),chosen=selectedCar===c.id,cls=c.status==='incident'?'red':c.status!=='available'?'blue':ready?'green':'orange';return `<div class="fleet-tile ${chosen?'selected':''}" data-fleet-search="${esc((t.name+' '+t.category+' '+c.plate+' '+(DEST[c.branch]?.name||c.branch)).toLowerCase())}"><div class="fleet-tile-head"><div class="car-thumb"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"></div><div class="grow"><div class="flex between center gap-8"><div class="fleet-tile-name">${esc(t.name)}</div><span class="pill ${cls}">${c.status==='available'?(ready?'READY':vehicleNeedsAttention(c)?'NEEDS CARE':'PARKED'):c.status==='restoration'?(c.restoration?.kind==='overhaul'?'OVERHAUL DUE':'RESTORING'):statusMsg(c.status)}</span></div><div class="car-plate">${esc(c.plate)}</div><div class="tile-sub">📍 ${esc(DEST[c.branch]?.name||c.branch)}</div><div class="tile-sub"><b>🛣️ ${odometerLabel(c)}</b> · ${c.status==='restoration'&&c.restoration?.kind==='overhaul'?'Overhaul due':'Next '+nextOverhaulKm(c).toLocaleString('en-ZA')+' km'}</div><div class="tile-sub money">${money(round(t.rate*(1+(c.tune||0)*.13)))} base/rental</div></div></div><div class="fleet-mini-meters">${[['⛽',c.fuel],['🔧',c.condition],['🫧',c.clean]].map(([n,v])=>`<div><div class="fm-label"><span>${n}</span><b>${Math.round(v)}%</b></div><div class="meter ${v<30?'bad':v<60?'warn':''}"><span style="width:${clamp(v)}%"></span></div></div>`).join('')}</div><div class="fleet-tile-footer"><span class="tiny muted">${c.rides||0} rides · Tune ${c.tune||0}/5</span>${listBtn('selectcar',c.id,chosen?'✓ Selected':'Inspect car →','btn sm '+(chosen?'primary':''))}</div></div>`;}
 
 function renderCarDetails(c){let t=typeOf(c.type),p=carePrices(c),total=p.service+p.wash+p.fuel,parked=c.status==='available',same=state.fleet.length>1;let readiness=carReady(c),reason=c.status==='auction'?'Listed at auction — cannot rent or service until sale closes.':c.status==='rented'?'Currently on hire — back when the rental ends.':c.status==='transfer'?'Travelling between branches.':c.status==='incident'?'Roadside recovery required before servicing.':c.status==='restoration'?'Complete all four timed rebuild stages in Fleet → Restoration before this car can be rented.':readiness?'Ready for the next booking.':c.fuel<15?'Refuel to at least 15% to accept a booking.':'Service to at least 35% condition to accept a booking.';
  const ordered=fleetInGarageOrder(state.fleet),number=Math.max(0,ordered.findIndex(x=>x.id===c.id))+1;
- const status=c.status==='incident'?'RECOVERY NEEDED':c.status==='auction'?'AT AUCTION':c.status==='rented'?'ON HIRE':c.status==='transfer'?'IN TRANSIT':c.status==='restoration'?'RESTORATION PROJECT':readiness?'READY TO RENT':'NEEDS PREPARATION';
+ const status=c.status==='incident'?'RECOVERY NEEDED':c.status==='auction'?'AT AUCTION':c.status==='rented'?'ON HIRE':c.status==='transfer'?'IN TRANSIT':c.status==='restoration'?(c.restoration?.kind==='overhaul'?'MAJOR OVERHAUL':'RESTORATION PROJECT'):readiness?'READY TO RENT':'NEEDS PREPARATION';
  const tone=c.status==='incident'?'danger':!parked?'road':readiness?'ready':'care';
  const rate=round(t.rate*(1+(c.tune||0)*.13));
  const stats=[['BASE HIRE',money(rate),'Rate per rental'],['HIRES COMPLETE',String(c.rides||0),'This vehicle'],['HORSEPOWER',String(carHorsepower(c))+' HP','After tuning'],['RESALE VALUE',money(getResale(c)),'Estimate']];
  const levels=[['⛽','Fuel',c.fuel],['🔧','Mechanical',c.condition],['🫧','Cleanliness',c.clean],['🛡️','Bodywork',c.body??100]];
  return `<div class="card pad vehicle-details-v5" aria-label="Inspect ${esc(t.name)}">
-  <div class="vehicle-v5-header"><div><small>CAPE TOWN GARAGE · VEHICLE INSPECTION</small><h3>${esc(t.name)}</h3><span class="vehicle-v5-plate">${esc(c.plate)}</span></div><div class="vehicle-v5-pager">
+  <div class="vehicle-v5-header"><div><small>CAPE TOWN GARAGE · VEHICLE INSPECTION</small><h3>${esc(t.name)}</h3><span class="vehicle-v5-plate">${esc(c.plate)} · 🛣️ ${odometerLabel(c)}</span></div><div class="vehicle-v5-pager">
     ${btn('garageprev','‹','vehicle-v5-arrow','aria-label="Previous vehicle" '+(ordered.length<2?'disabled':''))}
     <span>${number} / ${ordered.length}</span>
     ${btn('garagenext','›','vehicle-v5-arrow','aria-label="Next vehicle" '+(ordered.length<2?'disabled':''))}
@@ -6025,7 +6058,7 @@ ${listBtn('bodyrepair',c.id,`🔨 Repair panels · ${c.body>=99.9?'COMPLETE':bod
 ${listBtn('paintcar',c.id,`🎨 Apply colour · ${up('paintshop')?'FREE WITH PAINT STUDIO':'R1,200'}`,'btn block',!parked?'disabled':'')}
 <p class="tiny muted mt-12">Cosmetic repainting is separate from mechanical maintenance; buy a Paint Studio for free repaints. The Workshop covers body repairs and servicing.</p>
  <div class="divider"></div><label class="small muted" for="branch-car-${esc(c.id)}">🚚 Transfer to another branch · 12 seconds</label><select id="branch-car-${esc(c.id)}" class="branch-chooser" data-role="branch-select" data-id="${esc(c.id)}" style="width:100%;margin-top:9px"><option value="">Choose an open branch...</option>${BRANCHES.filter(x=>owned(x.id)&&x.id!==c.branch).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>${listBtn('transfer',c.id,'Transfer this vehicle','btn block mt-12',!parked||BRANCHES.filter(x=>owned(x.id)&&x.id!==c.branch).length===0?'disabled':'')}
- <div class="divider"></div><div class="flex between center gap-8"><div><b>Sell this car</b><div class="small muted mt-12">Est. resale price · ${money(getResale(c))}</div></div>${listBtn('asksell',c.id,'Sell car','btn sm danger',!parked||!same?'disabled':'')}</div><div class="mt-12">${listBtn('listauction',c.id,'🏷️ Auction this car','btn block',canListPlayerAuctionCar(c)?'':'disabled')}</div><p class="tiny muted mt-12">Only parked cars can be sold or auctioned. An auction lasts 75 seconds and locks the car. Keep at least one other car unlisted.</p></div>`;}
+ <div class="divider"></div><div class="flex between center gap-8"><div><b>Sell this car</b><div class="small muted mt-12">Est. resale price · ${money(getResale(c))}</div></div>${listBtn('asksell',c.id,'Sell car','btn sm danger',(!parked&&!(c.status==='restoration'&&c.restoration?.kind==='overhaul'))||!same?'disabled':'')}</div><div class="mt-12">${listBtn('listauction',c.id,'🏷️ Auction this car','btn block',canListPlayerAuctionCar(c)?'':'disabled')}</div><p class="tiny muted mt-12">Only parked cars and major-overhaul vehicles can be sold; auctions still require parked cars. Keep one other vehicle in your fleet.</p></div>`;}
 
 function renderDealership(){
  const cars=visibleDealerCars(),cap=garageCapacity(),full=state.fleet.length>=cap,counts={};
@@ -6138,10 +6171,10 @@ function restoreSalvage(id){
   // No second charge at collection: all money was paid when work started.
   if(stage===1){c.condition=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}
   if(stage===2)c.body=100;
-  if(stage===3){c.clean=100;c.fuel=100;c.status='available';project.completed=now();state.stats.washes++;state.stats.filled++;}
+  if(stage===3){c.clean=100;c.fuel=100;c.status='available';project.completed=now();state.stats.washes++;state.stats.filled++;if(project.kind==='overhaul'){c.lastOverhaulMileage=Math.floor(Math.max(0,Number(c.mileage)||0)/OVERHAUL_INTERVAL_KM)*OVERHAUL_INTERVAL_KM;c.overhaulCount=(Number(c.overhaulCount)||0)+1;}}
   project.stage=stage+1;
   delete project.work;
-  logVehicle(c,'Restoration completed',name,0);
+  logVehicle(c,project.kind==='overhaul'?'Mileage overhaul completed':'Restoration completed',name,0);
   note(`${c.plate}: ${name} collected after work finished.`);
   notify(stage===3?'Restored and ready for rentals!':`${name} complete — next restoration stage unlocked.`);
   return true;
@@ -6151,7 +6184,7 @@ function restoreSalvage(id){
  if(!spend(price,`Restore ${c.plate} · ${name}`))return false;
  project.work={stage,startedAt,dueAt:startedAt+duration};
  project.spent=(Number(project.spent)||0)+price;
- logVehicle(c,'Restoration started',`${name} · ${RESTORATION_STAGE_MINUTES[stage]} minutes`,price);
+ logVehicle(c,project.kind==='overhaul'?'Mileage overhaul started':'Restoration started',`${name} · ${RESTORATION_STAGE_MINUTES[stage]} minutes`,price);
  note(`${c.plate}: ${name} started · ${RESTORATION_STAGE_MINUTES[stage]}m remaining.`);
  notify(`${name} started! Check the Restoration timer.`);
  return true;
@@ -6159,13 +6192,13 @@ function restoreSalvage(id){
 function carHistoryPanel(c){
  const entries=Array.isArray(c.serviceHistory)?c.serviceHistory.slice(0,8):[];
  return `<section class="ctr-history card pad" aria-label="Mileage and service history"><div class="ctr-history-top"><h4>🧾 Mileage & Service History</h4><strong>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km</strong></div>
- <p class="tiny muted">${c.mileageKnown===false?'Kilometres tracked since this feature was added. Earlier mileage unknown.':'Known starting mileage plus rentals tracked.'} Resale estimate ${money(getResale(c))} (original pricing formula).</p>
- ${c.restoration?`<p class="tiny muted">🔨 Restoration ${c.restoration.stage===4?'completed':c.restoration.stage+'/4'} · Total invested ${money(c.restoration.spent)}</p>`:''}
+ <p class="tiny muted">${c.mileageKnown===false?'Kilometres tracked since this feature was added. Earlier mileage unknown.':'Known starting mileage plus rentals tracked.'} Resale estimate ${money(getResale(c))} (original pricing formula).</p><p class="tiny muted">${c.status==='restoration'&&c.restoration?.kind==='overhaul'?'🔧 Major mileage overhaul required — rebuild or sell.':'Next major overhaul at '+nextOverhaulKm(c).toLocaleString('en-ZA')+' km.'} Completed major overhauls: ${Number(c.overhaulCount)||0}. Odometer does not reset.</p>
+ ${c.restoration?`<p class="tiny muted">🔨 ${c.restoration.kind==='overhaul'?'Major overhaul':'Restoration'} ${c.restoration.stage===4?'completed':c.restoration.stage+'/4'} · Total invested ${money(c.restoration.spent)}</p>`:''}
  ${entries.length?entries.map(x=>`<div class="ctr-history-entry"><span><b>${esc(x.kind)}</b><small>${esc(x.detail||'')}</small></span><span>${Math.max(0,round(Number(x.mileage)||0)).toLocaleString('en-ZA')} km${x.cost?' · '+money(x.cost):''}</span></div>`).join(''):'<p class="tiny muted">No new rental or service records yet.</p>'}</section>`;
 }
 function restorationPanel(){
  const active=state.fleet.filter(c=>c.status==='restoration'),offers=Array.isArray(state.salvageOffers)?state.salvageOffers:[];
- return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Rebuild damaged vehicles over four increasingly longer stages. Pay to start work, wait for the countdown, then collect the result before continuing.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
+ return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Restore salvage vehicles or perform full 400,000 km mileage overhauls. Both use the same four paid, timed stages, collected one at a time.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
  <div class="ctr-restoration-timeline" aria-label="Restoration cooldown schedule">${RESTORATION_STAGE_NAMES.map((name,n)=>`<span><b>${n+1}. ${name}</b><strong>${RESTORATION_STAGE_MINUTES[n]} min</strong></span>`).join('')}</div>
  <p class="tiny muted">${active.length} projects · ${offers.length} finds · ${Math.max(0,garageCapacity()-state.fleet.length)} free garage bays · Timers continue while the game is closed.</p>
  <h4>Rebuilds in progress</h4><div class="ctr-salvage-grid">
@@ -6177,7 +6210,7 @@ function restorationPanel(){
   const action=work?(waiting?'⏳ Work in progress':'✓ Collect '+label):'Start '+label+' · '+money(price);
   const progress=work?restorationWorkProgress(work):0;
   return `<article class="ctr-salvage-card" data-restoration-car="${esc(c.id)}">
-  <img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)} · ${esc(c.plate)}</b>
+  <img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)} · ${esc(c.plate)}</b><small>${c.restoration?.kind==='overhaul'?'🔧 Major mileage overhaul':'Salvage restoration'}</small>
   <small>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km · Stage ${stage+1}/4 · Spent ${money(c.restoration.spent)}</small>
   <div class="ctr-restoration-job" ${work?`data-restoration-work="${esc(c.id)}"`:''}>
    <div class="ctr-restoration-job-head"><b>${label}</b><span>${duration} min</span></div>
@@ -6186,6 +6219,7 @@ function restorationPanel(){
     `<small class="ctr-restoration-clock">Ready to begin · ${duration} min · ${money(price)}</small>`}
   </div>
   ${listBtn('restoresalvage',c.id,action,'btn primary block',waiting||!work&&freeCash()<price?'disabled':'')}
+  ${c.restoration?.kind==='overhaul'?listBtn('asksell',c.id,'Sell instead · '+money(getResale(c)),'btn danger block',state.fleet.length<=1?'disabled':''):''}
   </article>`;
  }).join(''):'<p class="tiny muted">No active projects. Scout the salvage yard to start one.</p>'}</div>
  <h4>Salvage yard</h4><div class="ctr-salvage-grid">${offers.length?offers.map(o=>{const t=typeOf(o.type);return `<article class="ctr-salvage-card"><img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)}</b><small>${Math.max(0,round(Number(o.mileage)||0)).toLocaleString('en-ZA')} km · Engine ${round(o.condition)}% · Body ${round(o.body)}%</small><small>Retail ${money(t.price)} · Salvage ${money(o.price)}</small>${listBtn('buysalvage',o.id,'Buy project · '+money(o.price),'btn primary block',freeCash()<o.price||state.fleet.length>=garageCapacity()?'disabled':'')}</article>`;}).join(''):'<p class="tiny muted">Scout once per game day for up to three bargains.</p>'}</div>
@@ -6704,7 +6738,7 @@ if(modal==='staffhire'){
  <p class="small muted mt-12">Confirming charges the original hiring cost once and activates the employee's original benefit. Payroll still follows game-day and premium Operations rules.</p>`:'Employee unavailable.';
  actions=(allowed?listBtn('confirmhire',x.id,'Confirm hire · '+money(x.cost),'btn primary'):'<span class="small muted">Hiring unavailable. Check cash and existing staff.</span>')+btn('closemodal','Cancel','btn ghost');
 }
-if(modal==='sell'){let c=state.fleet.find(x=>x.id===modalCar);title='Sell this vehicle?';body=c?`<div class="fleet-detail-hero"><div class="car-thumb"><img src="${CAR_IMAGES[c.type]}" alt="Car"></div><div><strong>${esc(typeOf(c.type).name)}</strong><div class="car-plate">${esc(c.plate)}</div><div class="dealer-price">Receive ${money(getResale(c))}</div></div></div><p class="small muted mt-16">Selling permanently removes the car from your fleet. Its resale price depends on its condition and tuning. Your other cars and progress remain unchanged.</p>`:'Vehicle no longer available.';actions=c?listBtn('confirmsell',c.id,'Confirm sale','btn danger')+btn('closemodal','Keep my car','btn ghost'):btn('closemodal','Close','btn');}
+if(modal==='sell'){let c=state.fleet.find(x=>x.id===modalCar);title='Sell this vehicle?';body=c?`<div class="fleet-detail-hero"><div class="car-thumb"><img src="${CAR_IMAGES[c.type]}" alt="Car"></div><div><strong>${esc(typeOf(c.type).name)}</strong><div class="car-plate">${esc(c.plate)}</div><div class="dealer-price">Receive ${money(getResale(c))}</div></div></div><p class="small muted mt-16">Selling permanently removes the car, including any unfinished major overhaul. Stage payments already made are not refunded. Existing resale pricing applies. Your other progress is unchanged.</p>`:'Vehicle no longer available.';actions=c?listBtn('confirmsell',c.id,'Confirm sale','btn danger')+btn('closemodal','Keep my car','btn ghost'):btn('closemodal','Close','btn');}
  if(modal==='reset'){title='Start a new company?';body='<p>This will delete your local saved game. Export a JSON backup first if you want to return to your progress later.</p>';actions=btn('confirmreset','Yes, reset my company','btn danger')+btn('closemodal','Cancel','btn ghost');}
  
  return `<div class="modal-backdrop" data-action="closemodal"><div class="modal ${modal==='offline'?'modal-offline-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-action="modalbody"><div class="eyebrow">CAPE TOWN RENTALS</div><h2>${title}</h2>${body}<div class="btn-group mt-16">${actions}</div></div></div>`;

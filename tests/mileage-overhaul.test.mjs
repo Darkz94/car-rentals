@@ -1,0 +1,56 @@
+
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const js=source.split('<script>')[1].split('</script>')[0];
+new vm.Script(js);
+const extract=name=>{
+ const start=js.indexOf('function '+name+'(');
+ let end=js.indexOf(String.fromCharCode(10)+'function ',start+1);
+ if(name==='queueMileageOverhaul')end=js.indexOf('const BRANCHES=[',start);
+ assert.ok(start>=0&&end>start,'Missing function '+name);
+ return js.slice(start,end);
+};
+const a=js.indexOf('const ROUTE_DISTANCE_KM={'),b=js.indexOf('function rentalRoundTripKm(',a);
+assert.ok(a>0&&b>a);
+const funcs=['rentalRoundTripKm','nextOverhaulKm','overhaulDue','odometerLabel','logVehicle','queueMileageOverhaul','restorationPrice','restorationStageDuration','restoreSalvage','sellCar'];
+const testSource=[js.slice(a,b),...funcs.map(extract)].join(String.fromCharCode(10));
+let clock=100000,charges=0;
+const car={id:'old',type:'hatch',plate:'CA 111',branch:'hq',status:'available',mileage:400085,condition:90,body:70,clean:50,fuel:50,serviceHistory:[],parts:{}};
+const other={id:'other',type:'hatch',plate:'CA 222',status:'available',mileage:0};
+const state={cash:800000,fleet:[car,other],stats:{services:0,washes:0,filled:0},ledger:[]};
+const ctx={state,now:()=>clock,round:Math.round,Math,Number,RESTORATION_STAGE_MINUTES:[2,5,10,15],RESTORATION_STAGE_NAMES:['Diagnostics','Mechanical rebuild','Bodywork restoration','Roadworthy inspection & detail'],typeOf:()=>({price:89000,name:'Hatch'}),CAR_PARTS:[['engine'],['tyres'],['brakes'],['oil'],['battery']],money:x=>'R'+x,notify:()=>{},note:()=>{},spend:amount=>{charges++;if(state.cash<amount)return false;state.cash-=amount;return true;},getResale:()=>30000};
+vm.createContext(ctx);vm.runInContext(testSource,ctx);
+assert.equal(ctx.rentalRoundTripKm('hq','hermanus'),240);
+assert.equal(ctx.rentalRoundTripKm('stellenbosch','franschhoek'),62);
+assert.equal(ctx.rentalRoundTripKm('franschhoek','camps'),160);
+assert.equal(ctx.rentalRoundTripKm('hq','hq'),24);
+for(const branch of ['hq','stellenbosch','franschhoek'])assert.equal(Object.keys(vm.runInContext('ROUTE_DISTANCE_KM',ctx)[branch]).length,9);
+assert.equal(ctx.nextOverhaulKm(car),400000);
+assert.equal(ctx.queueMileageOverhaul(car),true);
+assert.equal(car.status,'restoration');
+assert.equal(car.mileage,400085);
+assert.equal(ctx.queueMileageOverhaul(car),false);
+for(let step=0;step<4;step++){
+ assert.equal(ctx.restoreSalvage('old'),true,'Starting stage '+step);
+ assert.equal(ctx.restoreSalvage('old'),false,'Cannot skip stage '+step);
+ clock += [2,5,10,15][step]*60000;
+ assert.equal(ctx.restoreSalvage('old'),true,'Collecting stage '+step);
+}
+assert.equal(charges,4);
+assert.equal(car.status,'available');
+assert.equal(car.mileage,400085);
+assert.equal(car.lastOverhaulMileage,400000);
+assert.equal(ctx.nextOverhaulKm(car),800000);
+assert.equal(ctx.overhaulDue(car),false);
+car.mileage=800002;
+assert.equal(ctx.queueMileageOverhaul(car),true);
+assert.equal(ctx.sellCar('old'),true,'Sell instead');
+assert.equal(state.fleet.length,1);
+assert.ok(state.fleet.includes(other));
+assert.ok(source.includes('class="garage-bay-mileage"'));
+assert.ok(source.includes('🛣️ ${odometerLabel(c)}'));
+assert.ok(source.includes('tripKm:rentalRoundTripKm(car.branch,offer.dest)'));
+assert.ok(source.includes("if(car.status==='available')queueMileageOverhaul(car);"));
+console.log('PASS road distances, repeat overhauls, four timers, resale and all Garage odometers');
