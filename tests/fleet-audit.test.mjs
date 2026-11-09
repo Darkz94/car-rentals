@@ -858,7 +858,7 @@ const v9ctx={
  paintFilter:()=>"none",arcadeIcon:()=>"<svg></svg>",now:()=>140000,
  DEST:{hq:{name:"Cape Town HQ"},airport:{name:"Cape Town Airport"}},
  clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),round:Math.round,
- esc:v=>String(v),money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),relativeTime:()=> "40s",formatTripTime:n=>n+"s",
+ esc:v=>String(v),money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),relativeTime:()=> "40s",formatTripTime:n=>n+"s",rentalRoundTripKm:()=>40,
  btn:(action,label,css,extra)=>'<button data-action="'+action+'" '+extra+'>'+label+'</button>'
 };
 const v9fn=vm.runInNewContext(v9code+"\nrentalCard",v9ctx);
@@ -871,8 +871,8 @@ assert.ok(v9render.includes("PENDING ON RETURN")&&v9render.includes(v9ctx.money(
 assert.ok(v9render.includes('aria-valuenow="50"')&&v9render.includes('style="width:50%"')&&
  v9render.includes('data-countdown-rental="r9"')&&v9render.includes('data-rental-progress="r9"'),
  "Live return progress must reflect timestamps");
-assert.ok(v9render.includes('data-action="page" data-id="map"')&&v9render.includes("80s trip"),"Rental must link to map and show duration");
-assert.ok(v9fn({...v9rental,seconds:undefined,start:90000}).includes("90s trip"),"Legacy rentals must use saved timestamps");
+assert.ok(v9render.includes('data-action="page" data-id="map"')&&v9render.includes("80s · 40 km return"),"Rental must link to map and show duration");
+assert.ok(v9fn({...v9rental,seconds:undefined,start:90000}).includes("90s · 40 km return"),"Legacy rentals must use saved timestamps");
 const v9history=vm.runInNewContext(v9returns+"\nrenderRecentReturns",v9ctx)();
 assert.ok(v9history.includes("Wedding Party")&&v9history.includes(v9ctx.money(3450))&&
  !v9history.includes("Upgrade purchased"),"Return history must use completed rental ledger entries only");
