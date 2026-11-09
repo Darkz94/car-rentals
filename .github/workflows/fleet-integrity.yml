@@ -42,6 +42,8 @@ jobs:
         run: node tests/tyres-destinations-collectors.test.mjs
       - name: Verify immersive Live Map UI, selection and portrait swipe camera
         run: node tests/live-map-immersive.test.mjs
+      - name: Verify wider map and correct moving vehicle direction arrows
+        run: node tests/live-map-direction.test.mjs
       - name: Verify all 17 contracts and fair booking rotation
         run: node tests/contracts-expansion.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility
