@@ -36,7 +36,7 @@ assert.match(html,/function confirmImportSave\(\)/);
 assert.match(html,/id="import-save"/);
 assert.match(html,/data-role="difficulty"/);
 assert.match(html,/toggleofflineearnings/);
-assert.match(html,/data-id="'\+id\+'" aria-pressed/);
+assert.match(html,/data-id="\$\{id\}" aria-pressed/);
 assert.match(html,/function renderPremiumUpgrades\(\)/);
 const achievementBlock=html.match(/const ACHIEVEMENTS=\[([^\n]+)\];/)?.[1]||'';
 assert.equal((achievementBlock.match(/reward:/g)||[]).length,8,'Eight original achievements and rewards still exist');
