@@ -4930,13 +4930,13 @@ const TYPES=[
 {id:'rally',name:'Rally Car',model:'Cape Apex R',category:'Rally Car',price:535000,rate:3300,tank:65,unlock:29,desc:'Turbocharged wide-arch rally hatch with racing livery and tall wing.',icon:'🏁'},
 {id:'grandtourer',name:'Grand Tourer',model:'Twelve Apostles GT',category:'Grand Tourer',price:835000,rate:4950,tank:75,unlock:33,desc:'Long-bonnet luxury grand touring coupe with sweeping glass and elegant trim.',icon:'🏎️'},
 {id:'armored',name:'Armoured VIP SUV',model:'Citadel Sentinel',category:'Armoured VIP SUV',price:1650000,rate:8750,tank:105,unlock:37,desc:'Reinforced high-security executive SUV with protected glazing and discreet armour.',icon:'🛡️'}];
-const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521}};
+const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521},blouberg:{name:'Bloubergstrand',x:275,y:72},muizenberg:{name:'Muizenberg',x:418,y:448},paarl:{name:'Paarl',x:784,y:97},somersetwest:{name:'Somerset West',x:617,y:379}};
 
 /* Approximate road kilometres one way; rental odometers count branch-to-destination-to-branch. */
 const ROUTE_DISTANCE_KM={
- hq:{hq:12,waterfront:3,camps:8,table:5,chapman:25,airport:20,stellenbosch:50,franschhoek:75,hermanus:120},
- stellenbosch:{hq:50,waterfront:49,camps:51,table:49,chapman:75,airport:35,stellenbosch:12,franschhoek:31,hermanus:94},
- franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93}
+ hq:{hq:12,waterfront:3,camps:8,table:5,chapman:25,airport:20,stellenbosch:50,franschhoek:75,hermanus:120,blouberg:20,muizenberg:26,paarl:65,somersetwest:50},
+ stellenbosch:{hq:50,waterfront:49,camps:51,table:49,chapman:75,airport:35,stellenbosch:12,franschhoek:31,hermanus:94,blouberg:49,muizenberg:44,paarl:29,somersetwest:20},
+ franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93,blouberg:83,muizenberg:75,paarl:29,somersetwest:47}
 };
 function rentalRoundTripKm(from,dest){
  const oneWay=ROUTE_DISTANCE_KM[from]?.[dest];
@@ -5025,7 +5025,11 @@ const CUSTOMER_TYPES=[{id:'backpacker-leo',name:'Backpacker Leo',icon:'🎒',nee
 {id:'coastal-luxury-couple',name:'Coastal Luxury Couple',icon:'🥂',need:'Grand Tourer',budget:18800,dest:'camps'},
 {id:'grand-tour-collector',name:'Grand Tour Collector',icon:'🎩',need:'Grand Tourer',budget:21300,dest:'franschhoek'},
 {id:'secure-executive-transfer',name:'Secure Executive Transfer',icon:'🛡️',need:'Armoured VIP SUV',budget:31100,dest:'airport'},
-{id:'diplomatic-security-team',name:'Diplomatic Security Team',icon:'🏛️',need:'Armoured VIP SUV',budget:34600,dest:'waterfront'}];
+{id:'diplomatic-security-team',name:'Diplomatic Security Team',icon:'🏛️',need:'Armoured VIP SUV',budget:34600,dest:'waterfront'},
+{id:'blouberg-surf-photographer',name:'Blouberg Surf Photographer',icon:'🏄',need:'Convertible',budget:5200,dest:'blouberg'},
+{id:'muizenberg-family-holiday',name:'Muizenberg Family Holiday',icon:'🏖️',need:'Compact SUV',budget:3900,dest:'muizenberg'},
+{id:'paarl-wine-tour-group',name:'Paarl Wine Tour Group',icon:'🍇',need:'Minibus Shuttle',budget:7500,dest:'paarl'},
+{id:'somerset-west-business-guest',name:'Somerset West Business Guest',icon:'💼',need:'Sedan',budget:4300,dest:'somersetwest'}];
 // Keep class-specific demand locked until its vehicle category is available.
 // Add new category unlock requirements here when expanding the vehicle roster.
 // Customer demand unlocks with its vehicle class; this also covers future additions.
