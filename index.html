@@ -6024,6 +6024,23 @@ function renderMap(compact=false){let w=1000,h=620,land='#d8d0af',tripPaths=[],c
  <path d="M401 290L481 208L517 327L455 404L386 382Z" fill="#2a574d" opacity=".8"/><path d="M615 113L691 61L763 115L721 153Z" fill="#2b5848" opacity=".5"/><path d="M670 390L741 373L798 455L729 484Z" fill="#304f4a" opacity=".55"/>
  <rect x="195" y="105" width="255" height="280" fill="url(#street)" opacity=".7"/><g fill="#e9d7b0" opacity=".32">${Array.from({length:14},(_,i)=>`<rect x="${250+(i%7)*27}" y="${155+Math.floor(i/7)*50}" width="15" height="21" rx="3"/>`).join('')}</g><g fill="#d9e5ad" opacity=".19"><circle cx="736" cy="197" r="82"/><circle cx="838" cy="315" r="70"/><circle cx="752" cy="516" r="52"/></g>
  <g stroke="#e6d9b0" opacity=".15">${Array.from({length:14},(_,i)=>`<path d="M${620+i*25} ${360+i%3*12}l150 78"/>`).join('')}</g><text x="47" y="96" font-size="21" font-weight="900" fill="#d5f0ef" opacity=".7">ATLANTIC OCEAN</text><text x="635" y="589" font-size="20" font-weight="900" fill="#d0e7e2" opacity=".35">OVERBERG</text><text x="417" y="394" font-size="14" font-weight="800" fill="#cde1b7" opacity=".6">MOUNTAIN RANGE</text>
+ <g class="map-landscape-fx-2026" aria-hidden="true" pointer-events="none">
+  <g fill="none" stroke="#a2eaf5" stroke-opacity=".17" stroke-width="3">
+   <path d="M12 170Q74 120 150 145 T304 118"/><path d="M5 220Q100 174 187 202 T334 165"/><path d="M0 277Q115 232 198 264 T346 234"/>
+   <path d="M22 340Q91 299 180 332 T319 302"/><path d="M4 405Q78 375 158 400 T288 381"/>
+   <path d="M16 492Q82 461 169 482 T309 458"/>
+  </g>
+  <g fill="none" stroke="#c4df9e" stroke-opacity=".18" stroke-width="4">
+   <path d="M359 345Q418 282 507 296T687 254"/><path d="M368 367Q438 306 527 322T710 288"/>
+   <path d="M560 464Q641 394 737 414T895 378"/><path d="M601 491Q680 426 767 451T911 415"/>
+  </g>
+  <g fill="#c1ffd5" opacity=".15">
+   <circle cx="585" cy="265" r="3"/><circle cx="640" cy="222" r="3"/><circle cx="712" cy="191" r="4"/><circle cx="403" cy="305" r="4"/><circle cx="525" cy="388" r="3"/><circle cx="791" cy="468" r="4"/><circle cx="826" cy="351" r="4"/>
+  </g>
+  <g font-family="Arial,sans-serif" font-size="15" font-weight="900" fill="#edffde" opacity=".36" letter-spacing="1">
+   <text x="369" y="438">PENINSULA</text><text x="686" y="64">WINELANDS</text><text x="520" y="525">FALSE BAY</text>
+  </g>
+ </g>
  ${tripPaths.join('')}${nodes}${cars.join('')}</svg>${compact?'':`<div class="map-control map-control-v10"><button type="button" data-action="zoomplus" aria-label="Zoom in">+</button><button type="button" data-action="zoomminus" aria-label="Zoom out">−</button><button type="button" data-action="mapreset" aria-label="Reset zoom and map focus">⌖</button></div>`}<div class="map-overlay map-overlay-v10"><span class="pill green">● ${state.rentals.length} LIVE RENTALS</span>${state.fleet.some(c=>c.status==='transfer')?'<span class="pill blue">● VEHICLE TRANSFER</span>':''}</div><div class="map-legend map-legend-v10"><span>🟢 Owned branches</span><span>🟠 Destinations</span><span>🚗 Actual rentals</span></div></div>`;
 }
 function renderFleet(){
