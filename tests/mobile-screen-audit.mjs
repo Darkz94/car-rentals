@@ -30,7 +30,7 @@ const scenarios=[
  ['business','contracts'],['business','staff'],['business','finance'],
  ['events','auctions'],['events','incidents'],['events','challenges'],['events','weather'],
  ['progress','milestones'],['progress','premium'],['progress','stats'],
- ['progress','roadmap'],['progress','settings']
+ ['progress','roadmap'],['settings',null]
 ];
 const problems=[];
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-webgl','--use-gl=angle','--use-angle=swiftshader']});
@@ -45,6 +45,11 @@ try{
    const name=route+(sub?'/'+sub:'');
    try{
     await page.evaluate(({route,sub})=>{
+      if(route==='settings'){
+       const settings=[...document.querySelectorAll('button[data-action="dashshortcut"]')].find(el=>el.dataset.id==='progress'&&el.dataset.sub==='settings');
+       if(!settings)throw Error('Missing header Settings shortcut');
+       settings.click();return;
+      }
       const main=[...document.querySelectorAll('.mobile-nav button[data-action="page"]')].find(el=>el.dataset.id===route);
       if(!main)throw Error('Missing navigation button '+route);
       main.click();
