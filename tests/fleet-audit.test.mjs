@@ -235,6 +235,7 @@ const testScript = [
   "const notify=()=>{},note=()=>{},money=n=>'R'+n,garageCapacity=()=>100;",
   "const bidReserve=()=>state.auction?.bidder==='You'?state.auction.playerBid:0;",
   "const freeCash=()=>state.cash-bidReserve();",
+   "const COLLECTOR_EDITIONS=[], COLLECTOR_AUCTION_CHANCE=.2;",
   "const getResale=c=>round(typeOf(c.type).price*(.38+.24*c.condition/100));",
   "const spend=amount=>{if(freeCash()<amount)return false;state.cash-=amount;return true;};",
   "const addCar=(id,price,auction,branch,honorExistingAuction=false)=>{if((state.rep<typeOf(id).unlock&&!honorExistingAuction)||state.fleet.length>=100||!spend(price))return false;state.fleet.push({id:uid('car'),type:id,status:'available',condition:70,plate:id});return true;};",
@@ -527,7 +528,7 @@ const garageMock={
  carReady:c=>c.status==="available"&&c.condition>=35&&c.fuel>=15,
  vehicleNeedsAttention:c=>c.status==="incident"||(c.status==="available"&&c.fuel<25),
  esc:value=>String(value).replace(/"/g,"&quot;"),round:Math.round,money:value=>"R"+value,
- paintFilter:()=>"none",odometerLabel:c=>Math.round(Number(c.mileage)||0).toLocaleString("en-ZA")+" km",nextOverhaulKm:()=>400000,listBtn:(action,id,label,style)=>'<button data-action="'+action+'" data-id="'+id+'">'+label+"</button>"
+ paintFilter:()=>"none",vehicleSideArt:c=>garageMock.CAR_IMAGES[c.type],vehicleName:c=>garageMock.typeOf(c.type).name,tyreWarningLabel:()=>"",odometerLabel:c=>Math.round(Number(c.mileage)||0).toLocaleString("en-ZA")+" km",nextOverhaulKm:()=>400000,listBtn:(action,id,label,style)=>'<button data-action="'+action+'" data-id="'+id+'">'+label+"</button>"
 };
 const bayRenderer=vm.runInNewContext(js.slice(bayV4Start,bayV4End)+"\ngarageBayCard",garageMock);
 const readyBay=bayRenderer(garageMockState.fleet[0],0);
@@ -586,7 +587,7 @@ const v5Ctx={
  state:v5State,typeOf:id=>({id,name:id==="limo"?"Limo":"Hatchback",category:id==="limo"?"Limo":"Hatch",tank:id==="limo"?69:45,rate:id==="limo"?2450:1500}),
  carePrices:()=>({service:0,wash:0,fuel:120}),carReady:c=>c.status==="available"&&c.fuel>=15&&c.condition>=35,
  fleetInGarageOrder:cars=>[...cars].sort((a,b)=>a.type==="hatch"?-1:1),
- getResale:()=>290000,carHorsepower:()=>441,paintFilter:()=>"none",
+ getResale:()=>290000,carHorsepower:()=>441,paintFilter:()=>"none",tyreCondition:c=>c.parts?.tyres??c.condition,tyreWarningLabel:()=>"",tyreReplacementCost:()=>350,
  CAR_IMAGES:{limo:"assets/limo-side.webp",hatch:"assets/city-hatch-side.png"},
  MAP_CAR_IMAGES:{limo:"assets/limo-topdown.webp",hatch:"assets/city-hatch-topdown.png"},
  renderHeroArt:()=>"<svg></svg>",DEST:{hq:{name:"Cape Town HQ"}},
@@ -651,7 +652,7 @@ const workshopCtx={
  state:workshopGameState,selectedCar:"limo-6",
  typeOf:()=>({id:"limo",name:"Limo",category:"Limo",rate:2450,tank:69}),
  carePrices:()=>({...mockPrices}),careNeeded:c=>c.fuel<99.9||c.condition<99.9||c.clean<99.9,
- bodyRepairCost:()=>400,paintFilter:()=>"none",
+ bodyRepairCost:()=>400,paintFilter:()=>"none",tyreCondition:c=>c.parts?.tyres??c.condition,tyreReplacementCost:()=>500,
  CAR_IMAGES:{limo:"assets/limo-side.webp"},DEST:{hq:{name:"Cape Town HQ"}},
  round:Math.round,clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
  money:n=>"R"+Math.round(n||0).toLocaleString("en-ZA"),esc:v=>String(v).replace(/"/g,"&quot;"),
@@ -981,7 +982,7 @@ assert.ok(js.includes("function freeCash(){return Math.max(0,state.cash-bidReser
  js.includes("function branchOverhead(){return round(BRANCHES.filter"),"Financial cost and auction reservation rules changed");
 console.log("PASS: Section 11 Business HQ financial precision, navigation, income charts, branches, staff, reserves and saved-game safety.");
 
-console.log("PASS: JavaScript syntax, 27 classes, 74 customers and all assets.");
+console.log("PASS: JavaScript syntax, 27 classes, 78 customers and all assets.");
 
 
 // Section 12 dealership: premium presentation, no changes to economy or save version.
@@ -991,7 +992,7 @@ assert.ok(d12start>0&&d12end>d12start,"Dealership renderer missing");
 for(const token of ["dealership-v12","dealer-v12-stage","renderHeroArt()","CAR_IMAGES[t.id]","CAR_IMAGES[x.id]","dealer-v12-filter-chips","dealer-comparison","data-dealer-result-count","data-role=\"dealer-search\"","data-role=\"dealer-class\"","data-role=\"dealer-sort\"","data-role=\"dealer-branch\"","freeCash()","bidReserve()","garageCapacity()","data-action=\"dealerfilter\""]){
  assert.ok(d12.includes(token),"Section 12 visual/behaviour feature missing "+token);
 }
-assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false)")&&
+assert.ok(js.includes("function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false,editionId=null)")&&
  js.includes("let cost=price??t.price;if(!spend(cost,")&&
  js.includes("state.fleet.push(car)")&&
  js.includes("modal='dealerbuy'")&&
@@ -1023,7 +1024,7 @@ assert.ok(js.includes("let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.0
  js.includes("ends:now()+75000")&&
  js.includes("ends:start+75000,nextBidAt:start+5000")&&
  js.includes("const reserve=round(getResale(car)*.85)")&&
- js.includes("if(addCar(a.type,price,true,'hq',!a.tierRules||a.tierRules<40))")&&
+ js.includes("if(addCar(a.type,price,true,'hq',!a.tierRules||a.tierRules<40,a.editionId||null))")&&
  js.includes("a.status='sold';a.salePrice=amount"),
  "Original bid increments, auction durations, reserve prices and settlements must remain");
 const a13snapshot={cash:450000,rep:5,fleet:[{id:"car1",type:"hatch",status:"available",plate:"CA 123"},{id:"car2",type:"sedan",status:"auction",plate:"CA 456"}],
