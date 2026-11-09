@@ -4870,6 +4870,34 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
  #app .live-map-focused-2026 .map-frame-v10 .map-car-v10.selected>circle:first-child{animation:none!important}
 }
 </style>
+
+<style id="ctr-live-map-direction-zoom-2026">
+/* Live-only legible fleet tracking; vehicle pointers and map labels remain readable at the wider camera. */
+#app .live-map-focused-2026 .map-frame-v10 .map-route-v10:not(.selected){opacity:.5;stroke-width:3;filter:none}
+#app .live-map-focused-2026 .map-frame-v10 .map-route-v10.selected{opacity:1;stroke-width:5;filter:drop-shadow(0 0 5px #f8d67b)}
+#app .live-map-focused-2026 .map-frame-v10 .map-direction-v11{filter:drop-shadow(0 0 5px #72eaff);pointer-events:none}
+#app .live-map-focused-2026 .map-frame-v10 .map-vehicle-v11 image{filter:drop-shadow(0 2px 3px #001423)}
+#app .live-map-focused-2026 .map-frame-v10 .map-car-v10.selected .map-vehicle-v11 circle:first-child{stroke:#ffe39b;stroke-width:3}
+#app .live-map-focused-2026 .map-frame-v10 .map-node-v10.selected .map-pin-icon-v11 circle:nth-child(2){stroke:#ffe39b;stroke-width:3;filter:drop-shadow(0 0 6px #ffe39b)}
+#app .live-map-focused-2026 .map-frame-v10 .map-node-v10 text{font-size:20px;stroke-width:3.5}
+#app .live-map-focused-2026 .map-frame-v10 .map-car-label-v10{font-size:17px;font-weight:900;stroke-width:3.5;fill:#ffe3a1}
+#app .live-map-focused-2026 .map-frame-v10 .map-car-v10:not(.selected) .map-vehicle-v11 circle:first-child{stroke-opacity:.55}
+#app .live-map-focused-2026 .map-frame-v10 .map-overlay-v10 .pill{font-size:9px;padding:5px 8px;box-shadow:0 4px 13px #0007}
+#app .live-map-focused-2026 .map-frame-v10 .map-legend-v10{font-size:9px;padding:6px 8px;opacity:.94}
+body:has(#app .main-live-focus) #arcade-overlay{top:85px;right:8px;max-width:min(175px,47vw);gap:5px}
+body:has(#app .main-live-focus) #arcade-overlay .arcade-fx{min-width:0!important;width:auto;max-width:100%;padding:6px 8px;border-radius:10px;font-size:9px;gap:5px}
+body:has(#app .main-live-focus) #arcade-overlay .arcade-fx b{font-size:15px}
+body:has(#app .main-live-focus) .toast-stack{max-width:min(258px,calc(100vw - 35px));left:auto;right:12px;bottom:calc(98px + env(safe-area-inset-bottom,0px));align-items:flex-end}
+body:has(#app .main-live-focus) .toast-stack .toast{width:auto!important;max-width:100%!important;font-size:11px;padding:8px 10px;border-radius:10px;line-height:1.25}
+@media(max-width:390px){
+ #app .live-map-focused-2026 .map-frame-v10 .map-node-v10 text{font-size:19px}
+ #app .live-map-focused-2026 .map-frame-v10 .map-car-label-v10{font-size:16px}
+ body:has(#app .main-live-focus) #arcade-overlay{top:100px}
+}
+@media(prefers-reduced-motion:reduce){
+ #app .live-map-focused-2026 .map-frame-v10 .map-route-v10{animation:none!important}
+}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp',suv:'assets/realistic-suv-side.webp',convertible:'assets/realistic-convertible-side.webp',shuttle:'assets/realistic-shuttle-side.webp',camper:'assets/realistic-camper-side.webp',luxsuv:'assets/realistic-luxsuv-side.webp',safari:'assets/realistic-safari-side.webp',motorhome:'assets/realistic-motorhome-side.webp',rally:'assets/realistic-rally-side.webp',grandtourer:'assets/realistic-grandtourer-side.webp',armored:'assets/realistic-armored-side.webp'};
 
@@ -6013,7 +6041,7 @@ function renderLog(limit=20){return `<div class="log-list">${state.log.slice(0,l
 function mapPortraitLive(){return typeof window!=='undefined'&&typeof activePage!=='undefined'&&activePage==='map'&&window.innerWidth<=760;}
 function mapMarkerYScale(){
  if(!mapPortraitLive())return 1;
- const h=620/mapZoom,aspect=Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115),w=Math.min(1000,h*aspect*2.05);
+ const h=620/mapZoom,aspect=Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115),w=Math.min(1000,h*aspect*2.3);
  return clamp(aspect*h/w,.35,1);
 }
 function mapHeadingDegrees(r,t=now(),car=null){
@@ -6038,7 +6066,7 @@ function mapViewBox(){
  const h=620/mapZoom,portrait=mapPortraitLive();
  const aspect=portrait?Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115):1000/620;
  // Wider horizontal field of view on phones: the previous portrait slice was too close.
- const w=portrait?Math.min(1000,h*aspect*2.05):1000/mapZoom;
+ const w=portrait?Math.min(1000,h*aspect*2.3):1000/mapZoom;
  const r=state.rentals.find(x=>x.id===selectedRental);
  const overview=portrait&&!r&&mapFocus==='hq'&&mapZoom<=1.01;
  const p=r?routePosition(r):overview?{x:500,y:310}:DEST[mapFocus]||{x:500,y:310};
