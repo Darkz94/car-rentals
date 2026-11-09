@@ -26,7 +26,7 @@ assert.equal(ctx.rentalRoundTripKm('hq','hermanus'),240);
 assert.equal(ctx.rentalRoundTripKm('stellenbosch','franschhoek'),62);
 assert.equal(ctx.rentalRoundTripKm('franschhoek','camps'),160);
 assert.equal(ctx.rentalRoundTripKm('hq','hq'),24);
-for(const branch of ['hq','stellenbosch','franschhoek'])assert.equal(Object.keys(vm.runInContext('ROUTE_DISTANCE_KM',ctx)[branch]).length,9);
+for(const branch of ['hq','stellenbosch','franschhoek'])assert.equal(Object.keys(vm.runInContext('ROUTE_DISTANCE_KM',ctx)[branch]).length,13);
 assert.equal(ctx.nextOverhaulKm(car),400000);
 assert.equal(ctx.queueMileageOverhaul(car),true);
 assert.equal(car.status,'restoration');
