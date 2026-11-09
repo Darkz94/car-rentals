@@ -527,7 +527,7 @@ const garageMock={
  carReady:c=>c.status==="available"&&c.condition>=35&&c.fuel>=15,
  vehicleNeedsAttention:c=>c.status==="incident"||(c.status==="available"&&c.fuel<25),
  esc:value=>String(value).replace(/"/g,"&quot;"),round:Math.round,money:value=>"R"+value,
- paintFilter:()=>"none",listBtn:(action,id,label,style)=>'<button data-action="'+action+'" data-id="'+id+'">'+label+"</button>"
+ paintFilter:()=>"none",odometerLabel:c=>Math.round(Number(c.mileage)||0).toLocaleString("en-ZA")+" km",nextOverhaulKm:()=>400000,listBtn:(action,id,label,style)=>'<button data-action="'+action+'" data-id="'+id+'">'+label+"</button>"
 };
 const bayRenderer=vm.runInNewContext(js.slice(bayV4Start,bayV4End)+"\ngarageBayCard",garageMock);
 const readyBay=bayRenderer(garageMockState.fleet[0],0);
@@ -536,7 +536,7 @@ const incidentBay=bayRenderer(garageMockState.fleet[2],2);
 assert.match(readyBay,/garage-bay-status--ready/,"Rental-ready bays should have teal status");
 assert.ok(readyBay.includes('src="assets/city-hatch-side.png"')&&readyBay.includes("CPT 001"),
  "Selected bay must use the correct original vehicle artwork and plate");
-assert.ok(readyBay.includes('data-action="selectcar"')&&readyBay.includes('garage-bay-health-grid'),
+assert.ok(readyBay.includes('data-action="selectcar"')&&readyBay.includes('garage-bay-health-grid')&&readyBay.includes('garage-bay-mileage'),
  "Selected bay must preserve inspect controls and condition bars");
 assert.ok(hiredBay.includes('src="assets/limo-side.webp"')&&hiredBay.includes("VEHICLE CURRENTLY AWAY"),
  "An on-hire Limo remains in its garage bay with correct image and status");
@@ -594,7 +594,7 @@ const v5Ctx={
  CAR_PARTS:[["engine","⚙️","Engine"],["tyres","🛞","Tyres"],["brakes","🛑","Brakes"],["oil","🛢️","Oil"],["battery","🔋","Battery"]],
  BRANCHES:[{id:"hq",name:"HQ"},{id:"airport",name:"Airport"}],
  owned:()=>true,up:()=>false,careNeeded:()=>true,canListPlayerAuctionCar:()=>true,bodyRepairCost:()=>1000,
- round:Math.round,clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
+ round:Math.round,odometerLabel:c=>Math.round(Number(c.mileage)||0).toLocaleString("en-ZA")+" km",clamp:(n,a=0,b=100)=>Math.max(a,Math.min(b,n)),
  money:n=>"R"+Math.round(n).toLocaleString("en-ZA"),esc:v=>String(v).replace(/"/g,"&quot;"),
  btn:(action,label,cls,attrs="")=>'<button data-action="'+action+'" '+attrs+'>'+label+"</button>",
  listBtn:(action,id,label,cls,extra="")=>'<button data-action="'+action+'" data-id="'+id+'" '+extra+'>'+label+"</button>"
@@ -606,7 +606,7 @@ assert.ok(v5Markup.includes('src="assets/limo-side.webp"')&&v5Markup.includes('s
  "Vehicle inspection must render both the matching side and top-down artwork");
 assert.ok(v5Markup.includes(v5Ctx.money(Math.round(2450*(1+1*.13))))&&v5Markup.includes("HIRES COMPLETE")&&v5Markup.includes(">8</strong>"),
  "Vehicle stats must show actual tuned base rate and completed hires");
-assert.ok(v5Markup.includes("441 HP")&&v5Markup.includes("CPT 666")&&v5Markup.includes("Cape Town HQ"),
+assert.ok(v5Markup.includes("441 HP")&&v5Markup.includes("CPT 666")&&v5Markup.includes("Cape Town HQ")&&v5Markup.includes("🛣️ 0 km"),
  "Vehicle detail must use true car data, power and location");
 for(const action of ["garageprev","garagenext","fuel","wash","service","care","tune","bodyrepair",
  "paintcar","transfer","asksell","listauction"])
