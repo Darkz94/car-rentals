@@ -6127,10 +6127,8 @@ function mapHeadingDegrees(r,t=now(),car=null){
  return Math.atan2(dy,dx*mapMarkerYScale())*180/Math.PI+90+spriteOffset;
 }
 function mapCarPose(r,t=now(),type=''){
- const p=routePosition(r,t),peers=typeof state!=='undefined'&&state.rentals?.length>4?state.rentals.filter(x=>x.from===r.from).sort((a,b)=>String(a.id).localeCompare(String(b.id))):[];
- const slot=peers.findIndex(x=>x.id===r.id),spread=slot>=0&&peers.length>3;
- const x=p.x+(spread?((slot%3)-1)*19:0),y=p.y+(spread?(Math.floor(slot/3)%3-1)*15:0);
- return `translate(${x.toFixed(2)} ${y.toFixed(2)})`;
+ const p=routePosition(r,t);
+ return `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)})`;
 }
 function mapViewBox(){
  const h=620/mapZoom,portrait=mapPortraitLive();
