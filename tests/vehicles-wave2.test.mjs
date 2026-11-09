@@ -14,7 +14,7 @@ const unlockCode=js.match(/function customerUnlocked\(c\)\{[^\n]*\}/)?.[0];asser
 const state={rep:2,fleet:[]};const unlocked=vm.runInNewContext(decl('TYPES','];')+'\n'+unlockCode+'\ncustomerUnlocked',{state});
 const specs=[{"id":"safari","name":"Safari 4x4","model":"Karoo Ranger","lvl":13,"price":290000,"rate":1800,"tank":92,"hp":250},{"id":"motorhome","name":"Motorhome","model":"Winelands Wanderer","lvl":28,"price":615000,"rate":3150,"tank":130,"hp":285},{"id":"rally","name":"Rally Car","model":"Cape Apex R","lvl":29,"price":535000,"rate":3300,"tank":65,"hp":390},{"id":"grandtourer","name":"Grand Tourer","model":"Twelve Apostles GT","lvl":33,"price":835000,"rate":4950,"tank":75,"hp":460},{"id":"armored","name":"Armoured VIP SUV","model":"Citadel Sentinel","lvl":37,"price":1650000,"rate":8750,"tank":105,"hp":430}];
 
-assert.equal(types.length,27);assert.equal(customers.length,74);assert.equal(contracts.length,17);
+assert.equal(types.length,27);assert.equal(customers.length,78);assert.equal(contracts.length,17);
 assert.equal(new Set(types.map(t=>t.id)).size,27);assert.equal(new Set(customers.map(c=>c.id)).size,74);
 assert.equal(customers.filter(c=>c.vipBonus).length,8);
 assert.equal(customers.filter(c=>!c.vipBonus).length,66);
