@@ -15,7 +15,7 @@ const customers=Array.from(vm.runInNewContext(decl('CUSTOMER_TYPES','];')+'\nCUS
 const contracts=Array.from(vm.runInNewContext(decl('CONTRACTS','];')+'\nCONTRACTS'));
 const original=['hatch','sedan','coupe','bakkie','jeep','van','classic','muscle','truck','tow','donk','limo','partybus','bus','sport','super','hyper'];
 const added=['suv','convertible','shuttle','camper','luxsuv','safari','motorhome','rally','grandtourer','armored'];
-assert.equal(types.length,27);assert.equal(customers.length,74);assert.equal(contracts.length,17);
+assert.equal(types.length,27);assert.equal(customers.length,78);assert.equal(contracts.length,17);
 assert.equal(customers.filter(c=>!!c.vipBonus).length,8);
 assert.equal(new Set(Object.values(sides)).size,27);
 assert.equal(new Set(Object.values(tops)).size,27);
