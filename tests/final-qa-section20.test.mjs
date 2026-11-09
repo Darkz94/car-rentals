@@ -158,7 +158,7 @@ for(const needle of [
  "if(modal==='importsave')pendingImportSave=null;modal=null;render();"
 ])assert.ok(js.includes(needle),'Missing confirmation safeguard: '+needle);
 // Main Events navigation must always open Auctions, including after viewing Challenges.
-assert.match(js,/if\(action==='page'\)\{[^}]*if\(id==='events'\)activeSub\.events='auctions';/,'Events navigation should reset the subtab to Auctions');
+assert.match(js,/if\(action==='page'\)\{[^}]*if\(id==='events'&&!targetSub\)activeSub\.events='auctions';/,'Main Events navigation should reset to Auctions while preserving explicit shortcuts');
 // Portrait Garage heading must take a full row rather than squeeze beside both actions.
 const mobileGarageRules=html.split('<style id="ctr-garage-section-04">')[1]?.split('</style>')[0]||'';
 assert.match(mobileGarageRules,/@media\(max-width:720px\)\{[\s\S]*?\.garage-heading-v4\{display:grid;grid-template-columns:minmax\(0,1fr\)/,'Mobile Garage heading must use a single-column grid');
@@ -168,10 +168,10 @@ const dashboardUI=js.split('function renderOverview(){')[1]?.split('function sta
 const dashboardTip=js.split('function smartOverview(){')[1]?.split('function dashboardShortcut(')[0]||'';
 assert.match(dashboardUI,/state\.offers\.slice\(0,2\)\.map\(offerCard\)/,'First two customer offers remain visible');
 assert.match(dashboardUI,/extraOffers\.map\(offerCard\)/,'All remaining offers stay accessible');
-assert.match(dashboardUI,/btn\('autorent'/,'Best-match dispatch stays on Dashboard');
+assert.match(dashboardTip,/btn\('autorent'/,'Best-match dispatch stays on Dashboard');
 assert.match(dashboardUI,/data-countdown-rental/,'Active rental countdowns remain visible');
-assert.match(dashboardTip,/READY TO RENT/,'Keep ready vehicle metric');
-assert.match(dashboardTip,/PAYMENT ON RETURN/,'Keep return-payment metric');
+assert.match(dashboardTip,/YOUR NEXT BEST MOVE/,'Keep concise next-step guidance');
+assert.match(dashboardTip,/matching customer request/,'Best-match action should reflect current demand');
 for(const duplicated of ['dashboardShortcut(','nextActions()','autoDeskControl()','renderMap(true)','renderRecentReturns(4)','renderLog(5)','dashboard-city-strip','dashboard-summary'])assert.ok(!dashboardUI.includes(duplicated),'Redundant Dashboard control remains: '+duplicated);
 for(const feature of ['function renderFleet()','function renderBusiness()','function renderEvents()','function renderMapPage()','function autoDeskControl()','function offerCard('])assert.ok(js.includes(feature),'Existing tab feature missing: '+feature);
 assert.match(html,/<style id="ctr-dashboard-simplified-2026">/,'Dashboard uses compact layout');
