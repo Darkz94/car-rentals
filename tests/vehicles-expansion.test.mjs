@@ -15,7 +15,7 @@ const regular=[{"id":"family-holiday-group","name":"Family Holiday Group","need"
 assert.equal(types.length,27);assert.equal(customers.length,78);assert.equal(contracts.length,17);
 assert.equal(customers.filter(c=>c.vipBonus).length,8);
 assert.equal(new Set(types.map(t=>t.id)).size,27);
-assert.equal(new Set(customers.map(c=>c.id)).size,74);
+assert.equal(new Set(customers.map(c=>c.id)).size,78);
 for(const spec of specs){
  const car=types.find(t=>t.id===spec.id);assert.ok(car);
  for(const [key,val] of Object.entries(spec))assert.equal(car[key],val,key+' for '+spec.id);
