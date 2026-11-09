@@ -38,6 +38,8 @@ jobs:
         run: node tests/vehicle-restoration-history.test.mjs
       - name: Verify road mileage, repeat 400k overhauls, and Garage odometers
         run: node tests/mileage-overhaul.test.mjs
+      - name: Verify optional tyre replacement, four destinations and collectible cars
+        run: node tests/tyres-destinations-collectors.test.mjs
       - name: Verify all 17 contracts and fair booking rotation
         run: node tests/contracts-expansion.test.mjs
       - name: Verify Section 18 progress, achievements and save compatibility
