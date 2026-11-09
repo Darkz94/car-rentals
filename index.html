@@ -4930,6 +4930,18 @@ const TYPES=[
 {id:'rally',name:'Rally Car',model:'Cape Apex R',category:'Rally Car',price:535000,rate:3300,tank:65,unlock:29,desc:'Turbocharged wide-arch rally hatch with racing livery and tall wing.',icon:'🏁'},
 {id:'grandtourer',name:'Grand Tourer',model:'Twelve Apostles GT',category:'Grand Tourer',price:835000,rate:4950,tank:75,unlock:33,desc:'Long-bonnet luxury grand touring coupe with sweeping glass and elegant trim.',icon:'🏎️'},
 {id:'armored',name:'Armoured VIP SUV',model:'Citadel Sentinel',category:'Armoured VIP SUV',price:1650000,rate:8750,tank:105,unlock:37,desc:'Reinforced high-security executive SUV with protected glazing and discreet armour.',icon:'🛡️'}];
+/* Collector editions never add new base vehicle classes or alter existing economy. */
+const COLLECTOR_EDITIONS=[
+{id:'cape-cobra-67',name:"Cape Cobra '67",type:'classic',rarity:'Rare',side:'assets/collector-cape-cobra-67-side.svg',top:'assets/collector-cape-cobra-67-topdown.svg'},
+{id:'table-bay-phantom',name:'Table Bay Phantom',type:'grandtourer',rarity:'Rare',side:'assets/collector-table-bay-phantom-side.svg',top:'assets/collector-table-bay-phantom-topdown.svg'},
+{id:'karoo-dakar-x',name:'Karoo Dakar X',type:'rally',rarity:'Legendary',side:'assets/collector-karoo-dakar-x-side.svg',top:'assets/collector-karoo-dakar-x-topdown.svg'},
+{id:'atlantic-apex',name:'Atlantic Apex',type:'hyper',rarity:"Collector's Edition",side:'assets/collector-atlantic-apex-side.svg',top:'assets/collector-atlantic-apex-topdown.svg'}
+];
+const COLLECTOR_AUCTION_CHANCE=.20;
+function editionOf(id){return COLLECTOR_EDITIONS.find(x=>x.id===id)||null;}
+function vehicleName(car){return editionOf(car?.editionId)?.name||typeOf(car?.type).name;}
+function vehicleSideArt(car){return editionOf(car?.editionId)?.side||CAR_IMAGES[car?.type]||CAR_IMAGES.hatch;}
+function vehicleRoofArt(car){return editionOf(car?.editionId)?.top||MAP_CAR_IMAGES[car?.type]||MAP_CAR_IMAGES.hatch;}
 const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521},blouberg:{name:'Bloubergstrand',x:275,y:72},muizenberg:{name:'Muizenberg',x:418,y:448},paarl:{name:'Paarl',x:784,y:97},somersetwest:{name:'Somerset West',x:617,y:379}};
 
 /* Approximate road kilometres one way; rental odometers count branch-to-destination-to-branch. */
@@ -5155,7 +5167,7 @@ function restoreSlot(n){
 }
 
 function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',mileage:0,mileageKnown:true,serviceHistory:[],parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
-function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],salvageOffers:[],salvageDay:0,branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],achievementRepeats:{},ledger:[],log:[],stats:{earned:0,spent:0,returned:0,rentalRevenue:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
+function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],salvageOffers:[],salvageDay:0,collectionDiscovered:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],achievementRepeats:{},ledger:[],log:[],stats:{earned:0,spent:0,returned:0,rentalRevenue:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 // Seed existing completed trophies at today's totals: no historical repeat payouts.
 function restoreAchievementRepeats(saved){
  const previous=saved.achievementRepeats&&typeof saved.achievementRepeats==='object'&&!Array.isArray(saved.achievementRepeats)?saved.achievementRepeats:{};
@@ -5167,7 +5179,7 @@ function restoreAchievementRepeats(saved){
  }
  return repeats;
 }
-function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},achievementRepeats:restoreAchievementRepeats(s),perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],salvageOffers:Array.isArray(s.salvageOffers)?s.salvageOffers.filter(o=>o&&o.id&&TYPES.some(t=>t.id===o.type)):[],salvageDay:Math.max(0,Math.floor(Number(s.salvageDay)||0)),settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
+function readSave(){try{let s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||s.version!==3||!Array.isArray(s.fleet))return null;let a=fresh();if(!s.premiumMigrated){s.legacyGarageCapacity=Math.max(Number(s.legacyGarageCapacity)||0,s.prestige>1?100:0);s.premiumCredits=Math.max(0,Math.floor(Number(s.prestigePoints)||0));s.premiumMigrated=true;}return {...a,...s,stats:{...a.stats,...s.stats},achievementRepeats:restoreAchievementRepeats(s),perks:{...a.perks,...s.perks},upgrades:{...a.upgrades,...s.upgrades},branchReports:{...a.branchReports,...(s.branchReports||{})},contractReports:{...a.contractReports,...(s.contractReports||{})},playerAuctions:Array.isArray(s.playerAuctions)?s.playerAuctions:[],salvageOffers:Array.isArray(s.salvageOffers)?s.salvageOffers.filter(o=>o&&o.id&&TYPES.some(t=>t.id===o.type)):[],salvageDay:Math.max(0,Math.floor(Number(s.salvageDay)||0)),collectionDiscovered:Array.isArray(s.collectionDiscovered)?[...new Set(s.collectionDiscovered.filter(id=>!!editionOf(id)))]:[],settings:{...a.settings,...s.settings},offlineLastActiveAt:Number(s.offlineLastActiveAt||s.savedAt||now()),fleet:s.fleet.map(c=>hydrateCar(c)),credit:clamp(Number(s.credit??680),300,850),difficulty:DIFFICULTIES[s.difficulty]?s.difficulty:'normal'};}catch(e){return null;}}
 let state=readSave()||fresh();let offlineSimulation=false;let lastOfflineReport=null;let storageErrorShown=false;let activePage='overview',activeSub={fleet:'garage',business:'command',events:'auctions',progress:'milestones'},selectedCar=state.fleet[0]?.id||null,selectedRental=null,garageStatus='all',garageBranch='all',garageSort='type',garageSearch='',garageDisplay='bays',garageScene='showroom',workshopFilter='all',garageFiltersOpen=window.matchMedia('(min-width:641px)').matches,staffFilter='all',dealerClass='all',dealerSearch='',dealerSort='unlock',dealerBranch='hq',dealerPreview='hatch',dealerPaint='silver',dealerCompare=[],financeFilter='all',modalCar=null,modal=null,mapZoom=1,mapFocus='hq',toastTimer=null,lastToastMessage='',lastToastAt=0,lastRenderedAt=0,lastWrite=0,shouldRepaint=true;
 let pendingImportSave=null;
 function save(force=false){let t=now();if(!force&&t-lastWrite<2500)return;lastWrite=t;state.savedAt=t;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){if(!storageErrorShown){storageErrorShown=true;notify('Local storage is blocked in this preview. Export a backup from Progress.','bad');}}}
@@ -5274,9 +5286,9 @@ function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)ret
  checkAchievements();
 }
 function restoreFinished(){let due=state.rentals.filter(r=>r.due<=now());if(due.length){state.rentals=state.rentals.filter(r=>r.due>now());due.forEach(finishRental);save(true);}}
-function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false){let t=typeOf(typeId);if(t.unlock>state.rep&&!honorExistingAuction){notify(`Reach reputation level ${t.unlock} to unlock this vehicle.`,'bad');return false;}let cap=garageCapacity();if(state.fleet.length>=cap){notify('Garage full! Buy the Garage Expansion in Business.','bad');return false;}
+function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false,editionId=null){let t=typeOf(typeId);if(t.unlock>state.rep&&!honorExistingAuction){notify(`Reach reputation level ${t.unlock} to unlock this vehicle.`,'bad');return false;}let cap=garageCapacity();if(state.fleet.length>=cap){notify('Garage full! Buy the Garage Expansion in Business.','bad');return false;}
  let cost=price??t.price;if(!spend(cost,`Bought ${t.name}`))return false;
- let car=makeCar(typeId,owned(branch)?branch:'hq',auction?{condition:rand(45,78),clean:rand(35,80),fuel:rand(20,70)}:{});state.fleet.push(car);selectedCar=car.id;
+ let car=makeCar(typeId,owned(branch)?branch:'hq',auction?{condition:rand(45,78),clean:rand(35,80),fuel:rand(20,70)}:{});if(editionId&&editionOf(editionId)?.type===typeId){car.editionId=editionId;state.collectionDiscovered=Array.isArray(state.collectionDiscovered)?state.collectionDiscovered:[];if(!state.collectionDiscovered.includes(editionId))state.collectionDiscovered.push(editionId);}state.fleet.push(car);selectedCar=car.id;
  note(`Purchased ${t.name} • ${car.plate}${auction?' at auction':''}.`);notify(`Welcome to the fleet: ${t.name}!`);checkAchievements();return true;
 }
 
@@ -5398,7 +5410,7 @@ function repayLoan(id){let l=state.loans.find(v=>v.id===id);if(!l)return false;
  let amount=loanSettlement(l);if(!spend(amount,`Loan settled early${staffed('accountant')?' · accountant discount':''}`))return false;
  state.loans=state.loans.filter(x=>x.id!==id);state.credit=clamp((state.credit??680)+5,300,850);note(`Loan fully settled for ${money(amount)}.`);notify('Loan repaid!');return true;
 }
-function makeAuction(){let t=pick(TYPES.filter(x=>x.unlock<=state.rep));let base=round(t.price*rand(48,68)/100);state.auction={id:uid('auction'),type:t.id,base,highest:0,bidder:'',ends:now()+75000,playerBid:0,tierRules:40};state.lastAuctionAt=now();}
+function makeAuction(){let t=pick(TYPES.filter(x=>x.unlock<=state.rep));let e=COLLECTOR_EDITIONS.find(x=>x.type===t.id&&!state.fleet.some(c=>c.editionId===x.id));let editionId=e&&Math.random()<COLLECTOR_AUCTION_CHANCE?e.id:null;let base=round(t.price*rand(48,68)/100);state.auction={id:uid('auction'),type:t.id,editionId,base,highest:0,bidder:'',ends:now()+75000,playerBid:0,tierRules:40};state.lastAuctionAt=now();}
 function bidAuction(){let a=state.auction;if(!a)return false;
  if(state.fleet.length>=garageCapacity()){notify('Make room in your garage before bidding.','bad');return false;}
  let bid=(a.highest||a.base)+Math.max(1000,round(a.base*.035));
@@ -5411,13 +5423,13 @@ function buyAuctionNow(){let a=state.auction;if(!a)return false;let cost=auction
  // Release our own bid commitment for this one checkout; no duplicate reservation deduction.
  if(state.cash<cost){notify('Not enough cash to buy this auction car.','bad');return false;}
  let previousBidder=a.bidder;a.bidder='Checking out';
- if(addCar(a.type,cost,true,'hq',!a.tierRules||a.tierRules<40)){note(`Bought auction car outright for ${money(cost)}.`);makeAuction();return true;}
+ if(addCar(a.type,cost,true,'hq',!a.tierRules||a.tierRules<40,a.editionId||null)){note(`Bought auction car outright for ${money(cost)}.`);makeAuction();return true;}
  a.bidder=previousBidder;return false;
 }
 function closeAuction(){let a=state.auction;if(!a)return;
  if(a.playerBid&&a.bidder==='You'){
   let price=a.playerBid;a.bidder='Settling';
-  if(addCar(a.type,price,true,'hq',!a.tierRules||a.tierRules<40)){note(`Auction won for ${money(price)}.`);notify(`Auction won! ${typeOf(a.type).name} added to the fleet.`);}
+  if(addCar(a.type,price,true,'hq',!a.tierRules||a.tierRules<40,a.editionId||null)){note(`Auction won for ${money(price)}.`);notify(`Auction won! ${typeOf(a.type).name} added to the fleet.`);}
   else {note('Auction closed without a purchase (insufficient funds or full garage).','bad');notify('Auction win could not be completed.','bad');}
  }else note('Auction ended. A new lot is available.');
  makeAuction();
@@ -5435,7 +5447,7 @@ function listCarForAuction(carId){
  const reserve=round(getResale(car)*.85),start=now();
  state.playerAuctions=state.playerAuctions||[];
  state.playerAuctions.unshift({id:uid('playerauction'),carId:car.id,type:car.type,plate:car.plate,
-   status:'active',start,ends:start+75000,nextBidAt:start+5000,reserve,
+   status:'active',editionId:car.editionId||null,start,ends:start+75000,nextBidAt:start+5000,reserve,
    maxBid:round(getResale(car)*rand(112,132)/100),highest:0,bidCount:0,bidder:''});
  car.status='auction';
  note(`${car.plate} listed in the Auction House at ${money(reserve)} reserve.`);
