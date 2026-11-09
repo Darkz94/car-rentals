@@ -106,7 +106,7 @@ function setup(){
   weatherEffect:()=>({dirt:1,incidents:1}),isNight:()=>false,up:()=>false,
   CAR_PARTS:[['engine'],['tyres'],['brakes'],['oil'],['battery']],
   earn:n=>{state.cash+=n;state.stats.earned+=n;credits++;},
-  awardRepXP:()=>{},checkAchievements:()=>{},note:()=>{},notify:()=>{},
+  awardRepXP:()=>{},checkAchievements:()=>{},note:()=>{},notify:()=>{},rentalRoundTripKm:()=>40,queueMileageOverhaul:()=>false,
   pick:a=>a[0],uid:()=> 'incident1'};
  vm.createContext(ctx);
  vm.runInContext(slice('function finishRental(r)','function addCar('),ctx);
