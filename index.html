@@ -7025,7 +7025,7 @@ document.getElementById('app').addEventListener('click',e=>{
    activePage=id;activeSub[id]=section;
    window.scrollTo({top:0,behavior:'instant'});render();return;
  }
- if(action==='page'){if(!NAV.some(x=>x[0]===id))return;activePage=id;if(id==='business'&&!activeSub.business)activeSub.business='command';window.scrollTo({top:0,behavior:'instant'});render();return;}
+ if(action==='page'){if(!NAV.some(x=>x[0]===id))return;activePage=id;if(id==='business'&&!activeSub.business)activeSub.business='command';const targetSub=button.dataset.sub;if(id==='fleet'&&['garage','dealership','care','restoration','tuning'].includes(targetSub))activeSub.fleet=targetSub;if(id==='events'&&['auctions','incidents','challenges','weather'].includes(targetSub))activeSub.events=targetSub;window.scrollTo({top:0,behavior:'instant'});render();return;}
  if(action==='sub'){activeSub[button.dataset.group]=id;render();return;}
  if(action==='closemodal'){if(modal==='importsave')pendingImportSave=null;modal=null;render();return;}
  if(action==='guide'){modal='guide';render();return;}
