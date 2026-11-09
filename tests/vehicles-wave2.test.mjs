@@ -17,7 +17,7 @@ const specs=[{"id":"safari","name":"Safari 4x4","model":"Karoo Ranger","lvl":13,
 assert.equal(types.length,27);assert.equal(customers.length,78);assert.equal(contracts.length,17);
 assert.equal(new Set(types.map(t=>t.id)).size,27);assert.equal(new Set(customers.map(c=>c.id)).size,78);
 assert.equal(customers.filter(c=>c.vipBonus).length,8);
-assert.equal(customers.filter(c=>!c.vipBonus).length,66);
+assert.equal(customers.filter(c=>!c.vipBonus).length,70);
 assert.equal(types.find(t=>t.id==='hyper').unlock,40);assert.equal(Math.max(...types.map(t=>t.unlock)),40);
 assert.equal(new Set(Object.values(sides)).size,27);assert.equal(new Set(Object.values(tops)).size,27);
 for(const s of specs){
