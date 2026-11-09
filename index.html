@@ -5267,7 +5267,12 @@ function restoreSlot(n){
  }
 }
 
-function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',mileage:0,mileageKnown:true,serviceHistory:[],parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};}
+function makeCar(type,branch='hq',attrs={}){return {id:uid('car'),type,plate:`CA ${rand(100,999)}-${rand(100,999)}`,fuel:100,clean:100,condition:100,status:'available',branch,tune:0,rides:0,body:100,paint:'silver',mileage:0,mileageKnown:true,serviceHistory:[],parts:{engine:100,tyres:100,brakes:100,oil:100,battery:100},...attrs};} function usedVehicleMileage(condition,source='auction'){
+ const salvage=source==='salvage',c=Number(condition)||0;
+ const expected=salvage?170000+(32-clamp(c,12,32))*2000:45000+(100-clamp(c,0,100))*1500;
+ const spread=rand(salvage?-70000:-45000,salvage?70000:45000);
+ return Math.round(clamp(expected+spread,salvage?100000:25000,salvage?300000:180000)/1000)*1000;
+}
 function fresh(){return {version:3,companyName:'Coastline Rentals',difficulty:'normal',credit:680,daily:null,cash:750000,rep:2,xp:0,day:1,gameSeconds:0,weather:'Sunny',fleet:[makeCar('hatch'),makeCar('sedan'),makeCar('bakkie')],rentals:[],offers:[],branches:['hq'],upgrades:{},staff:[],contracts:[],contractLast:{},playerAuctions:[],salvageOffers:[],salvageDay:0,collectionDiscovered:[],branchReports:{},contractReports:{},loans:[],incidents:[],auction:null,achievements:[],achievementRepeats:{},ledger:[],log:[],stats:{earned:0,spent:0,returned:0,rentalRevenue:0,lost:0,streak:0,best:0,services:0,washes:0,filled:0},history:[],prestige:0,prestigePoints:0,premiumCredits:0,premiumMigrated:true,legacyGarageCapacity:0,perks:{tips:0,prices:0,safety:0},savedAt:now(),offlineLastActiveAt:now(),lastDayAt:now(),lastOfferAt:0,lastAuctionAt:0,lastWeatherAt:now(),lastSaveAt:now(),settings:{sound:false,notifications:true,mapTheme:'auto',autoDispatch:true,offlineEarnings:true,autoCare:{autofuel:true,autoservice:true,autowash:true,autobody:true,autorecovery:true}}};}
 // Seed existing completed trophies at today's totals: no historical repeat payouts.
 function restoreAchievementRepeats(saved){
@@ -5470,7 +5475,7 @@ function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)ret
 function restoreFinished(){let due=state.rentals.filter(r=>r.due<=now());if(due.length){state.rentals=state.rentals.filter(r=>r.due>now());due.forEach(finishRental);save(true);}}
 function addCar(typeId,price=null,auction=false,branch='hq',honorExistingAuction=false,editionId=null){let t=typeOf(typeId);if(t.unlock>state.rep&&!honorExistingAuction){notify(`Reach reputation level ${t.unlock} to unlock this vehicle.`,'bad');return false;}let cap=garageCapacity();if(state.fleet.length>=cap){notify('Garage full! Buy the Garage Expansion in Business.','bad');return false;}
  let cost=price??t.price;if(!spend(cost,`Bought ${t.name}`))return false;
- let car=makeCar(typeId,owned(branch)?branch:'hq',auction?{condition:rand(45,78),clean:rand(35,80),fuel:rand(20,70)}:{});if(editionId&&editionOf(editionId)?.type===typeId){car.editionId=editionId;state.collectionDiscovered=Array.isArray(state.collectionDiscovered)?state.collectionDiscovered:[];if(!state.collectionDiscovered.includes(editionId))state.collectionDiscovered.push(editionId);}state.fleet.push(car);selectedCar=car.id;
+ const auctionCondition=auction?rand(45,78):100;let car=makeCar(typeId,owned(branch)?branch:'hq',auction?{condition:auctionCondition,clean:rand(35,80),fuel:rand(20,70),mileage:usedVehicleMileage(auctionCondition,'auction'),mileageKnown:true}:{});if(editionId&&editionOf(editionId)?.type===typeId){car.editionId=editionId;state.collectionDiscovered=Array.isArray(state.collectionDiscovered)?state.collectionDiscovered:[];if(!state.collectionDiscovered.includes(editionId))state.collectionDiscovered.push(editionId);}state.fleet.push(car);selectedCar=car.id;
  note(`Purchased ${t.name} • ${car.plate}${auction?' at auction':''}.`);notify(`Welcome to the fleet: ${t.name}!`);checkAchievements();return true;
 }
 
@@ -6383,7 +6388,7 @@ function findSalvage(){
  if(state.salvageDay===state.day){notify('You have already scouted today.');return false;}
  const choices=TYPES.filter(t=>t.unlock<=state.rep),ids=[];
  for(let i=0;i<Math.min(3,choices.length);i++)ids.push(pick(choices.filter(t=>!ids.includes(t.id))).id);
- state.salvageOffers=ids.map(type=>{const t=typeOf(type);return {id:uid('salvage'),type,price:round(t.price*(.17+rand(0,5)/100)),mileage:rand(850,2150)*100,condition:rand(12,32),body:rand(10,40),clean:rand(4,20)};});
+ state.salvageOffers=ids.map(type=>{const t=typeOf(type),condition=rand(12,32);return {id:uid('salvage'),type,price:round(t.price*(.17+rand(0,5)/100)),mileage:usedVehicleMileage(condition,'salvage'),condition,body:rand(10,40),clean:rand(4,20)};});
  state.salvageDay=state.day;note('New salvage projects found.');notify('Salvage yard inspected!');return true;
 }
 function buySalvage(id){
