@@ -4794,7 +4794,7 @@ body::before{background:repeating-linear-gradient(90deg,#7dbdff08 0 1px,transpar
 
 <style id="ctr-restoration-cooldowns-2026">
 /* Time-gated restorations — compact arcade schedule + live per-vehicle progress. */
-.ctr-restoration-timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:13px 0}
+.ctr-restoration-timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0}
 .ctr-restoration-timeline span{min-width:0;display:grid;gap:4px;padding:9px 7px;border-radius:10px;border:1px solid #3a7193;background:linear-gradient(150deg,#173856,#0b2642)}
 .ctr-restoration-timeline b{font-size:10px;line-height:1.3;overflow-wrap:anywhere;color:#d3e9f4}
 .ctr-restoration-timeline strong{font-size:14px;color:#ffe08c}
@@ -5064,9 +5064,9 @@ function overhaulDue(car){return !!car&&Math.max(0,Number(car.mileage)||0)>=next
 function odometerLabel(car){return Math.max(0,round(Number(car?.mileage)||0)).toLocaleString('en-ZA')+' km';}
 function queueMileageOverhaul(car){
  if(!car||car.status!=='available'||!overhaulDue(car))return false;
- if(car.restoration&&Number(car.restoration.stage)===4)
+ if(car.restoration&&Number(car.restoration.stage)===6)
   car.restorationHistory=[...(Array.isArray(car.restorationHistory)?car.restorationHistory:[]),{...car.restoration}].slice(-8);
- car.restoration={kind:'overhaul',stage:0,spent:0,purchase:0,started:now(),requiredAtMileage:car.mileage};
+ car.restoration={kind:'overhaul',stage:0,stagePlanVersion:2,spent:0,purchase:0,started:now(),requiredAtMileage:car.mileage};
  car.status='restoration';
  logVehicle(car,'Major overhaul required','400,000 km service interval reached');
  note(`${car.plate} requires a 400,000 km overhaul or sale.`,'bad');
@@ -5215,7 +5215,15 @@ function clockInfo(){let p=Math.max(0,(now()-state.lastDayAt)/GAME_DAY_MS),hour=
 function isNight(){return clockInfo().night;}
 function effectiveMapNight(){return state.settings.mapTheme==='night'||(state.settings.mapTheme!=='day'&&isNight());}
 function fuelPrice(){return difficulty().fuel;}
-function hydrateCar(c){const health=clamp(c.condition??100),known=c.mileage!==undefined&&Number.isFinite(Number(c.mileage));return {...c,body:clamp(c.body??100),paint:PAINTS[c.paint]?c.paint:'silver',mileage:known?Math.max(0,round(Number(c.mileage))):0,mileageKnown:c.mileageKnown===undefined?known:c.mileageKnown!==false,serviceHistory:Array.isArray(c.serviceHistory)?c.serviceHistory.slice(0,60):[],parts:{...Object.fromEntries(CAR_PARTS.map(([k])=>[k,health])),...(c.parts||{})}};}
+function migrateRestorationProject(project){
+ if(!project||Number(project.stagePlanVersion)>=2)return project;
+ const stageMap=[0,2,4,5,6],oldStage=Number(project.stage);
+ if(!Number.isInteger(oldStage)||oldStage<0||oldStage>=stageMap.length)return {...project,stagePlanVersion:2};
+ const migrated={...project,stage:stageMap[oldStage],stagePlanVersion:2};
+ if(project.work){const oldWorkStage=Number(project.work.stage);migrated.work={...project.work,stage:Number.isInteger(oldWorkStage)&&oldWorkStage>=0&&oldWorkStage<stageMap.length?stageMap[oldWorkStage]:migrated.stage};}
+ return migrated;
+}
+function hydrateCar(c){const health=clamp(c.condition??100),known=c.mileage!==undefined&&Number.isFinite(Number(c.mileage));return {...c,restoration:migrateRestorationProject(c.restoration),body:clamp(c.body??100),paint:PAINTS[c.paint]?c.paint:'silver',mileage:known?Math.max(0,round(Number(c.mileage))):0,mileageKnown:c.mileageKnown===undefined?known:c.mileageKnown!==false,serviceHistory:Array.isArray(c.serviceHistory)?c.serviceHistory.slice(0,60):[],parts:{...Object.fromEntries(CAR_PARTS.map(([k])=>[k,health])),...(c.parts||{})}};}
 function paintFilter(c){return PAINTS[c.paint]?.filter||'none';}
 function bodyRepairCost(c){return c.body>=99.9?0:up('workshop')?0:round((900+(100-c.body)*70)*difficulty().expenses);}
 function paintCost(c,key){return c.paint===key?0:up('paintshop')?0:1200;}
@@ -6383,7 +6391,7 @@ function logVehicle(c,kind,detail,cost=0){
  c.serviceHistory.unshift({at:now(),kind,detail,cost:Math.max(0,round(Number(cost)||0)),mileage:Math.max(0,round(Number(c.mileage)||0))});
  c.serviceHistory=c.serviceHistory.slice(0,60);
 }
-function restorationPrice(c,step){return Math.max(600,round(typeOf(c.type).price*([.025,.085,.055,.03][step]||0)));}
+function restorationPrice(c,step){return Math.max(400,round(typeOf(c.type).price*([.015,.02,.075,.025,.04,.02][step]||0)));}
 function findSalvage(){
  if(state.salvageDay===state.day){notify('You have already scouted today.');return false;}
  const choices=TYPES.filter(t=>t.unlock<=state.rep),ids=[];
@@ -6396,13 +6404,13 @@ function buySalvage(id){
  const t=TYPES.find(t=>t.id===o.type);if(!t||t.unlock>state.rep)return false;
  if(state.fleet.length>=garageCapacity()){notify('Garage full — free a bay first.','bad');return false;}
  if(!spend(o.price,`Salvage vehicle · ${t.name}`))return false;
- const c=makeCar(t.id,'hq',{status:'restoration',condition:o.condition,body:o.body,clean:o.clean,fuel:20,mileage:o.mileage,mileageKnown:true,parts:Object.fromEntries(CAR_PARTS.map(([k])=>[k,o.condition])),restoration:{stage:0,spent:o.price,purchase:o.price,started:now()}});
+ const c=makeCar(t.id,'hq',{status:'restoration',condition:o.condition,body:o.body,clean:o.clean,fuel:20,mileage:o.mileage,mileageKnown:true,parts:Object.fromEntries(CAR_PARTS.map(([k])=>[k,o.condition])),restoration:{stage:0,stagePlanVersion:2,spent:o.price,purchase:o.price,started:now()}});
  logVehicle(c,'Salvage purchase',`Damaged ${t.name} purchased`,o.price);
  state.fleet.push(c);state.salvageOffers=state.salvageOffers.filter(x=>x.id!==id);selectedCar=c.id;
  notify('Restoration car purchased!');note(`${c.plate} moved to restoration yard.`);return true;
 }
-const RESTORATION_STAGE_MINUTES=[2,5,10,15];
-const RESTORATION_STAGE_NAMES=['Diagnostics','Mechanical rebuild','Bodywork restoration','Roadworthy inspection & detail'];
+const RESTORATION_STAGE_MINUTES=[4,7,12,8,11,8];
+const RESTORATION_STAGE_NAMES=['Intake inspection & diagnostics','Strip-down & parts assessment','Engine & drivetrain rebuild','Brakes, tyres & suspension','Bodywork & paint','Reassembly, roadworthy test & detail'];
 function restorationStageDuration(step){return (RESTORATION_STAGE_MINUTES[step]||0)*60000;}
 function restorationWorkProgress(work,t=now()){
  if(!work)return 0;
@@ -6413,21 +6421,22 @@ function restoreSalvage(id){
  const c=state.fleet.find(x=>x.id===id);
  if(!c||c.status!=='restoration'||!c.restoration)return false;
  const project=c.restoration,stage=Number(project.stage);
- if(!Number.isInteger(stage)||stage<0||stage>3)return false;
+ if(!Number.isInteger(stage)||stage<0||stage>5)return false;
  const name=RESTORATION_STAGE_NAMES[stage],current=project.work;
  if(current){
   // One paid job per vehicle at a time. A finished stage must be claimed.
   if(Number(current.stage)!==stage||!Number.isFinite(Number(current.dueAt)))return false;
   if(now()<Number(current.dueAt)){notify('Restoration still in progress — check its countdown.');return false;}
   // No second charge at collection: all money was paid when work started.
-  if(stage===1){c.condition=100;c.parts=Object.fromEntries(CAR_PARTS.map(([k])=>[k,100]));state.stats.services++;}
-  if(stage===2)c.body=100;
-  if(stage===3){c.clean=100;c.fuel=100;c.status='available';project.completed=now();state.stats.washes++;state.stats.filled++;if(project.kind==='overhaul'){c.lastOverhaulMileage=Math.floor(Math.max(0,Number(c.mileage)||0)/OVERHAUL_INTERVAL_KM)*OVERHAUL_INTERVAL_KM;c.overhaulCount=(Number(c.overhaulCount)||0)+1;}}
+  if(stage===2){c.parts=c.parts||Object.fromEntries(CAR_PARTS.map(([k])=>[k,clamp(c.condition)]));for(const key of ['engine','oil','battery'])c.parts[key]=100;c.condition=Math.max(Number(c.condition)||0,75);}
+  if(stage===3){c.parts=c.parts||Object.fromEntries(CAR_PARTS.map(([k])=>[k,clamp(c.condition)]));for(const key of ['tyres','brakes'])c.parts[key]=100;c.condition=100;state.stats.services++;}
+  if(stage===4)c.body=100;
+  if(stage===5){c.clean=100;c.fuel=100;c.status='available';project.completed=now();state.stats.washes++;state.stats.filled++;if(project.kind==='overhaul'){c.lastOverhaulMileage=Math.floor(Math.max(0,Number(c.mileage)||0)/OVERHAUL_INTERVAL_KM)*OVERHAUL_INTERVAL_KM;c.overhaulCount=(Number(c.overhaulCount)||0)+1;}}
   project.stage=stage+1;
   delete project.work;
   logVehicle(c,project.kind==='overhaul'?'Mileage overhaul completed':'Restoration completed',name,0);
   note(`${c.plate}: ${name} collected after work finished.`);
-  notify(stage===3?'Restored and ready for rentals!':`${name} complete — next restoration stage unlocked.`);
+  notify(stage===5?'Restored and ready for rentals!':`${name} complete — next restoration stage unlocked.`);
   return true;
  }
  const price=restorationPrice(c,stage),startedAt=now(),duration=restorationStageDuration(stage);
@@ -6444,25 +6453,25 @@ function carHistoryPanel(c){
  const entries=Array.isArray(c.serviceHistory)?c.serviceHistory.slice(0,8):[];
  return `<section class="ctr-history card pad" aria-label="Mileage and service history"><div class="ctr-history-top"><h4>🧾 Mileage & Service History</h4><strong>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km</strong></div>
  <p class="tiny muted">${c.mileageKnown===false?'Kilometres tracked since this feature was added. Earlier mileage unknown.':'Known starting mileage plus rentals tracked.'} Resale estimate ${money(getResale(c))} (original pricing formula).</p><p class="tiny muted">${c.status==='restoration'&&c.restoration?.kind==='overhaul'?'🔧 Major mileage overhaul required — rebuild or sell.':'Next major overhaul at '+nextOverhaulKm(c).toLocaleString('en-ZA')+' km.'} Completed major overhauls: ${Number(c.overhaulCount)||0}. Odometer does not reset.</p>
- ${c.restoration?`<p class="tiny muted">🔨 ${c.restoration.kind==='overhaul'?'Major overhaul':'Restoration'} ${c.restoration.stage===4?'completed':c.restoration.stage+'/4'} · Total invested ${money(c.restoration.spent)}</p>`:''}
+ ${c.restoration?`<p class="tiny muted">🔨 ${c.restoration.kind==='overhaul'?'Major overhaul':'Restoration'} ${c.restoration.stage===6?'completed':c.restoration.stage+'/6'} · Total invested ${money(c.restoration.spent)}</p>`:''}
  ${entries.length?entries.map(x=>`<div class="ctr-history-entry"><span><b>${esc(x.kind)}</b><small>${esc(x.detail||'')}</small></span><span>${Math.max(0,round(Number(x.mileage)||0)).toLocaleString('en-ZA')} km${x.cost?' · '+money(x.cost):''}</span></div>`).join(''):'<p class="tiny muted">No new rental or service records yet.</p>'}</section>`;
 }
 function restorationPanel(){
  const active=state.fleet.filter(c=>c.status==='restoration'),offers=Array.isArray(state.salvageOffers)?state.salvageOffers:[];
- return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Restore salvage vehicles or perform full 400,000 km mileage overhauls. Both use the same four paid, timed stages, collected one at a time.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
+ return `<section class="ctr-salvage card pad" aria-label="Vehicle restoration projects"><div class="ctr-salvage-header"><div><div class="eyebrow">COASTLINE RESTORATION YARD</div><h3>🔨 Restoration Projects</h3><p>Restore salvage vehicles or perform full 400,000 km mileage overhauls. Both use the same six paid, timed stages, collected one at a time.</p></div>${listBtn('findsalvage','search',state.salvageDay===state.day?'Finds next day':'🔎 Scout salvage','btn primary',state.salvageDay===state.day?'disabled':'')}</div>
  <div class="ctr-restoration-timeline" aria-label="Restoration cooldown schedule">${RESTORATION_STAGE_NAMES.map((name,n)=>`<span><b>${n+1}. ${name}</b><strong>${RESTORATION_STAGE_MINUTES[n]} min</strong></span>`).join('')}</div>
  <p class="tiny muted">${active.length} projects · ${offers.length} finds · ${Math.max(0,garageCapacity()-state.fleet.length)} free garage bays · Timers continue while the game is closed.</p>
  <h4>Rebuilds in progress</h4><div class="ctr-salvage-grid">
  ${active.length?active.map(c=>{
-  const t=typeOf(c.type),stage=Math.max(0,Math.min(3,Number(c.restoration?.stage)||0)),price=restorationPrice(c,stage);
+  const t=typeOf(c.type),stage=Math.max(0,Math.min(5,Number(c.restoration?.stage)||0)),price=restorationPrice(c,stage);
   const work=c.restoration?.work&&Number(c.restoration.work.stage)===stage?c.restoration.work:null;
   const waiting=!!work&&now()<Number(work.dueAt),ready=!!work&&!waiting;
-  const duration=RESTORATION_STAGE_MINUTES[stage],label=RESTORATION_STAGE_NAMES[stage];
+  const duration=work?Math.max(1,Math.round((Number(work.dueAt)-Number(work.startedAt))/60000)):RESTORATION_STAGE_MINUTES[stage],label=RESTORATION_STAGE_NAMES[stage];
   const action=work?(waiting?'⏳ Work in progress':'✓ Collect '+label):'Start '+label+' · '+money(price);
   const progress=work?restorationWorkProgress(work):0;
   return `<article class="ctr-salvage-card" data-restoration-car="${esc(c.id)}">
   <img src="${CAR_IMAGES[t.id]}" alt="${esc(t.name)}"><b>${esc(t.name)} · ${esc(c.plate)}</b><small>${c.restoration?.kind==='overhaul'?'🔧 Major mileage overhaul':'Salvage restoration'}</small>
-  <small>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km · Stage ${stage+1}/4 · Spent ${money(c.restoration.spent)}</small>
+  <small>${Math.max(0,round(Number(c.mileage)||0)).toLocaleString('en-ZA')} km · Stage ${stage+1}/6 · Spent ${money(c.restoration.spent)}</small>
   <div class="ctr-restoration-job" ${work?`data-restoration-work="${esc(c.id)}"`:''}>
    <div class="ctr-restoration-job-head"><b>${label}</b><span>${duration} min</span></div>
    ${work?`<div class="ctr-restoration-progress" role="progressbar" aria-label="${esc(label)} restoration progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i data-restoration-fill style="width:${progress}%"></i></div>
