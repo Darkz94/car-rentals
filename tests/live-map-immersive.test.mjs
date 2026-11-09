@@ -41,10 +41,10 @@ assert.ok(js.includes('liveMapDrag')&&js.includes('liveMapSuppressClickUntil'));
 assert.ok(js.includes('map-landscape-fx-2026')&&js.includes('preserveAspectRatio='));
 const camSrc=slice('function mapViewBox(){','function renderMap(compact=false){');
 const cameraCtx={state,mapZoom:1,mapPanX:0,mapFocus:'hq',selectedRental:null,DEST:destinations,activePage:'map',
- window:{innerWidth:360,innerHeight:800},clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),routePosition:()=>({x:275,y:100})};
+ window:{innerWidth:360,innerHeight:800},mapPortraitLive:()=>cameraCtx.activePage==='map'&&cameraCtx.window.innerWidth<=760,clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),routePosition:()=>({x:275,y:100})};
 const camera=vm.runInNewContext(camSrc+'\nmapViewBox',cameraCtx);
 const [x,y,w,h]=camera().split(' ').map(Number);
-assert.ok(w<400&&h===620&&x>=0&&y===0,'Portrait viewBox uses a tall fit');
+assert.ok(w>=650&&w<=780&&h===620&&x>=0&&y===0,'Portrait viewBox shows a much wider Cape overview');
 cameraCtx.mapPanX=450;
 const [shiftX]=camera().split(' ').map(Number);
 assert.ok(shiftX>x,'Swipe pan moves camera toward eastern destinations');
