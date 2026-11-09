@@ -5358,7 +5358,88 @@ function newOffer(contract=null,forcedId=null){
  state.offers.push(offer);if(state.offers.length>6)state.offers.shift();return offer;
 }
 function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
-function routePosition(r,t=now()){let src=DEST[r.from]||DEST.hq,to=DEST[r.dest]||DEST.airport;let prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2;let x=src.x+(to.x-src.x)*u,y=src.y+(to.y-src.y)*u-38*Math.sin(Math.PI*u);return {x,y,progress:prog};}
+const MAP_ROAD_EDGES=[
+ ['blouberg','waterfront',[[275,72],[249,83],[226,95],[206,110]],true],
+ ['waterfront','hq',[[206,110],[222,143],[236,184],[242,234]],true],
+ ['hq','n1mid',[[242,234],[286,219],[330,201],[372,187]],true],
+ ['n1mid','n1east',[[372,187],[424,173],[470,162],[520,156]],true],
+ ['n1east','paarl',[[520,156],[575,143],[630,121],[690,108],[784,97]],true],
+ ['hq','westjunction',[[242,234],[224,268],[207,305],[206,338]],true],
+ ['westjunction','camps',[[206,338],[183,350],[151,369],[132,379]],true],
+ ['camps','southjunction',[[132,379],[169,403],[208,433],[243,455]],true],
+ ['southjunction','chapman',[[243,455],[270,473],[294,498],[311,519]],true],
+ ['chapman','muizenberg',[[311,519],[348,499],[382,470],[418,448]],false],
+ ['hq','table',[[242,234],[260,269],[282,307],[298,347]],true],
+ ['table','muizenberg',[[298,347],[325,386],[366,421],[418,448]],true],
+ ['hq','airportjunction',[[242,234],[290,242],[340,252],[389,258]],true],
+ ['airportjunction','airport',[[389,258],[439,267],[490,276],[540,279]],true],
+ ['airport','stellenbosch',[[540,279],[589,291],[639,273],[690,231],[743,198]],true],
+ ['stellenbosch','franschhoek',[[743,198],[779,222],[813,267],[840,320]],false],
+ ['stellenbosch','n1east',[[743,198],[699,181],[658,157],[615,147],[566,153],[520,156]],false],
+ ['airport','somersetwest',[[540,279],[576,307],[599,344],[617,379]],true],
+ ['somersetwest','hermanus',[[617,379],[654,414],[697,466],[752,521]],true],
+ ['muizenberg','hermanus',[[418,448],[505,452],[621,475],[752,521]],false]
+].map(([from,to,points,major])=>({from,to,points:points.map(([x,y])=>({x,y})),major:!!major}));
+const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:372,y:187},n1east:{x:520,y:156},westjunction:{x:206,y:338},southjunction:{x:243,y:455},airportjunction:{x:389,y:258}};
+const mapRoadCache=new Map();
+function mapRoadSmooth(points,steps=10){
+ if(points.length<2)return points.slice();
+ const out=[];
+ for(let i=0;i<points.length-1;i++){
+  const p0=points[i-1]||points[i],p1=points[i],p2=points[i+1],p3=points[i+2]||p2;
+  for(let j=0;j<steps;j++){
+   const t=j/steps,t2=t*t,t3=t2*t;
+   out.push({x:.5*((2*p1.x)+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),y:.5*((2*p1.y)+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)});
+  }
+ }
+ out.push({...points[points.length-1]});return out;
+}
+function mapRoadMeasure(points){
+ let total=0;const cumulative=[0];
+ for(let i=1;i<points.length;i++){total+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);cumulative.push(total);}
+ return {points,cumulative,total};
+}
+function mapRoadJourney(r){
+ const from=MAP_ROAD_NODES[r.from]?r.from:'hq',to=MAP_ROAD_NODES[r.dest]?r.dest:'airport',key=from+'>'+to;
+ if(mapRoadCache.has(key))return mapRoadCache.get(key);
+ if(from===to){const p=MAP_ROAD_NODES[from];return mapRoadMeasure([{...p},{...p}]);}
+ const adjacency={};for(const id of Object.keys(MAP_ROAD_NODES))adjacency[id]=[];
+ for(let i=0;i<MAP_ROAD_EDGES.length;i++){
+  const edge=MAP_ROAD_EDGES[i],sampled=mapRoadSmooth(edge.points),length=mapRoadMeasure(sampled).total;
+  adjacency[edge.from].push({to:edge.to,index:i,length});adjacency[edge.to].push({to:edge.from,index:i,length});
+ }
+ const distances={},previous={},pending=new Set(Object.keys(MAP_ROAD_NODES));
+ for(const id of pending)distances[id]=Infinity;distances[from]=0;
+ while(pending.size){
+  let current=null;for(const id of pending)if(current===null||distances[id]<distances[current])current=id;
+  if(current===null||!Number.isFinite(distances[current])||current===to)break;
+  pending.delete(current);
+  for(const next of adjacency[current])if(pending.has(next.to)&&distances[current]+next.length<distances[next.to]){distances[next.to]=distances[current]+next.length;previous[next.to]={from:current,index:next.index};}
+ }
+ const segments=[];let cursor=to;
+ while(cursor!==from&&previous[cursor]){const step=previous[cursor];segments.unshift({from:step.from,to:cursor,index:step.index});cursor=step.from;}
+ let points=[];
+ if(cursor===from)for(const segment of segments){
+  const edge=MAP_ROAD_EDGES[segment.index],raw=edge.points,oriented=segment.from===edge.from?raw:raw.slice().reverse(),sampled=mapRoadSmooth(oriented);
+  if(points.length&&sampled.length&&Math.hypot(points.at(-1).x-sampled[0].x,points.at(-1).y-sampled[0].y)<.01)sampled.shift();
+  points.push(...sampled);
+ }
+ if(points.length<2){const a=MAP_ROAD_NODES[from],b=MAP_ROAD_NODES[to];points=mapRoadSmooth([a,b]);}
+ const result=mapRoadMeasure(points);mapRoadCache.set(key,result);return result;
+}
+function mapRoadPath(points){return points.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');}
+function mapRoadMarkup(){
+ return MAP_ROAD_EDGES.map(edge=>{const d=mapRoadPath(mapRoadSmooth(edge.points)),width=edge.major?15:9;
+  return '<path d="'+d+'" fill="none" stroke="#435b50" stroke-opacity=".52" stroke-width="'+(width+4)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+(edge.major?'#e6d6ae':'#cfc29e')+'" stroke-opacity="'+(edge.major?'.94':'.78')+'" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'+(edge.major?'<path d="'+d+'" fill="none" stroke="#fff1cf" stroke-opacity=".42" stroke-width="1.4" stroke-dasharray="1 10" stroke-linecap="round"/>':'');
+ }).join('');
+}
+function routePosition(r,t=now()){
+ const prog=clamp((t-r.start)/(r.due-r.start),0,1),u=prog<.5?prog*2:(1-prog)*2,journey=mapRoadJourney(r);
+ if(journey.total<=.001){const p=journey.points[0]||{x:500,y:310};return {x:p.x,y:p.y,progress:prog};}
+ const target=journey.total*u;let i=1;while(i<journey.cumulative.length-1&&journey.cumulative[i]<target)i++;
+ const span=journey.cumulative[i]-journey.cumulative[i-1],ratio=span>0?(target-journey.cumulative[i-1])/span:0,a=journey.points[i-1],b=journey.points[i];
+ return {x:a.x+(b.x-a.x)*ratio,y:a.y+(b.y-a.y)*ratio,progress:prog};
+}
 function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
  let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,tripKm:rentalRoundTripKm(car.branch,offer.dest),balanceVersion:2,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${formatTripTime(seconds)} • ${money(payout)} on return`);return true;
@@ -6067,10 +6148,9 @@ function renderMap(compact=false){
  const instant=now(),pinScale=compact?1:typeof mapMarkerYScale==='function'?mapMarkerYScale():1;
  const mapBounds=mapViewBox().split(' ').map(Number),viewX=mapBounds[0]||0,viewY=mapBounds[1]||0,viewW=mapBounds[2]||1000,viewH=mapBounds[3]||620;
  for(const r of state.rentals){
-  const src=DEST[r.from]||DEST.hq,dst=DEST[r.dest]||DEST.airport;
-  const curve=`M${src.x} ${src.y} Q${(src.x+dst.x)/2} ${(src.y+dst.y)/2-65} ${dst.x} ${dst.y}`;
+  const journey=mapRoadJourney(r),curve=mapRoadPath(journey.points);
   const highlighted=selectedRental===r.id;
-  tripPaths.push(`<path class="map-route-v10 ${highlighted?'selected':''}" d="${curve}" fill="none" stroke="${highlighted?'#ffe09e':'#c5ad86'}" stroke-width="${highlighted?5:2.5}" stroke-dasharray="11 8" opacity="${highlighted?.96:.23}" stroke-linecap="round"/>`);
+  tripPaths.push(`<path class="map-route-v10 ${highlighted?'selected':''}" d="${curve}" fill="none" stroke="${highlighted?'#ffe09e':'#d1b77f'}" stroke-width="${highlighted?5:2.5}" stroke-dasharray="11 8" opacity="${highlighted?.96:.4}" stroke-linecap="round"/>`);
   const car=state.fleet.find(c=>c.id===r.carId),sprite=typeof vehicleRoofArt==='function'&&car?vehicleRoofArt(car):MAP_CAR_IMAGES[car?.type]||MAP_CAR_IMAGES.hatch;
   const position=mapCarPose(r,instant,car?.type),heading=typeof mapHeadingDegrees==='function'?mapHeadingDegrees(r,instant,car):0,arrowHeading=typeof mapHeadingDegrees==='function'?mapHeadingDegrees(r,instant):0;
   const showPlate=highlighted||state.rentals.length<=3;
@@ -6113,13 +6193,7 @@ function renderMap(compact=false){
   <path d="M188 111L202 95L215 110L228 105L241 121L235 145L217 151L203 137Z" fill="#748b72" opacity=".8"/><path d="M700 137Q736 103 771 130Q801 113 830 145Q860 133 884 164Q847 181 808 169Q770 183 733 165Z" fill="#9a9b70" opacity=".38"/><path d="M731 450Q762 421 794 441Q826 420 851 450Q878 438 900 465Q864 482 831 471Q786 493 751 474Z" fill="#9ca078" opacity=".34"/>
   <g aria-hidden="true" fill="none" stroke="#d6c49b" stroke-width="2.2" opacity=".24" pointer-events="none"><path d="M695 147Q748 138 812 153M690 158Q749 149 816 164M686 169Q748 160 821 175M683 180Q749 171 826 186M679 191Q750 182 832 197M676 202Q751 193 838 208"/></g>
   <ellipse cx="239" cy="204" rx="106" ry="69" fill="#e7d8ab" opacity=".045" pointer-events="none"/>
-  <g fill="none" stroke="#ddd4ae" stroke-linecap="round" stroke-linejoin="round">
-   <path d="M242 234Q311 213 372 187T520 156L655 120L784 97" stroke="#596752" stroke-opacity=".42" stroke-width="11"/><path d="M242 234Q311 213 372 187T520 156L655 120L784 97" stroke-width="5" opacity=".85"/>
-   <path d="M242 234Q316 247 389 258T540 279Q580 313 617 379T752 521" stroke="#596752" stroke-opacity=".42" stroke-width="12"/><path d="M242 234Q316 247 389 258T540 279Q580 313 617 379T752 521" stroke-width="5.5" opacity=".9"/>
-   <path d="M242 234Q282 283 298 347T365 416Q395 434 418 448" stroke="#596752" stroke-opacity=".38" stroke-width="9"/><path d="M242 234Q282 283 298 347T365 416Q395 434 418 448" stroke-width="4" opacity=".8"/>
-   <path d="M173 303Q206 338 132 379Q193 410 243 455T311 519" stroke="#596752" stroke-opacity=".36" stroke-width="8"/><path d="M173 303Q206 338 132 379Q193 410 243 455T311 519" stroke-width="3.5" opacity=".78"/>
-   <path d="M206 110Q238 145 242 234M540 279Q599 300 743 198T840 320" stroke-width="3" opacity=".56"/>
-  </g>
+  <g aria-hidden="true">${mapRoadMarkup()}</g>
   <g aria-hidden="true" opacity=".52"><path d="M181 87Q193 76 207 83L229 94Q237 101 232 113L220 126Q212 132 199 123L184 112Q178 102 181 87Z" fill="#4f8996" stroke="#d4ddc2" stroke-width="2"/><path d="M187 91L225 116M193 84L232 108M180 101L215 127M198 80L188 119M211 85L201 125" stroke="#dce5c9" stroke-width="1.5" opacity=".75"/></g>
   <rect x="189" y="142" width="137" height="104" fill="url(#street)" opacity=".7"/><g fill="#f0e6c8" opacity=".38">${Array.from({length:18},(_,i)=>`<rect x="${205+(i%6)*20}" y="${158+Math.floor(i/6)*23}" width="11" height="13" rx="2"/>`).join('')}</g>
   <g font-family="Arial,sans-serif" font-weight="900" font-size="10" letter-spacing=".5" text-anchor="middle" fill="#fff1cb" stroke="#294957" stroke-width="2.5" paint-order="stroke" opacity="${!compact&&mapZoom>=1.1?.78:0}" pointer-events="none"><g transform="translate(586 141) rotate(-18)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N1</text></g><g transform="translate(510 273) rotate(8)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(345 395) rotate(32)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">M3</text></g></g>
