@@ -893,7 +893,7 @@ const map10=js.slice(m10s,m10e),page10=js.slice(m10p,m10pe);
 for(const term of ["mapViewBox()","MAP_CAR_IMAGES[car?.type]","MAP_CAR_IMAGES[c.type]","data-mapcar","data-maptransfer","map-route-v10","map-control-v10","zoomplus","zoomminus","mapreset","map-legend-v10"])assert.ok(map10.includes(term),"Map missing "+term);
 for(const term of ["live-map-focused-2026","live-map-panel-v10","live-map-toolbar-2026","renderMap()","data-countdown-transfer","state.rentals.map(rentalCard)","maptheme","data-compact-info=\"map-details\""])assert.ok(page10.includes(term),"Map page missing "+term);
 assert.ok(!page10.includes("live-map-hero-v10")&&!page10.includes("live-map-kpis-v10"),"Large Live header and KPI cards should be removed");
-assert.ok(js.includes("if(action==='mapreset'){selectedRental=null;mapFocus='hq';mapZoom=1;render();return;}"),"Map reset missing");
+assert.ok(js.includes("if(action==='mapreset'){selectedRental=null;mapFocus='hq';mapPanX=0;mapZoom=1;render();return;}"),"Map reset or swipe-pan reset missing");
 assert.ok(js.includes("document.querySelectorAll('[data-maptransfer]')")&&js.includes("el.setAttribute('viewBox',mapViewBox())"),"Transfer updates missing");
 assert.ok(js.includes("const DEST={hq:{name:'Cape Town HQ',x:242,y:234}"),"Original destination coordinates changed");
 assert.ok(js.includes("start:c.transferDue-12000,due:c.transferDue"),"12-second transfers changed");
@@ -1254,6 +1254,7 @@ for(const component of ['live-map-focused-2026','live-map-panel-v10','live-map-t
 }
 assert.match(auditCss('ctr-live-map-section-10'),/@media\(max-width:720px\)/,'Live map needs phone breakpoint');
 assert.ok(html.includes('id="ctr-live-map-immersive-2026"'),'Immersive map styles missing');
+assert.ok(js.includes("mapPanX=0")&&js.includes("liveMapSuppressClickUntil"),"Portrait camera swipe exploration is not wired");
 assert.ok(js.includes("main-live-focus")&&js.includes("live-map-activity-toggle-2026"),'Live-only immersive mode or expandable journeys missing');
 
 const businessMenu=auditSource('function renderBusiness(){','function renderUpgrades(){');
