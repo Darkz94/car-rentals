@@ -7121,6 +7121,41 @@ document.getElementById('app').addEventListener('change',e=>{const el=e.target;i
 document.getElementById('app').addEventListener('click',e=>{const s=e.target.closest('.garage-filters > summary');if(s)garageFiltersOpen=!s.parentElement.open;},true);
 document.getElementById('app').addEventListener('input',e=>{if(e.target.dataset.role==='dealer-search'){dealerSearch=e.target.value;const q=dealerSearch.trim().toLowerCase();let count=0;document.querySelectorAll('#dealer-results [data-dealer-search]').forEach(card=>{const shown=card.dataset.dealerSearch.includes(q);card.style.display=shown?'':'none';if(shown)count++;});const result=document.querySelector('[data-dealer-result-count]');if(result)result.textContent=count+' of '+TYPES.length+' models shown';const empty=document.querySelector('[data-dealer-empty]');if(empty)empty.style.display=count?'none':'block';return;}if(e.target.dataset.role!=='garage-search')return;garageSearch=e.target.value;let q=garageSearch.trim().toLowerCase(),count=0;document.querySelectorAll('#fleet-results [data-fleet-search]').forEach(el=>{let visible=el.dataset.fleetSearch.includes(q);el.style.display=visible?'':'none';if(visible)count++;});document.querySelectorAll('#fleet-results .empty-slot').forEach(el=>{el.style.display=q?'none':'';});let msg=document.querySelector('[data-search-empty]');if(msg)msg.style.display=count?'none':'block';let c=document.querySelector('[data-fleet-count]');if(c)c.textContent=count+' matching vehicles · Bulk services include parked vehicles only.';});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){if(modal==='importsave')pendingImportSave=null;modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
+
+// Swipe horizontally to explore the Live Map without changing any rental or saved game data.
+let liveMapDrag=null,liveMapSuppressClickUntil=0;
+document.getElementById('app').addEventListener('pointerdown',e=>{
+ if(activePage!=='map'||e.button!==0)return;
+ const svg=e.target.closest('.live-map-focused-2026 .map-svg-v10');
+ if(!svg)return;
+ const rect=svg.getBoundingClientRect();
+ if(!rect.width)return;
+ liveMapDrag={id:e.pointerId,startX:e.clientX,startY:e.clientY,initialPan:mapPanX,width:rect.width,viewWidth:Number(mapViewBox().split(' ')[2])||1000,svg,dragged:false};
+});
+document.getElementById('app').addEventListener('pointermove',e=>{
+ const d=liveMapDrag;
+ if(!d||e.pointerId!==d.id||activePage!=='map'||!d.svg.isConnected)return;
+ const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+ if(!d.dragged&&(Math.abs(dx)<9||Math.abs(dx)<Math.abs(dy)))return;
+ d.dragged=true;
+ const tracked=state.rentals.find(x=>x.id===selectedRental);
+ const center=tracked?routePosition(tracked):(DEST[mapFocus]||DEST.hq);
+ const minPan=d.viewWidth/2-center.x,maxPan=1000-d.viewWidth/2-center.x;
+ mapPanX=clamp(d.initialPan-dx*d.viewWidth/d.width,minPan,maxPan);
+ d.svg.setAttribute('viewBox',mapViewBox());
+ if(e.cancelable)e.preventDefault();
+});
+window.addEventListener('pointerup',e=>{
+ if(!liveMapDrag||e.pointerId!==liveMapDrag.id)return;
+ if(liveMapDrag.dragged)liveMapSuppressClickUntil=Date.now()+250;
+ liveMapDrag=null;
+});
+window.addEventListener('pointercancel',()=>{liveMapDrag=null;});
+document.getElementById('app').addEventListener('click',e=>{
+ if(Date.now()<liveMapSuppressClickUntil&&e.target.closest('.live-map-focused-2026 .map-svg-v10')){
+  e.preventDefault();e.stopImmediatePropagation();liveMapSuppressClickUntil=0;
+ }
+},true);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){state.offlineLastActiveAt=now();save(true);}else{tick();render();}});window.addEventListener('beforeunload',()=>{state.offlineLastActiveAt=now();save(true);});
 function uiSignature(){return [state.cash,state.day,state.weather,state.rentals.map(x=>x.id).join(','),state.offers.map(x=>x.id).join(','),state.auction?.id,state.auction?.highest,state.auction?.bidder,(state.playerAuctions||[]).map(a=>[a.id,a.status,a.highest,a.bidCount].join(':')).join(','),state.fleet.map(c=>[c.status,c.branch,round(c.fuel),round(c.condition),round(c.clean),round(c.body)].join(':')).join(','),state.incidents.length,state.log[0]?.id].join('|');}
 function refreshLive(){let t=now();
