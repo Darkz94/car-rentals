@@ -4908,6 +4908,24 @@ body:has(#app .main-live-focus) .toast-stack .toast{width:auto!important;max-wid
  .fleet-shell-v3 .fleet-command-tab-label{font-size:11px}
 }
 </style>
+<style id="live-map-visual-pass-2026">
+/* Visual polish for the Cape Town map; keeps its layout and controls intact. */
+.map-frame-v10.night-city svg.map-svg-v10{filter:brightness(.78) saturate(1.04) hue-rotate(8deg)}
+.map-frame-v10.night-city:after{content:'✧  ·  ✦  ·  ✧';top:20px;color:#d3e5ff70;letter-spacing:36px;font-size:18px}
+.map-frame-v10.night-city .map-car-v10{filter:brightness(1.08) drop-shadow(0 2px 4px #06172bd9)}
+.map-frame-v10.night-city .map-node-v10{filter:brightness(1.14)}
+.map-frame-v10 .map-terrain-contours{opacity:.8}
+.map-frame-v10.night-city .map-terrain-contours{opacity:.58}
+.map-frame-v10 .map-node-v10 .map-pin-icon-v11 circle:nth-of-type(2){stroke:#e2d9b7;stroke-opacity:.78;stroke-width:1.5}
+.map-frame-v10.night-city .map-node-v10 .map-pin-icon-v11 circle:nth-of-type(2){stroke:#e8dfc4;stroke-opacity:.76}
+.map-frame-v10 .map-node-v10 text,.map-frame-v10 .map-car-label-v10{paint-order:stroke;stroke-linejoin:round;filter:drop-shadow(0 1px 2px #06172bbb)}
+.map-frame-v10 .map-road-casing.major{stroke:#3e574b;stroke-opacity:.82}
+.map-frame-v10 .map-road-casing.local{stroke:#506454;stroke-opacity:.68}
+.map-frame-v10 .map-road-shoulder.local{stroke:#d3d0ad;stroke-opacity:.78}
+.map-frame-v10 .map-road-surface.major{stroke:#c7bd96}
+.map-frame-v10 .map-road-surface.local{stroke:#abb696}
+.map-frame-v10.night-city .map-road-centre{stroke:#fff1c8;stroke-opacity:.64}
+</style>
 </head><body><div id="app"></div><div id="toasts" class="toast-stack" aria-live="polite"></div><div id="arcade-overlay" aria-hidden="true"></div><script>
 const CAR_IMAGES={hatch:'assets/lineup-hatch-side.webp',sedan:'assets/lineup-sedan-side.webp',coupe:'assets/lineup-coupe-side.webp',bakkie:'assets/lineup-bakkie-side.webp',jeep:'assets/lineup-jeep-side.webp',truck:'assets/lineup-truck-side.webp',tow:'assets/lineup-tow-side.webp',donk:'assets/lineup-donk-side.webp',limo:'assets/lineup-limo-side.webp',partybus:'assets/lineup-partybus-side.webp',bus:'assets/lineup-bus-side.webp',sport:'assets/lineup-sport-side.webp',super:'assets/lineup-super-side.webp',hyper:'assets/lineup-hyper-side.webp',muscle:'assets/lineup-muscle-side.webp',classic:'assets/lineup-classic-side.webp',van:'assets/lineup-van-side.webp',suv:'assets/realistic-suv-side.webp',convertible:'assets/realistic-convertible-side.webp',shuttle:'assets/realistic-shuttle-side.webp',camper:'assets/realistic-camper-side.webp',luxsuv:'assets/realistic-luxsuv-side.webp',safari:'assets/realistic-safari-side.webp',motorhome:'assets/realistic-motorhome-side.webp',rally:'assets/realistic-rally-side.webp',grandtourer:'assets/realistic-grandtourer-side.webp',armored:'assets/realistic-armored-side.webp'};
 
@@ -5452,8 +5470,13 @@ function mapRoadJourney(r){
 }
 function mapRoadPath(points){return points.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');}
 function mapRoadMarkup(){
- return MAP_ROAD_EDGES.map(edge=>{const d=mapRoadPath(mapRoadSmooth(edge.points)),width=edge.major?15:9;
-  return '<path d="'+d+'" fill="none" stroke="#435b50" stroke-opacity=".52" stroke-width="'+(width+4)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+(edge.major?'#e6d6ae':'#cfc29e')+'" stroke-opacity="'+(edge.major?'.94':'.78')+'" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'+(edge.major?'<path d="'+d+'" fill="none" stroke="#fff1cf" stroke-opacity=".42" stroke-width="1.4" stroke-dasharray="1 10" stroke-linecap="round"/>':'');
+ return MAP_ROAD_EDGES.map(edge=>{
+  const d=mapRoadPath(mapRoadSmooth(edge.points)),major=!!edge.major,width=major?14:8;
+  const casing=major?23:15,shoulder=major?18:11;
+  return '<path class="map-road-casing '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="#40574c" stroke-opacity=".78" stroke-width="'+casing+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+   '<path class="map-road-shoulder '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="'+(major?'#e8dfbd':'#d6d2b1')+'" stroke-opacity="'+(major?'.98':'.88')+'" stroke-width="'+shoulder+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+   '<path class="map-road-surface '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="'+(major?'#c5bc96':'#aeb697')+'" stroke-opacity=".98" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+   (major?'<path class="map-road-centre" d="'+d+'" fill="none" stroke="#fff4d6" stroke-opacity=".58" stroke-width="1.5" stroke-dasharray="9 13" stroke-linecap="round"/>':'');
  }).join('');
 }
 function routePosition(r,t=now()){
@@ -6228,11 +6251,19 @@ function renderMap(compact=false){
   const rightSpace=viewX+viewW-location.x,leftSpace=location.x-viewX;
   let labelX=16,labelAnchor='start';
   if(rightSpace<labelWidth+26&&leftSpace>labelWidth+26){labelX=-16;labelAnchor='end';}
+  if(id==='camps'){labelX=-16;labelAnchor='end';}
+  if(showName&&viewW>=labelWidth+16){
+   const labelLeft=labelAnchor==='start'?location.x+labelX:location.x+labelX-labelWidth;
+   const labelRight=labelLeft+labelWidth;
+   if(labelLeft<viewX+8||labelRight>viewX+viewW-8){
+    const center=clamp(location.x,viewX+labelWidth/2+8,viewX+viewW-labelWidth/2-8);
+    labelX=center-location.x;labelAnchor='middle';
+   }
+  }
   let labelY=-14;
   if(location.y-viewY<30)labelY=25;
   if(viewY+viewH-location.y<34)labelY=-23;
   if(id==='hq')labelY=-29;
-  if(id==='camps'){labelX=-16;labelAnchor='end';}
   return `<g class="map-node map-node-v10 ${selected?'selected':''}" data-action="mapfocus" data-id="${id}" tabindex="0" role="button" transform="translate(${location.x} ${location.y})"><g class="map-pin-icon-v11" transform="scale(1 ${pinScale.toFixed(3)})"><circle r="23" fill="transparent" stroke="none"/><circle r="12" fill="${owned(id)?'#36deac':'#ffc96c'}" fill-opacity=".26" stroke="#a3dff8" stroke-width="1.8"/><circle r="${id==='hq'?8:6}" fill="${id==='hq'||owned(id)?'#74e2b9':'#ffce8b'}"/>${showName?`<text x="${labelX}" y="${labelY}" text-anchor="${labelAnchor}">${esc(location.name)}</text>`:''}</g><title>${esc(location.name)}</title></g>`;
  }).join('');
  return `<div class="map-frame map-frame-v10 ${compact?'compact':''} ${effectiveMapNight()?'night-city':'day-city'}"><svg class="map-svg map-svg-v10" viewBox="${mapViewBox()}" preserveAspectRatio="${compact?'xMidYMid meet':mapPortraitLive()?'none':'xMidYMid slice'}" role="img" aria-label="Illustrated operational map showing live Cape Town rental routes and vehicle positions"><defs><linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6fabb7"/><stop offset=".55" stop-color="#4b8794"/><stop offset="1" stop-color="#326879"/></linearGradient><linearGradient id="mGround" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a8ad7d"/><stop offset=".38" stop-color="#87966d"/><stop offset=".72" stop-color="#718668"/><stop offset="1" stop-color="#567565"/></linearGradient><linearGradient id="mCape" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#84917d"/><stop offset="1" stop-color="#596e65"/></linearGradient><pattern id="street" width="32" height="29" patternUnits="userSpaceOnUse"><path d="M0 0H32M0 0V29" stroke="#efe6c7" stroke-opacity=".11" stroke-width="1.5"/></pattern><filter id="mGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
@@ -6240,6 +6271,16 @@ function renderMap(compact=false){
  <path d="M193 95C197 134 230 157 228 193C228 222 208 251 184 278C154 311 125 344 111 379C125 413 137 442 151 470" fill="none" stroke="#d8e5cf" stroke-width="3" opacity=".62"/><path d="M200 100C204 137 236 160 234 195C234 225 214 254 190 281C160 313 131 346 117 379C131 414 143 443 157 469" fill="none" stroke="#f1e9cc" stroke-width="7" opacity=".24"/>
  <path d="M178 184Q211 203 244 219M159 281Q202 294 231 322M138 356Q177 367 211 395M151 449Q196 449 233 472" fill="none" stroke="#d8e5cf" stroke-width="2" opacity=".35"/>
  <g aria-hidden="true" pointer-events="none">
+  <g class="map-terrain-contours" fill="none" stroke="#eee5c5" stroke-width="1.8" stroke-linecap="round" stroke-opacity=".18">
+   <path d="M430 231C494 208 548 213 602 234S713 263 783 236S885 209 964 229"/>
+   <path d="M436 245C500 222 551 227 607 248S715 276 786 250S888 223 967 243"/>
+   <path d="M452 259C512 237 560 242 615 263S719 289 790 265S892 239 969 257"/>
+   <path d="M489 436C548 414 594 420 642 441S744 464 803 441S885 427 957 449"/>
+   <path d="M493 451C551 431 597 436 646 456S745 480 806 457S887 443 959 464"/>
+   <path d="M500 466C556 447 602 452 651 471S748 495 809 473S890 459 961 480"/>
+   <path d="M116 489C147 463 177 458 205 475S253 510 289 507"/>
+   <path d="M119 503C151 478 179 474 207 490S255 524 292 521"/>
+  </g>
   <path d="M178 383L201 349L220 361L243 324L258 337L279 301L297 311L316 302L335 314L353 338L373 329L391 351L405 382L379 394L346 388L319 403L286 394L252 405L220 393Z" fill="url(#mCape)" stroke="#b9bd9c" stroke-opacity=".52" stroke-width="2"/><path d="M268 309L279 301L297 311L316 302L335 314L351 337L326 334L308 330L289 333L269 328L248 335Z" fill="#b4b19a" opacity=".55"/><path d="M193 336L210 313L224 324L238 305L253 320L241 342L222 351Z" fill="#758574" opacity=".9"/>
   <path d="M188 111L202 95L215 110L228 105L241 121L235 145L217 151L203 137Z" fill="#748b72" opacity=".8"/><path d="M700 137Q736 103 771 130Q801 113 830 145Q860 133 884 164Q847 181 808 169Q770 183 733 165Z" fill="#9a9b70" opacity=".38"/><path d="M731 450Q762 421 794 441Q826 420 851 450Q878 438 900 465Q864 482 831 471Q786 493 751 474Z" fill="#9ca078" opacity=".34"/>
   <g aria-hidden="true" fill="none" stroke="#d6c49b" stroke-width="2.2" opacity=".24" pointer-events="none"><path d="M695 147Q748 138 812 153M690 158Q749 149 816 164M686 169Q748 160 821 175M683 180Q749 171 826 186M679 191Q750 182 832 197M676 202Q751 193 838 208"/></g>
