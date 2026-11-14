@@ -5067,7 +5067,7 @@ function editionOf(id){return COLLECTOR_EDITIONS.find(x=>x.id===id)||null;}
 function vehicleName(car){return editionOf(car?.editionId)?.name||typeOf(car?.type).name;}
 function vehicleSideArt(car){return editionOf(car?.editionId)?.side||CAR_IMAGES[car?.type]||CAR_IMAGES.hatch;}
 function vehicleRoofArt(car){return editionOf(car?.editionId)?.top||MAP_CAR_IMAGES[car?.type]||MAP_CAR_IMAGES.hatch;}
-const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521},blouberg:{name:'Bloubergstrand',x:275,y:72},muizenberg:{name:'Muizenberg',x:418,y:448},paarl:{name:'Paarl',x:784,y:97},somersetwest:{name:'Somerset West',x:617,y:379},malmesbury:{name:'Malmesbury',x:390,y:100},langebaan:{name:'Langebaan',x:300,y:20},ceres:{name:'Ceres',x:700,y:25},worcester:{name:'Worcester',x:960,y:160},swellendam:{name:'Swellendam',x:980,y:310},mosselbay:{name:'Mossel Bay',x:950,y:500},george:{name:'George',x:940,y:610},oudtshoorn:{name:'Oudtshoorn',x:850,y:600},knysna:{name:'Knysna',x:870,y:720}};
+const DEST={hq:{name:'Cape Town HQ',x:235,y:795},waterfront:{name:'V&A Waterfront',x:218,y:770},camps:{name:'Camps Bay',x:188,y:835},table:{name:'Table Mountain',x:305,y:790},chapman:{name:'Chapman’s Peak',x:175,y:1010},airport:{name:'Cape Town Airport',x:280,y:860},stellenbosch:{name:'Stellenbosch',x:385,y:735},franschhoek:{name:'Franschhoek',x:500,y:660},hermanus:{name:'Hermanus',x:500,y:1000},blouberg:{name:'Bloubergstrand',x:198,y:715},muizenberg:{name:'Muizenberg',x:315,y:910},paarl:{name:'Paarl',x:460,y:610},somersetwest:{name:'Somerset West',x:395,y:875},malmesbury:{name:'Malmesbury',x:285,y:500},langebaan:{name:'Langebaan',x:125,y:430},ceres:{name:'Ceres',x:620,y:370},worcester:{name:'Worcester',x:620,y:600},swellendam:{name:'Swellendam',x:790,y:680},mosselbay:{name:'Mossel Bay',x:875,y:820},george:{name:'George',x:860,y:920},oudtshoorn:{name:'Oudtshoorn',x:755,y:850},knysna:{name:'Knysna',x:850,y:980}};
 
 /* Approximate road kilometres one way; rental odometers count branch-to-destination-to-branch. */
 const ROUTE_DISTANCE_KM={
@@ -5415,39 +5415,38 @@ function newOffer(contract=null,forcedId=null){
 }
 function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
 const MAP_ROAD_EDGES=[
- ['blouberg','waterfront',[[275,72],[249,83],[226,95],[206,110]],true],
- ['waterfront','hq',[[206,110],[222,143],[236,184],[242,234]],true],
- ['hq','n1mid',[[242,234],[286,219],[330,201],[372,187]],true],
- ['n1mid','n1east',[[372,187],[424,173],[470,162],[520,156]],true],
- ['n1east','paarl',[[520,156],[575,143],[630,121],[690,108],[784,97]],true],
- ['hq','westjunction',[[242,234],[224,268],[207,305],[206,338]],true],
- ['westjunction','camps',[[206,338],[183,350],[151,369],[132,379]],true],
- ['camps','southjunction',[[132,379],[169,403],[208,433],[243,455]],true],
- ['southjunction','chapman',[[243,455],[270,473],[294,498],[311,519]],true],
- ['chapman','muizenberg',[[311,519],[348,499],[382,470],[418,448]],false],
- ['hq','table',[[242,234],[260,269],[282,307],[298,347]],true],
- ['table','muizenberg',[[298,347],[325,386],[366,421],[418,448]],true],
- ['hq','airportjunction',[[242,234],[290,242],[340,252],[389,258]],true],
- ['airportjunction','airport',[[389,258],[439,267],[490,276],[540,279]],true],
- ['airport','stellenbosch',[[540,279],[589,291],[639,273],[690,231],[743,198]],true],
- ['stellenbosch','franschhoek',[[743,198],[779,222],[813,267],[840,320]],false],
- ['stellenbosch','n1east',[[743,198],[699,181],[658,157],[615,147],[566,153],[520,156]],false],
- ['airport','somersetwest',[[540,279],[576,307],[599,344],[617,379]],true],
- ['somersetwest','hermanus',[[617,379],[654,414],[697,466],[752,521]],true],
- ['muizenberg','somersetwest',[[418,448],[450,427],[489,410],[533,399],[574,392],[617,379]],true],
- ['blouberg','malmesbury',[[275,72],[304,77],[333,84],[361,93],[390,100]],true],
- ['malmesbury','langebaan',[[390,100],[365,82],[342,61],[319,40],[300,20]],true],
- ['malmesbury','paarl',[[390,100],[480,96],[575,94],[675,95],[784,97]],true],
- ['paarl','ceres',[[784,97],[760,75],[739,54],[718,37],[700,25]],false],
- ['paarl','worcester',[[784,97],[830,104],[875,119],[918,140],[960,160]],true],
- ['ceres','worcester',[[700,25],[760,48],[812,77],[869,113],[960,160]],false],
- ['worcester','swellendam',[[960,160],[970,194],[976,232],[980,270],[980,310]],true],
- ['swellendam','mosselbay',[[980,310],[973,352],[965,399],[957,450],[950,500]],true],
- ['mosselbay','george',[[950,500],[949,536],[946,572],[940,610]],true],
- ['george','knysna',[[940,610],[924,638],[905,675],[887,703],[870,720]],true],
- ['george','oudtshoorn',[[940,610],[910,602],[880,601],[850,600]],false]
+ ['blouberg','waterfront',[[198,715],[205,735],[211,752],[218,770]],true],
+ ['waterfront','hq',[[218,770],[222,778],[228,787],[235,795]],true],
+ ['hq','n1mid',[[235,795],[275,775],[315,750],[350,720]],true],
+ ['n1mid','n1east',[[350,720],[375,690],[405,650],[430,620]],true],
+ ['n1east','paarl',[[430,620],[440,615],[450,612],[460,610]],true],
+ ['hq','westjunction',[[235,795],[225,820],[205,846],[195,870]],true],
+ ['westjunction','camps',[[195,870],[193,858],[190,846],[188,835]],true],
+ ['camps','southjunction',[[188,835],[185,865],[180,910],[178,955]],true],
+ ['southjunction','chapman',[[178,955],[175,972],[174,991],[175,1010]],true],
+ ['chapman','muizenberg',[[175,1010],[210,985],[250,950],[315,910]],false],
+ ['hq','table',[[235,795],[258,792],[282,790],[305,790]],true],
+ ['table','muizenberg',[[305,790],[308,828],[310,865],[315,910]],true],
+ ['hq','airportjunction',[[235,795],[245,810],[252,827],[260,840]],true],
+ ['airportjunction','airport',[[260,840],[267,847],[273,854],[280,860]],true],
+ ['airport','stellenbosch',[[280,860],[315,830],[350,785],[385,735]],true],
+ ['stellenbosch','franschhoek',[[385,735],[420,710],[462,680],[500,660]],false],
+ ['stellenbosch','n1east',[[385,735],[400,700],[412,660],[430,620]],false],
+ ['airport','somersetwest',[[280,860],[315,870],[355,875],[395,875]],true],
+ ['somersetwest','hermanus',[[395,875],[430,910],[465,955],[500,1000]],true],
+ ['blouberg','malmesbury',[[198,715],[220,655],[245,590],[285,500]],true],
+ ['malmesbury','langebaan',[[285,500],[250,475],[200,450],[125,430]],true],
+ ['malmesbury','paarl',[[285,500],[330,525],[385,570],[460,610]],true],
+ ['paarl','ceres',[[460,610],[500,550],[545,475],[585,415],[620,370]],false],
+ ['paarl','worcester',[[460,610],[510,606],[565,602],[620,600]],true],
+ ['ceres','worcester',[[620,370],[625,425],[625,505],[620,600]],false],
+ ['worcester','swellendam',[[620,600],[675,615],[730,647],[790,680]],true],
+ ['swellendam','mosselbay',[[790,680],[825,720],[850,770],[875,820]],true],
+ ['mosselbay','george',[[875,820],[870,852],[865,887],[860,920]],true],
+ ['george','knysna',[[860,920],[858,940],[855,960],[850,980]],true],
+ ['george','oudtshoorn',[[860,920],[825,892],[790,868],[755,850]],false]
 ].map(([from,to,points,major])=>({from,to,points:points.map(([x,y])=>({x,y})),major:!!major}));
-const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:372,y:187},n1east:{x:520,y:156},westjunction:{x:206,y:338},southjunction:{x:243,y:455},airportjunction:{x:389,y:258}};
+const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:350,y:720},n1east:{x:430,y:620},westjunction:{x:195,y:870},southjunction:{x:178,y:955},airportjunction:{x:260,y:840}};
 const mapRoadCache=new Map();
 function mapRoadSmooth(points,steps=10){
  if(points.length<2)return points.slice();
@@ -6211,7 +6210,7 @@ function renderLog(limit=20){return `<div class="log-list">${state.log.slice(0,l
 function mapPortraitLive(){return typeof window!=='undefined'&&typeof activePage!=='undefined'&&activePage==='map'&&window.innerWidth<=760;}
 function mapMarkerYScale(){
  if(!mapPortraitLive())return 1;
- const h=620/mapZoom,aspect=Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115),w=Math.min(1000,h*aspect*2.3);
+ const h=Math.min(1500,750/mapZoom),aspect=Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115),w=Math.min(1000,h*aspect*2.3);
  return clamp(aspect*h/w,.35,1);
 }
 function mapHeadingDegrees(r,t=now(),car=null){
@@ -6233,15 +6232,15 @@ function mapCarPose(r,t=now(),type=''){
  return `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)})`;
 }
 function mapViewBox(){
- const h=Math.min(850,620/mapZoom),portrait=mapPortraitLive();
- const aspect=portrait?Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115):1000/620;
- // Keep the current phone framing while letting overview zoom show the full map canvas.
+ const h=Math.min(1500,750/mapZoom),portrait=mapPortraitLive();
+ const aspect=portrait?Math.max(240,window.innerWidth-12)/Math.max(440,window.innerHeight-115):1000/1500;
+ // Preserve the expanded terrain map proportions at full-region zoom.
  const w=portrait?Math.min(1000,h*aspect*2.3):Math.min(1000,1000/mapZoom);
  const r=state.rentals.find(x=>x.id===selectedRental);
  const overview=portrait&&!r&&mapFocus==='hq'&&mapZoom<=1.01;
- const p=r?routePosition(r):overview?{x:500,y:310}:DEST[mapFocus]||{x:500,y:310};
+ const p=r?routePosition(r):overview?{x:500,y:750}:DEST[mapFocus]||{x:500,y:750};
  const panX=typeof mapPanX==='number'?mapPanX:0,panY=typeof mapPanY==='number'?mapPanY:0;
- return [clamp(p.x+panX-w/2,0,1000-w),clamp(p.y+panY-h/2,0,850-h),w,h].map(n=>n.toFixed(2)).join(' ');
+ return [clamp(p.x+panX-w/2,0,1000-w),clamp(p.y+panY-h/2,0,1500-h),w,h].map(n=>n.toFixed(2)).join(' ');
 }
 function renderMap(compact=false){
  let tripPaths=[],cars=[];
@@ -6293,12 +6292,12 @@ function renderMap(compact=false){
   return `<g class="map-node map-node-v10 ${selected?'selected':''}" data-action="mapfocus" data-id="${id}" tabindex="0" role="button" transform="translate(${location.x} ${location.y})"><g class="map-pin-icon-v11" transform="scale(1 ${pinScale.toFixed(3)})"><circle r="23" fill="transparent" stroke="none"/><circle r="15" fill="${owned(id)?'#36deac':'#ffc96c'}" fill-opacity=".24" stroke="#f7ebc2" stroke-width="2.1"/><circle r="${id==='hq'?9:7}" fill="${id==='hq'||owned(id)?'#74e2b9':'#ffd06b'}" style="filter:drop-shadow(0 0 5px ${owned(id)?'#5be8b4':'#ffd46b'})"/>${showName?`<text x="${labelX}" y="${labelY}" text-anchor="${labelAnchor}">${esc(location.name)}</text>`:''}</g><title>${esc(location.name)}</title></g>`;
  }).join('');
  return `<div class="map-frame map-frame-v10 ${compact?'compact':''} ${effectiveMapNight()?'night-city':'day-city'}"><svg class="map-svg map-svg-v10" viewBox="${mapViewBox()}" preserveAspectRatio="${compact?'xMidYMid meet':mapPortraitLive()?'none':'xMidYMid slice'}" role="img" aria-label="Illustrated operational map showing live Cape Town rental routes and vehicle positions"><defs><linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4b829d"/><stop offset=".52" stop-color="#376f8b"/><stop offset="1" stop-color="#285a76"/></linearGradient><linearGradient id="mGround" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8b8e63"/><stop offset=".34" stop-color="#77805a"/><stop offset=".68" stop-color="#657653"/><stop offset="1" stop-color="#52694f"/></linearGradient><linearGradient id="mCape" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#84917d"/><stop offset="1" stop-color="#596e65"/></linearGradient><linearGradient id="mReliefLight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d6d0a0" stop-opacity=".24"/><stop offset=".5" stop-color="#b5bc8a" stop-opacity=".08"/><stop offset="1" stop-color="#263d32" stop-opacity=".2"/></linearGradient><linearGradient id="mReliefShadow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263b30" stop-opacity=".27"/><stop offset=".55" stop-color="#354935" stop-opacity=".08"/><stop offset="1" stop-color="#d4ce9d" stop-opacity=".16"/></linearGradient><pattern id="mTerrainTexture" width="48" height="46" patternUnits="userSpaceOnUse"><g fill="#263b30"><circle cx="6" cy="8" r="1.4" opacity=".52"/><circle cx="18" cy="5" r=".9" opacity=".35"/><circle cx="37" cy="12" r="1.2" opacity=".45"/><circle cx="26" cy="20" r="1.6" opacity=".42"/><circle cx="9" cy="31" r="1.1" opacity=".4"/><circle cx="41" cy="36" r="1.5" opacity=".48"/><circle cx="31" cy="43" r=".9" opacity=".34"/></g><path d="M1 19l5-3m22 10 4-3m-20 14 3-2m17-25 4-2" fill="none" stroke="#c9c693" stroke-opacity=".25" stroke-width="1"/></pattern><clipPath id="mLandClip"><path d="M207 0H1000V850H685V620C658 607 632 586 608 560C581 531 552 503 523 481C495 458 467 439 442 428C414 416 390 416 369 429C348 443 333 468 318 496C302 525 286 554 265 567C244 580 221 571 201 551C177 527 159 494 143 462C128 432 117 405 111 379C122 351 145 329 169 307C194 284 218 259 231 234C240 211 231 185 216 159C201 132 190 109 190 84C190 51 197 23 207 0Z"/></clipPath><pattern id="street" width="32" height="29" patternUnits="userSpaceOnUse"><path d="M0 0H32M0 0V29" stroke="#efe6c7" stroke-opacity=".11" stroke-width="1.5"/></pattern><filter id="mGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
- <image class="map-real-background" href="assets/cape-town-topographic.webp" x="0" y="0" width="1000" height="760" preserveAspectRatio="none"/>
+ <image class="map-real-background" href="assets/western-cape-regional-terrain.webp" x="0" y="0" width="1000" height="1500" preserveAspectRatio="none"/>
   <g aria-hidden="true">${mapRoadMarkup()}</g>
-  <g font-family="Arial,sans-serif" font-weight="900" font-size="10" letter-spacing=".5" text-anchor="middle" fill="#fff1cb" stroke="#294957" stroke-width="2.5" paint-order="stroke" opacity="${!compact&&mapZoom>=1.1?.78:0}" pointer-events="none"><g transform="translate(586 141) rotate(-18)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N1</text></g><g transform="translate(510 273) rotate(8)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(345 395) rotate(32)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">M3</text></g></g>
-  <g class="map-geography-labels" font-family="Arial,sans-serif" font-weight="900" letter-spacing="1.2" fill="#f4f0dd" stroke="#344b4b" stroke-width="3" paint-order="stroke" opacity=".84"><text x="28" y="205" font-size="13">TABLE BAY</text><text x="582" y="592" font-size="15">FALSE BAY</text><text x="754" y="56" font-size="14">WINELANDS</text><text x="754" y="74" font-size="10" letter-spacing=".7">STELLENBOSCH</text><text x="165" y="545" font-size="13">CAPE PENINSULA</text><text x="220" y="612" font-size="11" letter-spacing=".6">CAPE POINT</text></g>
-  <g class="map-place-labels" font-family="Arial,sans-serif" font-weight="800" fill="#e9f3ed" stroke="#263e43" stroke-width="2.5" paint-order="stroke" opacity=".82"><text x="184" y="143" font-size="9" text-anchor="middle">ROBBEN ISLAND</text></g>
- ${tripPaths.join('')}${nodes}${cars.join('')}</svg>${compact?'':`<div class="map-control map-control-v10"><button type="button" data-action="zoomplus" aria-label="Zoom in">+</button><button type="button" data-action="zoomminus" aria-label="Zoom out">−</button><button type="button" data-action="mapreset" aria-label="Reset zoom and map focus">⌖</button></div>`}<div class="map-overlay map-overlay-v10"><span class="pill green">● ${state.rentals.length} LIVE RENTALS</span>${state.fleet.some(c=>c.status==='transfer')?'<span class="pill blue">● VEHICLE TRANSFER</span>':''}</div><div class="map-legend map-legend-v10"><span>🟢 Owned branches</span><span>🟠 Destinations</span><span>🚗 Actual rentals</span></div></div>`;
+  <g font-family="Arial,sans-serif" font-weight="900" font-size="10" letter-spacing=".5" text-anchor="middle" fill="#fff1cb" stroke="#294957" stroke-width="2.5" paint-order="stroke" opacity="${!compact&&mapZoom>=1.1?.78:0}" pointer-events="none"><g transform="translate(535 602) rotate(-4)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N1</text></g><g transform="translate(820 710) rotate(28)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(260 875) rotate(24)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">M3</text></g></g>
+  <g class="map-geography-labels" font-family="Arial,sans-serif" font-weight="900" letter-spacing="1.2" fill="#f4f0dd" stroke="#344b4b" stroke-width="3" paint-order="stroke" opacity=".84"><text x="70" y="760" font-size="13">TABLE BAY</text><text x="430" y="1085" font-size="15">FALSE BAY</text><text x="535" y="535" font-size="14">WINELANDS</text><text x="375" y="713" font-size="10" letter-spacing=".7">STELLENBOSCH</text><text x="120" y="1120" font-size="13">CAPE PENINSULA</text><text x="138" y="1260" font-size="11" letter-spacing=".6">CAPE POINT</text></g>
+  <g class="map-place-labels" font-family="Arial,sans-serif" font-weight="800" fill="#e9f3ed" stroke="#263e43" stroke-width="2.5" paint-order="stroke" opacity=".82"><text x="170" y="680" font-size="9" text-anchor="middle">ROBBEN ISLAND</text></g>
+  ${tripPaths.join('')}${nodes}${cars.join('')}</svg>${compact?'':`<div class="map-control map-control-v10"><button type="button" data-action="zoomplus" aria-label="Zoom in">+</button><button type="button" data-action="zoomminus" aria-label="Zoom out">−</button><button type="button" data-action="mapreset" aria-label="Reset zoom and map focus">⌖</button></div>`}<div class="map-overlay map-overlay-v10"><span class="pill green">● ${state.rentals.length} LIVE RENTALS</span>${state.fleet.some(c=>c.status==='transfer')?'<span class="pill blue">● VEHICLE TRANSFER</span>':''}</div><div class="map-legend map-legend-v10"><span>🟢 Owned branches</span><span>🟠 Destinations</span><span>🚗 Actual rentals</span></div></div>`;
 }
 function renderFleet(){
  const unlocked=TYPES.filter(t=>t.unlock<=state.rep).length;
@@ -7231,8 +7230,8 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='garageprev'||action==='garagenext'){let ordered=fleetInGarageOrder(state.fleet);if(!ordered.length)return;let i=ordered.findIndex(x=>x.id===selectedCar);if(i<0)i=0;let delta=action==='garageprev'?-1:1;selectedCar=ordered[(i+delta+ordered.length)%ordered.length].id;render();document.getElementById('garage-inspection-anchor')?.scrollIntoView({block:'start'});return;}
  if(action==='mapfocus'){if(!DEST[id])return;mapFocus=id;selectedRental=null;mapPanX=0;mapPanY=0;mapZoom=Math.max(1.6,mapZoom);notify(`${DEST[id].name} selected on map.`);render();return;}
  if(action==='mapreset'){selectedRental=null;mapFocus='hq';mapPanX=0;mapPanY=0;mapZoom=1;render();return;}
- if(action==='zoomplus'){mapZoom=clamp(mapZoom+.25,.70,2.25);render();return;}
- if(action==='zoomminus'){mapZoom=clamp(mapZoom-.25,.70,2.25);render();return;}
+ if(action==='zoomplus'){mapZoom=clamp(mapZoom+.25,.50,2.25);render();return;}
+ if(action==='zoomminus'){mapZoom=clamp(mapZoom-.25,.50,2.25);render();return;}
  if(action==='rentalfocus'){if(!state.rentals.some(r=>r.id===id))return;selectedRental=id;mapPanX=0;mapPanY=0;mapZoom=Math.max(1.6,mapZoom);notify('Rental selected on the live map.');render();return;}
  if(action==='rent'){const chosen=document.getElementById('rental-offer-car-'+id)?.value||null;startRental(id,chosen);afterAction();return;}
  if(action==='jumpmissions'){activePage='events';activeSub.events='challenges';render();return;}
@@ -7313,7 +7312,7 @@ document.getElementById('app').addEventListener('pointermove',e=>{
  const tracked=state.rentals.find(x=>x.id===selectedRental);
  const overview=!tracked&&mapFocus==='hq'&&mapZoom<=1.01;const center=tracked?routePosition(tracked):overview?{x:500,y:310}:(DEST[mapFocus]||DEST.hq);
  const minPanX=d.viewWidth/2-center.x,maxPanX=1000-d.viewWidth/2-center.x;
- const minPanY=d.viewHeight/2-center.y,maxPanY=850-d.viewHeight/2-center.y;
+ const minPanY=d.viewHeight/2-center.y,maxPanY=1500-d.viewHeight/2-center.y;
  mapPanX=clamp(d.initialPanX-dx*d.viewWidth/d.width,minPanX,maxPanX);
  mapPanY=clamp(d.initialPanY-dy*d.viewHeight/d.height,minPanY,maxPanY);
  d.svg.setAttribute('viewBox',mapViewBox());
