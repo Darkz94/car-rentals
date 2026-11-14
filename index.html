@@ -5076,7 +5076,10 @@ const ROUTE_DISTANCE_KM={
  franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93,blouberg:83,muizenberg:75,paarl:29,somersetwest:47,malmesbury:125,langebaan:210,ceres:220,worcester:140,swellendam:245,mosselbay:410,george:455,oudtshoorn:450,knysna:525}
 };
 function rentalRoundTripKm(from,dest){
- const oneWay=ROUTE_DISTANCE_KM[from]?.[dest];
+ const journey=mapRoadJourney({from,dest});
+ const graphKm=journey.distanceKm;
+ const fallback=ROUTE_DISTANCE_KM[from]?.[dest];
+ const oneWay=Number.isFinite(graphKm)&&graphKm>0?graphKm:fallback;
  return Number.isFinite(oneWay)&&oneWay>0?round(2*oneWay):null;
 }
 const OVERHAUL_INTERVAL_KM=400000;
@@ -5415,38 +5418,45 @@ function newOffer(contract=null,forcedId=null){
 }
 function initialize(){advancePlayerAuctions(now());dailyRecord();if(!state.offers.length){newOffer(null,'backpacker-leo');newOffer(null,'family-jacobs');newOffer(null,'contractor-dave');note('Welcome to Cape Town Rentals. Your fleet is ready to earn!');}if(!state.auction)makeAuction();restoreFinished();save(true);}
 const MAP_ROAD_EDGES=[
- ['blouberg','waterfront',[[198,715],[205,735],[211,752],[218,770]],true],
- ['waterfront','hq',[[218,770],[222,778],[228,787],[235,795]],true],
- ['hq','n1mid',[[235,795],[275,775],[315,750],[350,720]],true],
- ['n1mid','n1east',[[350,720],[375,690],[405,650],[430,620]],true],
- ['n1east','paarl',[[430,620],[440,615],[450,612],[460,610]],true],
- ['hq','westjunction',[[235,795],[225,820],[205,846],[195,870]],true],
- ['westjunction','camps',[[195,870],[193,858],[190,846],[188,835]],true],
- ['camps','southjunction',[[188,835],[185,865],[180,910],[178,955]],true],
- ['southjunction','chapman',[[178,955],[175,972],[174,991],[175,1010]],true],
- ['chapman','muizenberg',[[175,1010],[210,985],[250,950],[315,910]],false],
- ['hq','table',[[235,795],[258,792],[282,790],[305,790]],true],
- ['table','muizenberg',[[305,790],[308,828],[310,865],[315,910]],true],
- ['hq','airportjunction',[[235,795],[245,810],[252,827],[260,840]],true],
- ['airportjunction','airport',[[260,840],[267,847],[273,854],[280,860]],true],
- ['airport','stellenbosch',[[280,860],[315,830],[350,785],[385,735]],true],
- ['stellenbosch','franschhoek',[[385,735],[420,710],[462,680],[500,660]],false],
- ['stellenbosch','n1east',[[385,735],[400,700],[412,660],[430,620]],false],
- ['airport','somersetwest',[[280,860],[315,870],[355,875],[395,875]],true],
- ['somersetwest','hermanus',[[395,875],[430,910],[465,955],[500,1000]],true],
- ['blouberg','malmesbury',[[198,715],[220,655],[245,590],[285,500]],true],
- ['malmesbury','langebaan',[[285,500],[250,475],[200,450],[125,430]],true],
- ['malmesbury','paarl',[[285,500],[330,525],[385,570],[460,610]],true],
- ['paarl','ceres',[[460,610],[500,550],[545,475],[585,415],[620,370]],false],
- ['paarl','worcester',[[460,610],[510,606],[565,602],[620,600]],true],
- ['ceres','worcester',[[620,370],[625,425],[625,505],[620,600]],false],
- ['worcester','swellendam',[[620,600],[675,615],[730,647],[790,680]],true],
- ['swellendam','mosselbay',[[790,680],[825,720],[850,770],[875,820]],true],
- ['mosselbay','george',[[875,820],[870,852],[865,887],[860,920]],true],
- ['george','knysna',[[860,920],[858,940],[855,960],[850,980]],true],
- ['george','oudtshoorn',[[860,920],[825,892],[790,868],[755,850]],false]
-].map(([from,to,points,major])=>({from,to,points:points.map(([x,y])=>({x,y})),major:!!major}));
-const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:350,y:720},n1east:{x:430,y:620},westjunction:{x:195,y:870},southjunction:{x:178,y:955},airportjunction:{x:260,y:840}};
+ ['blouberg','waterfront',[[198,715],[205,735],[211,752],[218,770]],true,20],
+ ['waterfront','hq',[[218,770],[222,778],[228,787],[235,795]],true,3],
+ ['hq','n1mid',[[235,795],[275,775],[315,750],[350,720]],true,28],
+ ['n1mid','n1east',[[350,720],[375,690],[405,650],[430,620]],true,34],
+ ['n1east','paarl',[[430,620],[440,615],[450,612],[460,610]],true,8],
+ ['hq','westjunction',[[235,795],[225,820],[205,846],[195,870]],true,5],
+ ['westjunction','camps',[[195,870],[193,858],[190,846],[188,835]],true,6],
+ ['camps','southjunction',[[188,835],[185,865],[180,910],[178,955]],true,19],
+ ['southjunction','chapman',[[178,955],[175,972],[174,991],[175,1010]],true,15],
+ ['chapman','muizenberg',[[175,1010],[210,985],[250,950],[315,910]],false,42],
+ ['hq','table',[[235,795],[258,792],[282,790],[305,790]],true,5],
+ ['table','muizenberg',[[305,790],[308,828],[310,865],[315,910]],true,18],
+ ['hq','airportjunction',[[235,795],[245,810],[252,827],[260,840]],true,16],
+ ['airportjunction','airport',[[260,840],[267,847],[273,854],[280,860]],true,4],
+ ['airport','stellenbosch',[[280,860],[315,830],[350,785],[385,735]],true,30],
+ ['stellenbosch','franschhoek',[[385,735],[420,710],[462,680],[500,660]],false,25],
+ ['stellenbosch','n1east',[[385,735],[400,700],[412,660],[430,620]],false,31],
+ ['airport','somersetwest',[[280,860],[315,870],[355,875],[395,875]],true,27],
+ ['stellenbosch','somersetwest',[[385,735],[395,770],[398,820],[395,875]],false,25],
+ ['stellenbosch','paarl',[[385,735],[408,700],[435,655],[460,610]],false,28],
+ ['franschhoek','paarl',[[500,660],[488,646],[475,628],[460,610]],false,30],
+ ['somersetwest','hermanus',[[395,875],[430,910],[465,955],[500,1000]],true,75],
+ ['somersetwest','caledon',[[395,875],[450,852],[510,826],[580,800]],true,70],
+ ['hermanus','caledon',[[500,1000],[525,946],[548,875],[580,800]],false,40],
+ ['caledon','swellendam',[[580,800],[650,765],[720,720],[790,680]],true,110],
+ ['blouberg','malmesbury',[[198,715],[220,655],[245,590],[285,500]],true,55],
+ ['malmesbury','langebaan',[[285,500],[250,475],[200,450],[125,430]],true,60],
+ ['malmesbury','paarl',[[285,500],[330,525],[385,570],[460,610]],true,70],
+ ['paarl','ceres',[[460,610],[500,550],[545,475],[585,415],[620,370]],false,90],
+ ['paarl','worcester',[[460,610],[510,606],[565,602],[620,600]],true,50],
+ ['ceres','worcester',[[620,370],[625,425],[625,505],[620,600]],false,90],
+ ['worcester','swellendam',[[620,600],[675,615],[730,647],[790,680]],true,165],
+ ['worcester','oudtshoorn',[[620,600],[660,660],[705,738],[755,850]],false,290],
+ ['swellendam','mosselbay',[[790,680],[825,720],[850,770],[875,820]],true,170],
+ ['mosselbay','george',[[875,820],[870,852],[865,887],[860,920]],true,40],
+ ['george','knysna',[[860,920],[858,940],[855,960],[850,980]],true,60],
+ ['george','oudtshoorn',[[860,920],[825,892],[790,868],[755,850]],false,60]
+].map(([from,to,points,major,km])=>({from,to,points:points.map(([x,y])=>({x,y})),major:!!major,km}));
+const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:350,y:720},n1east:{x:430,y:620},westjunction:{x:195,y:870},southjunction:{x:178,y:955},airportjunction:{x:260,y:840},caledon:{x:580,y:800}};
 const mapRoadCache=new Map();
 function mapRoadSmooth(points,steps=10){
  if(points.length<2)return points.slice();
@@ -5460,18 +5470,18 @@ function mapRoadSmooth(points,steps=10){
  }
  out.push({...points[points.length-1]});return out;
 }
-function mapRoadMeasure(points){
+function mapRoadMeasure(points,distanceKm=0){
  let total=0;const cumulative=[0];
  for(let i=1;i<points.length;i++){total+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);cumulative.push(total);}
- return {points,cumulative,total};
+ return {points,cumulative,total,distanceKm};
 }
 function mapRoadJourney(r){
  const from=MAP_ROAD_NODES[r.from]?r.from:'hq',to=MAP_ROAD_NODES[r.dest]?r.dest:'airport',key=from+'>'+to;
  if(mapRoadCache.has(key))return mapRoadCache.get(key);
- if(from===to){const p=MAP_ROAD_NODES[from];return mapRoadMeasure([{...p},{...p}]);}
+ if(from===to){const p=MAP_ROAD_NODES[from];return mapRoadMeasure([{...p},{...p}],0);}
  const adjacency={};for(const id of Object.keys(MAP_ROAD_NODES))adjacency[id]=[];
  for(let i=0;i<MAP_ROAD_EDGES.length;i++){
-  const edge=MAP_ROAD_EDGES[i],sampled=mapRoadSmooth(edge.points),length=mapRoadMeasure(sampled).total;
+  const edge=MAP_ROAD_EDGES[i],sampled=mapRoadSmooth(edge.points),length=Number(edge.km)||mapRoadMeasure(sampled).total;
   adjacency[edge.from].push({to:edge.to,index:i,length});adjacency[edge.to].push({to:edge.from,index:i,length});
  }
  const distances={},previous={},pending=new Set(Object.keys(MAP_ROAD_NODES));
@@ -5484,14 +5494,15 @@ function mapRoadJourney(r){
  }
  const segments=[];let cursor=to;
  while(cursor!==from&&previous[cursor]){const step=previous[cursor];segments.unshift({from:step.from,to:cursor,index:step.index});cursor=step.from;}
- let points=[];
+ let points=[],distanceKm=0;
  if(cursor===from)for(const segment of segments){
   const edge=MAP_ROAD_EDGES[segment.index],raw=edge.points,oriented=segment.from===edge.from?raw:raw.slice().reverse(),sampled=mapRoadSmooth(oriented);
+  distanceKm+=Number(edge.km)||0;
   if(points.length&&sampled.length&&Math.hypot(points.at(-1).x-sampled[0].x,points.at(-1).y-sampled[0].y)<.01)sampled.shift();
   points.push(...sampled);
  }
  if(points.length<2){const a=MAP_ROAD_NODES[from],b=MAP_ROAD_NODES[to];points=mapRoadSmooth([a,b]);}
- const result=mapRoadMeasure(points);mapRoadCache.set(key,result);return result;
+ const result=mapRoadMeasure(points,distanceKm);mapRoadCache.set(key,result);return result;
 }
 function mapRoadPath(points){return points.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');}
 function mapRoadMarkup(){
@@ -6295,7 +6306,7 @@ function renderMap(compact=false){
  return `<div class="map-frame map-frame-v10 ${compact?'compact':''} ${effectiveMapNight()?'night-city':'day-city'}"><svg class="map-svg map-svg-v10" viewBox="${mapViewBox()}" preserveAspectRatio="${compact?'xMidYMid meet':mapPortraitLive()?'none':'xMidYMid slice'}" role="img" aria-label="Illustrated operational map showing live Cape Town rental routes and vehicle positions"><defs><linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4b829d"/><stop offset=".52" stop-color="#376f8b"/><stop offset="1" stop-color="#285a76"/></linearGradient><linearGradient id="mGround" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8b8e63"/><stop offset=".34" stop-color="#77805a"/><stop offset=".68" stop-color="#657653"/><stop offset="1" stop-color="#52694f"/></linearGradient><linearGradient id="mCape" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#84917d"/><stop offset="1" stop-color="#596e65"/></linearGradient><linearGradient id="mReliefLight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d6d0a0" stop-opacity=".24"/><stop offset=".5" stop-color="#b5bc8a" stop-opacity=".08"/><stop offset="1" stop-color="#263d32" stop-opacity=".2"/></linearGradient><linearGradient id="mReliefShadow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263b30" stop-opacity=".27"/><stop offset=".55" stop-color="#354935" stop-opacity=".08"/><stop offset="1" stop-color="#d4ce9d" stop-opacity=".16"/></linearGradient><pattern id="mTerrainTexture" width="48" height="46" patternUnits="userSpaceOnUse"><g fill="#263b30"><circle cx="6" cy="8" r="1.4" opacity=".52"/><circle cx="18" cy="5" r=".9" opacity=".35"/><circle cx="37" cy="12" r="1.2" opacity=".45"/><circle cx="26" cy="20" r="1.6" opacity=".42"/><circle cx="9" cy="31" r="1.1" opacity=".4"/><circle cx="41" cy="36" r="1.5" opacity=".48"/><circle cx="31" cy="43" r=".9" opacity=".34"/></g><path d="M1 19l5-3m22 10 4-3m-20 14 3-2m17-25 4-2" fill="none" stroke="#c9c693" stroke-opacity=".25" stroke-width="1"/></pattern><clipPath id="mLandClip"><path d="M207 0H1000V850H685V620C658 607 632 586 608 560C581 531 552 503 523 481C495 458 467 439 442 428C414 416 390 416 369 429C348 443 333 468 318 496C302 525 286 554 265 567C244 580 221 571 201 551C177 527 159 494 143 462C128 432 117 405 111 379C122 351 145 329 169 307C194 284 218 259 231 234C240 211 231 185 216 159C201 132 190 109 190 84C190 51 197 23 207 0Z"/></clipPath><pattern id="street" width="32" height="29" patternUnits="userSpaceOnUse"><path d="M0 0H32M0 0V29" stroke="#efe6c7" stroke-opacity=".11" stroke-width="1.5"/></pattern><filter id="mGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
  <image class="map-real-background" href="assets/western-cape-regional-terrain.svg" x="0" y="0" width="1000" height="1500" preserveAspectRatio="none"/>
   <g aria-hidden="true">${mapRoadMarkup()}</g>
-  <g font-family="Arial,sans-serif" font-weight="900" font-size="10" letter-spacing=".5" text-anchor="middle" fill="#fff1cb" stroke="#294957" stroke-width="2.5" paint-order="stroke" opacity="${!compact&&mapZoom>=1.1?.78:0}" pointer-events="none"><g transform="translate(535 602) rotate(-4)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N1</text></g><g transform="translate(820 710) rotate(28)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(260 875) rotate(24)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">M3</text></g><g transform="translate(245 615) rotate(-18)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N7</text></g><g transform="translate(405 690) rotate(-26)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">R44</text></g><g transform="translate(810 885) rotate(-35)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N12</text></g></g>
+  <g font-family="Arial,sans-serif" font-weight="900" font-size="10" letter-spacing=".5" text-anchor="middle" fill="#fff1cb" stroke="#294957" stroke-width="2.5" paint-order="stroke" opacity="${!compact&&mapZoom>=1.1?.78:0}" pointer-events="none"><g transform="translate(535 602) rotate(-4)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N1</text></g><g transform="translate(820 710) rotate(28)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(260 875) rotate(24)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">M3</text></g><g transform="translate(245 615) rotate(-18)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N7</text></g><g transform="translate(405 690) rotate(-26)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">R44</text></g><g transform="translate(810 885) rotate(-35)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N12</text></g><g transform="translate(665 755) rotate(-27)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">N2</text></g><g transform="translate(535 900) rotate(-62)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">R43</text></g><g transform="translate(690 735) rotate(-48)"><rect x="-15" y="-9" width="30" height="18" rx="6" fill="#173b48" stroke="#e8dfbd" stroke-width="1.2"/><text y="3.5" stroke="none">R62</text></g></g>
   <g class="map-geography-labels" font-family="Arial,sans-serif" font-weight="900" letter-spacing="1.2" fill="#f4f0dd" stroke="#344b4b" stroke-width="3" paint-order="stroke" opacity=".84"><text x="70" y="760" font-size="13">TABLE BAY</text><text x="430" y="1085" font-size="15">FALSE BAY</text><text x="535" y="535" font-size="14">WINELANDS</text><text x="375" y="713" font-size="10" letter-spacing=".7">STELLENBOSCH</text><text x="120" y="1120" font-size="13">CAPE PENINSULA</text><text x="138" y="1260" font-size="11" letter-spacing=".6">CAPE POINT</text></g><g class="map-geography-labels map-region-labels" font-family="Arial,sans-serif" font-weight="900" letter-spacing="1.2" fill="#f4f0dd" stroke="#344b4b" stroke-width="3" paint-order="stroke" opacity="${mapZoom<=.8?.76:0}"><text x="145" y="370" font-size="13">WEST COAST</text><text x="600" y="910" font-size="13">OVERBERG</text><text x="840" y="765" font-size="14">GARDEN ROUTE</text></g>
   <g class="map-place-labels" font-family="Arial,sans-serif" font-weight="800" fill="#e9f3ed" stroke="#263e43" stroke-width="2.5" paint-order="stroke" opacity=".82"><text x="170" y="680" font-size="9" text-anchor="middle">ROBBEN ISLAND</text></g>
   ${tripPaths.join('')}${nodes}${cars.join('')}</svg>${compact?'':`<div class="map-control map-control-v10"><button type="button" data-action="zoomplus" aria-label="Zoom in">+</button><button type="button" data-action="zoomminus" aria-label="Zoom out">−</button><button type="button" data-action="mapreset" aria-label="Reset zoom and map focus">⌖</button></div>`}<div class="map-overlay map-overlay-v10"><span class="pill green">● ${state.rentals.length} LIVE RENTALS</span>${state.fleet.some(c=>c.status==='transfer')?'<span class="pill blue">● VEHICLE TRANSFER</span>':''}</div><div class="map-legend map-legend-v10"><span>🟢 Owned branches</span><span>🟠 Destinations</span><span>🚗 Actual rentals</span></div></div>`;
