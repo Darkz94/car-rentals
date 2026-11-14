@@ -6271,7 +6271,8 @@ function renderMap(compact=false){
  const nodes=Object.entries(DEST).map(([id,location])=>{
   const selected=mapFocus===id&&!selectedRental;
   const primaryLabel=['hq','airport','blouberg','muizenberg','paarl','stellenbosch'].includes(id);
-  const showName=compact||selected||mapZoom>=1.35||(mapZoom>=1.1&&primaryLabel);
+  const regionalLabel=['langebaan','malmesbury','ceres','worcester','swellendam','mosselbay','george','oudtshoorn','knysna'].includes(id);
+  const showName=compact||selected||mapZoom>=1.35||(mapZoom>=1.1&&primaryLabel)||(mapZoom<=.55&&regionalLabel);
   const labelWidth=location.name.length*7.2;
   const rightSpace=viewX+viewW-location.x,leftSpace=location.x-viewX;
   let labelX=16,labelAnchor='start';
