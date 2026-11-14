@@ -5067,13 +5067,13 @@ function editionOf(id){return COLLECTOR_EDITIONS.find(x=>x.id===id)||null;}
 function vehicleName(car){return editionOf(car?.editionId)?.name||typeOf(car?.type).name;}
 function vehicleSideArt(car){return editionOf(car?.editionId)?.side||CAR_IMAGES[car?.type]||CAR_IMAGES.hatch;}
 function vehicleRoofArt(car){return editionOf(car?.editionId)?.top||MAP_CAR_IMAGES[car?.type]||MAP_CAR_IMAGES.hatch;}
-const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521},blouberg:{name:'Bloubergstrand',x:275,y:72},muizenberg:{name:'Muizenberg',x:418,y:448},paarl:{name:'Paarl',x:784,y:97},somersetwest:{name:'Somerset West',x:617,y:379}};
+const DEST={hq:{name:'Cape Town HQ',x:242,y:234},waterfront:{name:'V&A Waterfront',x:206,y:110},camps:{name:'Camps Bay',x:132,y:379},table:{name:'Table Mountain',x:298,y:347},chapman:{name:'Chapman’s Peak',x:311,y:519},airport:{name:'Cape Town Airport',x:540,y:279},stellenbosch:{name:'Stellenbosch',x:743,y:198},franschhoek:{name:'Franschhoek',x:840,y:320},hermanus:{name:'Hermanus',x:752,y:521},blouberg:{name:'Bloubergstrand',x:275,y:72},muizenberg:{name:'Muizenberg',x:418,y:448},paarl:{name:'Paarl',x:784,y:97},somersetwest:{name:'Somerset West',x:617,y:379},malmesbury:{name:'Malmesbury',x:390,y:100},langebaan:{name:'Langebaan',x:300,y:20},ceres:{name:'Ceres',x:700,y:25},worcester:{name:'Worcester',x:960,y:160},swellendam:{name:'Swellendam',x:980,y:310},mosselbay:{name:'Mossel Bay',x:950,y:500},george:{name:'George',x:940,y:610},oudtshoorn:{name:'Oudtshoorn',x:850,y:600},knysna:{name:'Knysna',x:870,y:720}};
 
 /* Approximate road kilometres one way; rental odometers count branch-to-destination-to-branch. */
 const ROUTE_DISTANCE_KM={
- hq:{hq:12,waterfront:3,camps:8,table:5,chapman:25,airport:20,stellenbosch:50,franschhoek:75,hermanus:120,blouberg:20,muizenberg:26,paarl:65,somersetwest:50},
- stellenbosch:{hq:50,waterfront:49,camps:51,table:49,chapman:75,airport:35,stellenbosch:12,franschhoek:31,hermanus:94,blouberg:49,muizenberg:44,paarl:29,somersetwest:20},
- franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93,blouberg:83,muizenberg:75,paarl:29,somersetwest:47}
+ hq:{hq:12,waterfront:3,camps:8,table:5,chapman:25,airport:20,stellenbosch:50,franschhoek:75,hermanus:120,blouberg:20,muizenberg:26,paarl:65,somersetwest:50,malmesbury:70,langebaan:135,ceres:180,worcester:115,swellendam:220,mosselbay:390,george:430,oudtshoorn:420,knysna:500},
+ stellenbosch:{hq:50,waterfront:49,camps:51,table:49,chapman:75,airport:35,stellenbosch:12,franschhoek:31,hermanus:94,blouberg:49,muizenberg:44,paarl:29,somersetwest:20,malmesbury:95,langebaan:180,ceres:190,worcester:100,swellendam:205,mosselbay:375,george:415,oudtshoorn:410,knysna:485},
+ franschhoek:{hq:75,waterfront:77,camps:80,table:79,chapman:100,airport:71,stellenbosch:31,franschhoek:12,hermanus:93,blouberg:83,muizenberg:75,paarl:29,somersetwest:47,malmesbury:125,langebaan:210,ceres:220,worcester:140,swellendam:245,mosselbay:410,george:455,oudtshoorn:450,knysna:525}
 };
 function rentalRoundTripKm(from,dest){
  const oneWay=ROUTE_DISTANCE_KM[from]?.[dest];
@@ -5166,7 +5166,16 @@ const CUSTOMER_TYPES=[{id:'backpacker-leo',name:'Backpacker Leo',icon:'🎒',nee
 {id:'blouberg-surf-photographer',name:'Blouberg Surf Photographer',icon:'🏄',need:'Convertible',budget:5200,dest:'blouberg'},
 {id:'muizenberg-family-holiday',name:'Muizenberg Family Holiday',icon:'🏖️',need:'Compact SUV',budget:3900,dest:'muizenberg'},
 {id:'paarl-wine-tour-group',name:'Paarl Wine Tour Group',icon:'🍇',need:'Minibus Shuttle',budget:7500,dest:'paarl'},
-{id:'somerset-west-business-guest',name:'Somerset West Business Guest',icon:'💼',need:'Sedan',budget:4300,dest:'somersetwest'}];
+{id:'somerset-west-business-guest',name:'Somerset West Business Guest',icon:'💼',need:'Sedan',budget:4300,dest:'somersetwest'},
+{id:'malmesbury-business-transfer',name:'Malmesbury Business Transfer',icon:'💼',need:'Sedan',budget:6800,dest:'malmesbury'},
+{id:'langebaan-coastal-crew',name:'Langebaan Coastal Crew',icon:'🏄',need:'Bakkie',budget:9500,dest:'langebaan'},
+{id:'ceres-mountain-expedition',name:'Ceres Mountain Expedition',icon:'🏔️',need:'Safari 4x4',budget:16500,dest:'ceres'},
+{id:'worcester-freight-contract',name:'Worcester Freight Contract',icon:'📦',need:'Truck',budget:14800,dest:'worcester'},
+{id:'swellendam-road-trip',name:'Swellendam Road Trip',icon:'🗺️',need:'Motorhome',budget:24500,dest:'swellendam'},
+{id:'mossel-bay-holiday-group',name:'Mossel Bay Holiday Group',icon:'🌊',need:'Campervan',budget:32500,dest:'mosselbay'},
+{id:'george-overland-tour',name:'George Overland Tour',icon:'🧭',need:'Safari 4x4',budget:38500,dest:'george'},
+{id:'oudtshoorn-karoo-expedition',name:'Oudtshoorn Karoo Expedition',icon:'🦤',need:'Motorhome',budget:41500,dest:'oudtshoorn'},
+{id:'knysna-garden-route-tour',name:'Knysna Garden Route Tour',icon:'🌿',need:'Grand Tourer',budget:49500,dest:'knysna'}];
 // Keep class-specific demand locked until its vehicle category is available.
 // Add new category unlock requirements here when expanding the vehicle roster.
 // Customer demand unlocks with its vehicle class; this also covers future additions.
@@ -5425,7 +5434,18 @@ const MAP_ROAD_EDGES=[
  ['stellenbosch','n1east',[[743,198],[699,181],[658,157],[615,147],[566,153],[520,156]],false],
  ['airport','somersetwest',[[540,279],[576,307],[599,344],[617,379]],true],
  ['somersetwest','hermanus',[[617,379],[654,414],[697,466],[752,521]],true],
- ['muizenberg','somersetwest',[[418,448],[450,427],[489,410],[533,399],[574,392],[617,379]],true]
+ ['muizenberg','somersetwest',[[418,448],[450,427],[489,410],[533,399],[574,392],[617,379]],true],
+ ['blouberg','malmesbury',[[275,72],[304,77],[333,84],[361,93],[390,100]],true],
+ ['malmesbury','langebaan',[[390,100],[365,82],[342,61],[319,40],[300,20]],true],
+ ['malmesbury','paarl',[[390,100],[480,96],[575,94],[675,95],[784,97]],true],
+ ['paarl','ceres',[[784,97],[760,75],[739,54],[718,37],[700,25]],false],
+ ['paarl','worcester',[[784,97],[830,104],[875,119],[918,140],[960,160]],true],
+ ['ceres','worcester',[[700,25],[760,48],[812,77],[869,113],[960,160]],false],
+ ['worcester','swellendam',[[960,160],[970,194],[976,232],[980,270],[980,310]],true],
+ ['swellendam','mosselbay',[[980,310],[973,352],[965,399],[957,450],[950,500]],true],
+ ['mosselbay','george',[[950,500],[949,536],[946,572],[940,610]],true],
+ ['george','knysna',[[940,610],[924,638],[905,675],[887,703],[870,720]],true],
+ ['george','oudtshoorn',[[940,610],[910,602],[880,601],[850,600]],false]
 ].map(([from,to,points,major])=>({from,to,points:points.map(([x,y])=>({x,y})),major:!!major}));
 const MAP_ROAD_NODES={...Object.fromEntries(Object.entries(DEST).map(([id,p])=>[id,{x:p.x,y:p.y}])),n1mid:{x:372,y:187},n1east:{x:520,y:156},westjunction:{x:206,y:338},southjunction:{x:243,y:455},airportjunction:{x:389,y:258}};
 const mapRoadCache=new Map();
@@ -5477,8 +5497,8 @@ function mapRoadJourney(r){
 function mapRoadPath(points){return points.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');}
 function mapRoadMarkup(){
  return MAP_ROAD_EDGES.map(edge=>{
-  const d=mapRoadPath(mapRoadSmooth(edge.points)),major=!!edge.major,width=major?14:8;
-  const casing=major?23:15,shoulder=major?18:11;
+  const d=mapRoadPath(mapRoadSmooth(edge.points)),major=!!edge.major,width=major?15:8;
+  const casing=major?27:17,shoulder=major?21:12;
   return '<path class="map-road-casing '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="#40574c" stroke-opacity=".78" stroke-width="'+casing+'" stroke-linecap="round" stroke-linejoin="round"/>'+
    '<path class="map-road-shoulder '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="'+(major?'#e8dfbd':'#d6d2b1')+'" stroke-opacity="'+(major?'.98':'.88')+'" stroke-width="'+shoulder+'" stroke-linecap="round" stroke-linejoin="round"/>'+
    '<path class="map-road-surface '+(major?'major':'local')+'" d="'+d+'" fill="none" stroke="'+(major?'#c5bc96':'#aeb697')+'" stroke-opacity=".98" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'+
