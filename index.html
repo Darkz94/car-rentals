@@ -7305,7 +7305,7 @@ document.getElementById('app').addEventListener('input',e=>{if(e.target.dataset.
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){if(modal==='importsave')pendingImportSave=null;modal=null;render();}else if((e.key==='Enter'||e.key===' ')&&e.target.matches('g[data-action]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 
 // Drag the Live Map in both directions without changing rental or saved-game data.
-let liveMapDrag=null,liveMapSuppressClickUntil=0;
+let liveMapDrag=null,liveMapSuppressClickUntil=0,liveMapFrame=0;
 document.getElementById('app').addEventListener('pointerdown',e=>{
  if(activePage!=='map'||e.button!==0)return;
  const svg=e.target.closest('.live-map-focused-2026 .map-svg-v10');
@@ -7323,23 +7323,31 @@ document.getElementById('app').addEventListener('pointermove',e=>{
  const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
  if(!d.dragged&&Math.hypot(dx,dy)<9)return;
  d.dragged=true;
- const tracked=state.rentals.find(x=>x.id===selectedRental);
- const overview=mapPortraitLive()&&!tracked&&mapFocus==='hq'&&mapZoom<=1.01;const center=tracked?routePosition(tracked):overview?{x:500,y:750}:(DEST[mapFocus]||DEST.hq);
- const scale=d.svg.getScreenCTM()?.a||d.width/d.viewWidth;
- const minPanX=d.viewWidth/2-center.x,maxPanX=1000-d.viewWidth/2-center.x;
- const minPanY=d.viewHeight/2-center.y,maxPanY=1500-d.viewHeight/2-center.y;
- mapPanX=clamp(d.initialPanX-dx/scale,minPanX,maxPanX);
- mapPanY=clamp(d.initialPanY-dy/scale,minPanY,maxPanY);
- d.svg.setAttribute('viewBox',mapViewBox());
+ d.pointerX=e.clientX;d.pointerY=e.clientY;
+ if(!liveMapFrame)liveMapFrame=requestAnimationFrame(()=>{
+  liveMapFrame=0;
+  const drag=liveMapDrag;
+  if(!drag||!drag.dragged||!drag.svg.isConnected)return;
+  const tracked=state.rentals.find(x=>x.id===selectedRental);
+  const overview=mapPortraitLive()&&!tracked&&mapFocus==='hq'&&mapZoom<=1.01;
+  const center=tracked?routePosition(tracked):overview?{x:500,y:750}:(DEST[mapFocus]||DEST.hq);
+  const scaleX=drag.width/drag.viewWidth,scaleY=drag.height/drag.viewHeight;
+  const minPanX=drag.viewWidth/2-center.x,maxPanX=1000-drag.viewWidth/2-center.x;
+  const minPanY=drag.viewHeight/2-center.y,maxPanY=1500-drag.viewHeight/2-center.y;
+  mapPanX=clamp(drag.initialPanX-(drag.pointerX-drag.startX)/scaleX,minPanX,maxPanX);
+  mapPanY=clamp(drag.initialPanY-(drag.pointerY-drag.startY)/scaleY,minPanY,maxPanY);
+  drag.svg.setAttribute('viewBox',mapViewBox());
+ });
  if(e.cancelable)e.preventDefault();
 });
 window.addEventListener('pointerup',e=>{
  if(!liveMapDrag||e.pointerId!==liveMapDrag.id)return;
+ if(liveMapFrame){cancelAnimationFrame(liveMapFrame);liveMapFrame=0;}
  if(liveMapDrag.dragged)liveMapSuppressClickUntil=Date.now()+250;
  liveMapDrag.svg.classList.remove('map-dragging');
  liveMapDrag=null;
 });
-window.addEventListener('pointercancel',()=>{if(liveMapDrag?.svg)liveMapDrag.svg.classList.remove('map-dragging');liveMapDrag=null;});
+window.addEventListener('pointercancel',()=>{if(liveMapFrame){cancelAnimationFrame(liveMapFrame);liveMapFrame=0;}if(liveMapDrag?.svg)liveMapDrag.svg.classList.remove('map-dragging');liveMapDrag=null;});
 document.getElementById('app').addEventListener('click',e=>{
  if(Date.now()<liveMapSuppressClickUntil&&e.target.closest('.live-map-focused-2026 .map-svg-v10')){
   e.preventDefault();e.stopImmediatePropagation();liveMapSuppressClickUntil=0;
@@ -7365,7 +7373,7 @@ let needsRender=false;
  document.getElementById('app').addEventListener('focusout',e=>{
   if(e.target.matches('input,select,textarea')&&needsRender){queueMicrotask(()=>{if(!document.activeElement?.matches('input,select,textarea')&&needsRender){needsRender=false;render();}});}
  });
- setInterval(()=>{let before=uiSignature();tick();if(liveMapDrag?.dragged){needsRender=true;return;}if(uiSignature()!==before){if((document.activeElement?.matches('select,input,textarea')||activeArcadePicker)){needsRender=true;refreshLive();}else{needsRender=false;render();}}else if(needsRender&&!(document.activeElement?.matches('select,input,textarea')||activeArcadePicker)){needsRender=false;render();}else refreshLive();},600);
+ setInterval(()=>{let before=uiSignature();tick();if(liveMapDrag?.dragged){refreshLive();return;}if(uiSignature()!==before){if((document.activeElement?.matches('select,input,textarea')||activeArcadePicker)){needsRender=true;refreshLive();}else{needsRender=false;render();}}else if(needsRender&&!(document.activeElement?.matches('select,input,textarea')||activeArcadePicker)){needsRender=false;render();}else refreshLive();},600);
 // Read-only testing helpers; never grant money or bypass gameplay conditions.
 window.__CTR_TEST__={offlineReport:()=>lastOfflineReport,offlineLimitMs:OFFLINE_LIMIT_MS,snapshot:()=>JSON.parse(JSON.stringify(state)),findRental:id=>state.rentals.find(r=>r.id===id)||null,map2d:()=>({mode:"2d",rentals:state.rentals.length}),readSave:()=>{try{return JSON.parse(localStorage.getItem(KEY));}catch(e){return null;}}};
 render();
