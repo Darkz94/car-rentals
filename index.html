@@ -5234,7 +5234,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const RENTAL_MIN_SECONDS=20,RENTAL_MAX_SECONDS=300;
 const GAME_DAY_MS=10*60*1000,OFFER_LIFETIME_MS=60*1000;
-const AVERAGE_DURATION_MULTIPLIER=1+(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/200;
+const AVERAGE_RENTAL_SECONDS=(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/2;
 const rentalSeconds=()=>rand(RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS);
 function formatTripTime(seconds){const n=Math.max(0,Math.round(Number(seconds)||0));return n>=60?`${Math.floor(n/60)}m${n%60?' '+n%60+'s':''}`:`${n}s`;}
 const pick=a=>a[rand(0,a.length-1)];
@@ -5406,9 +5406,28 @@ function carMatch(car,offer){let typ=typeOf(car.type);let needed=offer.need;
 }
 function bestCar(offer){return state.fleet.map(c=>({c,score:carMatch(c,offer)})).filter(o=>o.score>=0).sort((a,b)=>b.score-a.score)[0]?.c||null;}
 function projectedPayout(car,offer){let t=typeOf(car.type);let p=t.rate*(offer.mult||1.35)*(1+(car.tune||0)*.13)*(up('booking')?1.15:1)*(1+perkEffect('prices',.8))*difficulty().revenue*weatherEffect().revenue*(isNight()?.98:1);return offer.vipBonus?round(p*(1+offer.vipBonus)):round(Math.min(offer.budget*1.6,p)*(offer.contract?1+perkEffect('corporate',.5):1));}
-// Match against the base quote; hire duration scales the customer's booking budget.
-function rentalPayout(car,offer,seconds){return round(projectedPayout(car,offer)*(1+clamp(seconds,RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS)/100));}
-function estimatedRentalPayout(car,offer){return rentalPayout(car,offer,(RENTAL_MIN_SECONDS+RENTAL_MAX_SECONDS)/2);}
+function rentalBalanceProgress(){
+ return clamp((state.rep-10)/5,0,1);
+}
+function rentalDurationMultiplier(seconds,balance=rentalBalanceProgress()){
+ const duration=clamp(seconds,RENTAL_MIN_SECONDS,RENTAL_MAX_SECONDS);
+ // Preserve the shortest booking's payout and reduce the bonus for extra time.
+ const extraSeconds=duration-RENTAL_MIN_SECONDS;
+ const reductionPerSecond=.0036*balance;
+ return 1+duration/100-extraSeconds*reductionPerSecond;
+}
+function rentalPayout(car,offer,seconds){
+ const balance=rentalBalanceProgress();
+ let quote=projectedPayout(car,offer);
+ if(offer.contract||offer.vipBonus){
+  // Premium bookings keep half of any quote above the threshold at full balance.
+  const threshold=typeOf(car.type).rate*3.25*difficulty().revenue;
+  const excess=Math.max(0,quote-threshold);
+  quote-=excess*.5*balance;
+ }
+ return round(quote*rentalDurationMultiplier(seconds,balance));
+}
+function estimatedRentalPayout(car,offer){return rentalPayout(car,offer,AVERAGE_RENTAL_SECONDS);}
 function newOffer(contract=null,forcedId=null){
  const customerId=contract?CONTRACT_CUSTOMER_IDS[contract.id]:forcedId;
  const c=customerId==null?selectRandomCustomer(CUSTOMER_TYPES.filter(customerUnlocked)):CUSTOMER_TYPES.find(x=>x.id===customerId);
@@ -6424,7 +6443,7 @@ function renderDealership(){
  const branchOptions=BRANCHES.filter(b=>owned(b.id)).map(b=>`<option value="${b.id}" ${dealerBranch===b.id?'selected':''}>${esc(b.name)}</option>`).join('');
  const t=typeOf(dealerPreview)||TYPES[0],locked=state.rep<t.unlock,tradeInReady=state.fleet.some(car=>car.status==='available'),canBuy=!locked&&(!full||tradeInReady)&&(freeCash()>=t.price||state.fleet.some(car=>car.status==='available'&&freeCash()+tradeInOffer(car)>=t.price));
  const selectedIndex=TYPES.findIndex(x=>x.id===t.id),compared=dealerCompare.map(id=>typeOf(id));
- const compareBlock=compared.length?`<div class="card pad mb-16">${paneHeading('Vehicle comparison',`${compared.length} of 2 selections · Compare real game values`,btn('clearcompare','Clear selection','btn sm'))}<div class="dealer-comparison"><table><thead><tr><th>Specification</th>${compared.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['Purchase price',x=>money(x.price)],['Base hire income',x=>money(x.rate)],['Fuel capacity',x=>x.tank+' litres'],['Reputation required',x=>'Level '+x.unlock],['Earnings to break even*',x=>Math.ceil(x.price/(x.rate*1.35*AVERAGE_DURATION_MULTIPLIER))+' returns'],['Currently owned',x=>counts[x.id]||0]].map(([label,fn])=>`<tr><td>${label}</td>${compared.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="tiny muted mt-12">*Estimated using 1.35× base rental payout per return, excluding operating costs and upgrades.</p></div>`:'';
+ const compareBlock=compared.length?`<div class="card pad mb-16">${paneHeading('Vehicle comparison',`${compared.length} of 2 selections · Compare real game values`,btn('clearcompare','Clear selection','btn sm'))}<div class="dealer-comparison"><table><thead><tr><th>Specification</th>${compared.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['Purchase price',x=>money(x.price)],['Base hire income',x=>money(x.rate)],['Fuel capacity',x=>x.tank+' litres'],['Reputation required',x=>'Level '+x.unlock],['Earnings to break even*',x=>Math.ceil(x.price/(x.rate*1.35*rentalDurationMultiplier(AVERAGE_RENTAL_SECONDS)))+' returns'],['Currently owned',x=>counts[x.id]||0]].map(([label,fn])=>`<tr><td>${label}</td>${compared.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="tiny muted mt-12">*Estimated using 1.35× base rental payout per return, excluding operating costs and upgrades.</p></div>`:'';
  const showroom=`<section class="dealer-pavilion" aria-label="2D vehicle showroom">
  <div class="dealer-pavilion-header"><div><span class="dealer-v12-kicker">✦ CAPE TOWN · PREMIUM SHOWROOM</span><h2>Find your next fleet legend</h2><p>Preview, compare and buy vehicles with your existing business cash.</p></div><div class="dealer-preview-meta"><span class="pill green">2D SIDE VIEWS</span><span class="pill orange">${TYPES.length} MODELS</span></div></div>
  <div class="dealer-showcase-layout">
@@ -6438,7 +6457,7 @@ function renderDealership(){
  <div class="dealer-preview-heading"><div class="eyebrow">SHOWROOM SPOTLIGHT</div><h3>${esc(t.name)}</h3>${t.model?`<div class="eyebrow">MODEL · ${esc(t.model)}</div>`:''}<p>${esc(t.desc)}</p></div>
  <div class="dealer-preview-meta"><span class="pill ${locked?'orange':'green'}">${locked?'🔒 REP '+t.unlock+' REQUIRED':'✓ AVAILABLE TO BUY'}</span>${counts[t.id]?`<span class="pill">${counts[t.id]} OWNED</span>`:''}</div>
  <div class="dealer-preview-price"><span class="dealer-v12-price-label">PURCHASE PRICE</span>${money(t.price)}</div>
- <div class="dealer-preview-metrics"><div class="dealer-preview-metric"><small>Base rental return (before trip length)</small><strong class="money">${money(t.rate)}</strong></div><div class="dealer-preview-metric"><small>Fuel tank</small><strong>${t.tank} L</strong></div><div class="dealer-preview-metric"><small>Break-even estimate</small><strong>${Math.ceil(t.price/(t.rate*1.35*AVERAGE_DURATION_MULTIPLIER))} trips</strong></div><div class="dealer-preview-metric"><small>Owned / capacity</small><strong>${state.fleet.length} / ${cap}</strong></div></div>
+ <div class="dealer-preview-metrics"><div class="dealer-preview-metric"><small>Base rental return (before trip length)</small><strong class="money">${money(t.rate)}</strong></div><div class="dealer-preview-metric"><small>Fuel tank</small><strong>${t.tank} L</strong></div><div class="dealer-preview-metric"><small>Break-even estimate</small><strong>${Math.ceil(t.price/(t.rate*1.35*rentalDurationMultiplier(AVERAGE_RENTAL_SECONDS)))} trips</strong></div><div class="dealer-preview-metric"><small>Owned / capacity</small><strong>${state.fleet.length} / ${cap}</strong></div></div>
  <div class="dealer-pavilion-buy"><label class="small muted" for="dealer-deliver">Deliver purchased car to</label><select class="branch-chooser" id="dealer-deliver" data-role="dealer-branch">${branchOptions}</select>
  ${listBtn('buycar',t.id,locked?'🔒 Unlock at reputation '+t.unlock:full?'Garage is full':freeCash()<t.price?'Not enough available cash':'Purchase vehicle · '+money(t.price),'btn primary',canBuy?'':'disabled')}
  ${listBtn('comparecar',t.id,dealerCompare.includes(t.id)?'✓ In comparison':'Add to comparison','btn ghost')}
@@ -6454,7 +6473,7 @@ function renderDealership(){
  <div class="section2-help">💡 Buying adds a real vehicle to your fleet at the branch selected above. Rentals pay only after cars return. Select models to compare their economics.</div>
  ${compareBlock}
  <div class="dealer-grid" id="dealer-results">${cars.map(x=>{let isLocked=state.rep<x.unlock,own=counts[x.id]||0,checked=dealerCompare.includes(x.id),isFocus=dealerPreview===x.id;
- return `<div data-dealer-search="${esc((x.name+' '+x.category+' '+x.desc).toLowerCase())}" class="dealer-card ${isLocked?'locked':''} ${checked?'compare':''} ${isFocus?'preview-active':''}"><div class="dealer-visual"><img src="${CAR_IMAGES[x.id]}" alt="${esc(x.name)}">${isFocus?'<span class="dealer-preview-pill">● IN SHOWROOM</span>':''}${own?`<span class="owned-indicator">✓ ${own} OWNED</span>`:''}</div><div class="dealer-card-body"><div class="flex between center gap-8"><h3>${esc(x.name)}</h3><span class="pill ${isLocked?'orange':'green'}">${isLocked?'REP '+x.unlock:'UNLOCKED'}</span></div><p class="small muted mt-12">${esc(x.desc)}</p><div class="dealer-price"><span class="dealer-v12-price-label">BUY PRICE</span>${money(x.price)}</div><div class="dealer-metrics"><div class="dealer-metric"><small>Base rental income (before trip length)</small><b class="money">${money(x.rate)}</b></div><div class="dealer-metric"><small>Fuel tank</small><b>${x.tank} L</b></div><div class="dealer-metric"><small>Category</small><b>${esc(x.category)}</b></div><div class="dealer-metric"><small>Break-even estimate</small><b>${Math.ceil(x.price/(x.rate*1.35*AVERAGE_DURATION_MULTIPLIER))} trips</b></div></div><div class="btn-group mt-16">${listBtn('dealerpreview',x.id,isFocus?'● In showroom':'◈ Preview 2D','btn sm '+(isFocus?'primary':'dealer-preview-card-button'))}${listBtn('buycar',x.id,isLocked?'🔒 Rep '+x.unlock:full?'Garage full':freeCash()<x.price?'Insufficient cash':'Buy · '+money(x.price),'btn sm primary',isLocked||full||freeCash()<x.price?'disabled':'')}${listBtn('comparecar',x.id,checked?'✓ Comparing':'Compare','btn sm ghost')}</div></div></div>`;}).join('')}</div><p class="dealer-v12-empty" data-dealer-empty style="display:${cars.length?'none':'block'}">No vehicles match these filters. Try another category or search.</p></section></div>`;
+ return `<div data-dealer-search="${esc((x.name+' '+x.category+' '+x.desc).toLowerCase())}" class="dealer-card ${isLocked?'locked':''} ${checked?'compare':''} ${isFocus?'preview-active':''}"><div class="dealer-visual"><img src="${CAR_IMAGES[x.id]}" alt="${esc(x.name)}">${isFocus?'<span class="dealer-preview-pill">● IN SHOWROOM</span>':''}${own?`<span class="owned-indicator">✓ ${own} OWNED</span>`:''}</div><div class="dealer-card-body"><div class="flex between center gap-8"><h3>${esc(x.name)}</h3><span class="pill ${isLocked?'orange':'green'}">${isLocked?'REP '+x.unlock:'UNLOCKED'}</span></div><p class="small muted mt-12">${esc(x.desc)}</p><div class="dealer-price"><span class="dealer-v12-price-label">BUY PRICE</span>${money(x.price)}</div><div class="dealer-metrics"><div class="dealer-metric"><small>Base rental income (before trip length)</small><b class="money">${money(x.rate)}</b></div><div class="dealer-metric"><small>Fuel tank</small><b>${x.tank} L</b></div><div class="dealer-metric"><small>Category</small><b>${esc(x.category)}</b></div><div class="dealer-metric"><small>Break-even estimate</small><b>${Math.ceil(x.price/(x.rate*1.35*rentalDurationMultiplier(AVERAGE_RENTAL_SECONDS)))} trips</b></div></div><div class="btn-group mt-16">${listBtn('dealerpreview',x.id,isFocus?'● In showroom':'◈ Preview 2D','btn sm '+(isFocus?'primary':'dealer-preview-card-button'))}${listBtn('buycar',x.id,isLocked?'🔒 Rep '+x.unlock:full?'Garage full':freeCash()<x.price?'Insufficient cash':'Buy · '+money(x.price),'btn sm primary',isLocked||full||freeCash()<x.price?'disabled':'')}${listBtn('comparecar',x.id,checked?'✓ Comparing':'Compare','btn sm ghost')}</div></div></div>`;}).join('')}</div><p class="dealer-v12-empty" data-dealer-empty style="display:${cars.length?'none':'block'}">No vehicles match these filters. Try another category or search.</p></section></div>`;
 }
 
 function renderWorkshopVehicle(c){
