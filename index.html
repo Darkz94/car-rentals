@@ -5713,6 +5713,17 @@ function buildBranch(id){let b=BRANCHES.find(x=>x.id===id);if(!b||owned(id))retu
 function transferCar(carId,branch){let c=state.fleet.find(x=>x.id===carId);if(!c||!owned(branch)||c.branch===branch||c.status!=='available'){notify('Choose an available car and an unlocked branch.','bad');return;}
  c.status='transfer';c.transferTo=branch;c.transferDue=now()+12000;c.transferFrom=c.branch;note(`${c.plate} transferring to ${DEST[branch]?.name||branch}.`);notify('Vehicle transfer started • 12 seconds');}
 function signContract(id){let c=CONTRACTS.find(x=>x.id===id);if(!c||state.contracts.includes(id))return;if(state.rep<c.rep||!owned(c.branch)){notify(`Requires reputation ${c.rep} and ${DEST[c.branch]?.name}.`,'bad');return;}state.contracts.push(id);state.contractLast[id]=now();note(`Corporate contract signed: ${c.name}.`);notify(`Contract signed! Premium bookings will arrive.`);}
+function cancelContract(id){
+ const contract=CONTRACTS.find(x=>x.id===id);
+ if(!contract||!state.contracts.includes(id))return false;
+ state.contracts=state.contracts.filter(activeId=>activeId!==id);
+ const waiting=state.offers.filter(offer=>offer.contract===id).length;
+ state.offers=state.offers.filter(offer=>offer.contract!==id);
+ state.contractLast[id]=now();
+ note(`Corporate contract cancelled: ${contract.name}.`);
+ notify(waiting?`Contract cancelled. ${waiting} waiting enquiry ${waiting===1?'was':'were'} withdrawn.`:'Contract cancelled.');
+ return true;
+}
 function takeLoan(id){let x=LOANS.find(v=>v.id===id);if(!x)return;
  if((state.credit??680)<480){notify('Your credit score is too low to borrow again. Improve payments first.','bad');return false;}
  if(state.loans.length>=2){notify('Maximum two active loans.','bad');return false;}
@@ -6818,7 +6829,7 @@ function renderContracts(){
  <div class="contract17-grid">${CONTRACTS.map(c=>{const signed=state.contracts.includes(c.id),unlocked=state.rep>=c.rep&&owned(c.branch),report=contractReport(c.id),leads=state.offers.filter(o=>o.contract===c.id),ready=leads.filter(o=>bestCar(o)).length,remaining=signed?Math.max(0,Math.ceil((c.period*1000-(now()-(state.contractLast[c.id]||0)))/1000)):0;
  return `<article class="contract17-card ${signed?'signed':unlocked?'ready':'locked'}"><div class="contract17-card-title"><span aria-hidden="true">${c.icon}</span><div><span class="event17-kicker">CORPORATE PARTNER</span><h4>${esc(c.name)}</h4><span class="pill ${signed?'green':unlocked?'blue':'orange'}">${signed?'ACTIVE':unlocked?'READY':'LOCKED'}</span></div></div>
  <div class="contract17-card-body"><p>${esc(c.desc)}</p><div class="contract17-tags"><span>🚗 ${esc(c.need)}</span><span>⭐ Rep ${c.rep}</span><span>📍 ${esc(DEST[c.branch]?.name||c.branch)}</span></div><div class="contract17-premium"><span>RENTAL PREMIUM</span><strong>+${Math.round((c.premium-1)*100)}%</strong></div>
- ${signed?`<div class="contract17-count"><div><small>Returns</small><b>${report.count}</b></div><div><small>Earned</small><b>${money(report.revenue)}</b></div><div><small>Open leads</small><b>${leads.length}</b></div></div><div class="contract17-clock"><span>⏱ Next enquiry</span><b data-contract-countdown="${c.id}">${remaining}s</b></div>${btn('page',ready?'🚗 '+ready+' booking'+(ready===1?'':'s')+' ready · Rental Desk':'Go to Rental Desk →','btn primary','data-id="overview"')}`:
+ ${signed?`<div class="contract17-count"><div><small>Returns</small><b>${report.count}</b></div><div><small>Earned</small><b>${money(report.revenue)}</b></div><div><small>Open leads</small><b>${leads.length}</b></div></div><div class="contract17-clock"><span>⏱ Next enquiry</span><b data-contract-countdown="${c.id}">${remaining}s</b></div>${btn('page',ready?'🚗 '+ready+' booking'+(ready===1?'':'s')+' ready · Rental Desk':'Go to Rental Desk →','btn primary','data-id="overview"')}${listBtn('cancelcontract',c.id,'Cancel contract','btn ghost')}`:
  `${!unlocked?`<div class="contract17-requirements">🔒 ${!owned(c.branch)?'Open '+esc(DEST[c.branch]?.name||c.branch)+' first. ':''}${state.rep<c.rep?'Increase reputation to '+c.rep+'.':''}</div>`:''}${listBtn('contract',c.id,unlocked?'✦ Sign partnership':'Requirements not met','btn '+(unlocked?'primary':'ghost'),unlocked?'':'disabled')}`}
  </div></article>`;}).join('')}</div></section><aside class="event17-note">ℹ️ Income is credited only on completed vehicle returns. Original premiums and timers remain unchanged; fair rotation reserves room for regular and VIP bookings.</aside></div>`;
 }
@@ -7297,6 +7308,7 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='hire'){const x=STAFF.find(c=>c.id===id);if(!x||staffed(id))return;modalCar=id;modal='staffhire';render();return;}
  if(action==='confirmhire'){if(modal!=='staffhire'||id!==modalCar)return;modal=null;hire(id);afterAction();return;}
  if(action==='contract'){signContract(id);afterAction();return;}
+ if(action==='cancelcontract'){if(!CONTRACTS.some(c=>c.id===id&&state.contracts.includes(id)))return;cancelContract(id);afterAction();return;}
  if(action==='loan'){takeLoan(id);afterAction();return;}
  if(action==='repayloan'){repayLoan(id);afterAction();return;}
  if(action==='exportledger'){exportLedger();return;}
