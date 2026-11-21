@@ -5543,6 +5543,7 @@ function routePosition(r,t=now()){
  return {x:a.x+(b.x-a.x)*ratio,y:a.y+(b.y-a.y)*ratio,progress:prog};
 }
 let rentalAudio=null;
+let rentalAudioResume=null;
 const lastRentalSound={};
 function unlockRentalAudio(){
  if(!state.settings.sound)return;
@@ -5550,19 +5551,30 @@ function unlockRentalAudio(){
   const Audio=window.AudioContext||window.webkitAudioContext;
   if(!Audio)return;
   rentalAudio=rentalAudio||new Audio();
-  if(rentalAudio.state!=='running')rentalAudio.resume().catch(()=>{});
+  if(rentalAudio.state!=='running'&&!rentalAudioResume){
+   rentalAudioResume=rentalAudio.resume().then(()=>true,()=>false).finally(()=>{rentalAudioResume=null;});
+  }
  }catch(_error){}
 }
 document.addEventListener('click',unlockRentalAudio,true);
 
 function playRentalSound(kind){
- if(!state.settings.sound||offlineSimulation||document.hidden||rentalAudio?.state!=='running')return;
+ if(!state.settings.sound||offlineSimulation||document.hidden||!rentalAudio)return;
+ if(rentalAudio.state!=='running'){
+  if(kind==='dispatch'&&rentalAudioResume){
+   const expires=performance.now()+500;
+   rentalAudioResume.then(resumed=>{
+    if(resumed&&performance.now()<expires&&rentalAudio.state==='running')playRentalSound(kind);
+   });
+  }
+  return;
+ }
  const start=rentalAudio.currentTime;
  if(start-(lastRentalSound[kind]??-Infinity)<.4)return;
  lastRentalSound[kind]=start;
  try{
   const tones=kind==='dispatch'
-   ?[[0,0.22,75,145,'triangle',.09]]
+   ?[[0,.34,115,235,'triangle',.27],[.035,.19,230,470,'triangle',.12]]
    :[[0,.16,880,880,'sine',.07],[.09,.23,1320,1320,'sine',.06]];
   for(const [delay,duration,from,to,type,volume] of tones){
    const time=start+delay;
