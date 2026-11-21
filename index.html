@@ -5542,14 +5542,53 @@ function routePosition(r,t=now()){
  const span=journey.cumulative[i]-journey.cumulative[i-1],ratio=span>0?(target-journey.cumulative[i-1])/span:0,a=journey.points[i-1],b=journey.points[i];
  return {x:a.x+(b.x-a.x)*ratio,y:a.y+(b.y-a.y)*ratio,progress:prog};
 }
+let rentalAudio=null;
+const lastRentalSound={};
+function unlockRentalAudio(){
+ if(!state.settings.sound)return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio)return;
+  rentalAudio=rentalAudio||new Audio();
+  if(rentalAudio.state!=='running')rentalAudio.resume().catch(()=>{});
+ }catch(_error){}
+}
+document.addEventListener('click',unlockRentalAudio,true);
+
+function playRentalSound(kind){
+ if(!state.settings.sound||offlineSimulation||document.hidden||rentalAudio?.state!=='running')return;
+ const start=rentalAudio.currentTime;
+ if(start-(lastRentalSound[kind]??-Infinity)<.4)return;
+ lastRentalSound[kind]=start;
+ try{
+  const tones=kind==='dispatch'
+   ?[[0,0.22,75,145,'triangle',.09]]
+   :[[0,.16,880,880,'sine',.07],[.09,.23,1320,1320,'sine',.06]];
+  for(const [delay,duration,from,to,type,volume] of tones){
+   const time=start+delay;
+   const tone=rentalAudio.createOscillator(),gain=rentalAudio.createGain();
+   tone.type=type;
+   tone.frequency.setValueAtTime(from,time);
+   tone.frequency.exponentialRampToValueAtTime(to,time+duration);
+   gain.gain.setValueAtTime(.001,time);
+   gain.gain.linearRampToValueAtTime(volume,time+.025);
+   gain.gain.exponentialRampToValueAtTime(.001,time+duration);
+   tone.connect(gain).connect(rentalAudio.destination);
+   tone.start(time);
+   tone.stop(time+duration);
+  }
+ }catch(_error){}
+}
+
 function startRental(offerId,explicitCarId=null,quiet=false){const offer=state.offers.find(x=>x.id===offerId);if(!offer||offer.expires<=now()){notify('That booking request has expired.','bad');return false;}let car=explicitCarId?state.fleet.find(c=>c.id===explicitCarId):bestCar(offer);
  if(!car||carMatch(car,offer)<0){notify('No suitable ready vehicle. Check fuel, condition and vehicle type.','bad');return false;}
- let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,tripKm:rentalRoundTripKm(car.branch,offer.dest),balanceVersion:2,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${formatTripTime(seconds)} • ${money(payout)} on return`);return true;
+ let seconds=rentalSeconds(),start=now(),payout=rentalPayout(car,offer,seconds);state.rentals.push({id:uid('rent'),carId:car.id,customer:offer.customer,icon:offer.icon,from:car.branch,dest:offer.dest,start,due:start+seconds*1000,payout,seconds,tripKm:rentalRoundTripKm(car.branch,offer.dest),balanceVersion:2,contract:offer.contract});car.status='rented';state.offers=state.offers.filter(o=>o.id!==offer.id);state.stats.streak++;playRentalSound('dispatch');note(`${car.plate} hired by ${offer.customer}. ${money(payout)} due on return.`);if(!quiet)notify(`Rental started • ${formatTripTime(seconds)} • ${money(payout)} on return`);return true;
 }
 function finishRental(r){let car=state.fleet.find(c=>c.id===r.carId);if(!car)return;
  let base=clamp((1+(state.rep/20)*.3)*((staffed('concierge')?1.15:1))*(1+perkEffect('tips',1)),1,2.4);
  let tip=rand(0,100)<20?round(r.payout*(base-.85)*.07):0;
  earn(r.payout+tip,`Rental returned · ${r.customer}`);
+ playRentalSound('return');
  const payout=r.payout+tip;recordVehicleIncome(car,payout);const branch=r.from||car.branch;
  if(!state.branchReports)state.branchReports={};if(!state.contractReports)state.contractReports={};
  let b=state.branchReports[branch]||{count:0,revenue:0};state.branchReports[branch]={count:b.count+1,revenue:b.revenue+payout};
@@ -7029,6 +7068,7 @@ function renderSettings(){
  '<section class="progress18-panel"><div class="progress18-panel-head"><div><span class="progress18-eyebrow">COMPANY & PLAY OPTIONS</span><h3>Gameplay settings</h3><p>Use the same settings and mechanics as before.</p></div></div>'+
  '<label class="biz-field">Company name<input id="company-name" type="text" maxlength="36" value="'+esc(state.companyName||'Coastline Rentals')+'" placeholder="Your business name"></label>'+
  '<label class="biz-field">Difficulty<select data-role="difficulty">'+Object.entries(DIFFICULTIES).map(([id,d])=>'<option value="'+id+'" '+(state.difficulty===id?'selected':'')+'>'+d.name+' · '+money(d.fuel)+'/L fuel</option>').join('')+'</select></label><p class="progress18-chart-label">'+esc(difficulty().desc)+' Current rentals keep their promised payouts.</p>'+
+ '<div class="settings-row"><div><b>Sound effects</b><div class="small muted">Play a sound when a rental starts or pays out.</div></div>'+btn('togglerentalsound',state.settings.sound?'Sound on':'Sound off','btn sm '+(state.settings.sound?'green':'primary'))+'</div>'+
  '<div style="margin-top:14px">'+autoDeskControl()+'</div><div class="settings-row offline-toggle-row"><div><b>🌙 Earn while offline</b><div class="small muted mt-12">'+(state.settings.offlineEarnings!==false?'ON':'OFF')+' · Up to 12 hours per absence. Needs the Auto-Dispatch Desk upgrade and Auto-Dispatch enabled.</div><div class="small '+(offlineBookingsEnabled()?'positive':'muted')+' mt-12">'+(offlineBookingsEnabled()?'✓ Ready for offline dispatch':!up('auto')?'Requires the Auto-Dispatch Desk upgrade.':state.settings.autoDispatch===false?'Auto-Dispatch is paused.':'Offline earnings are paused.')+'</div></div>'+btn('toggleofflineearnings',state.settings.offlineEarnings!==false?'Pause offline earnings':'Enable offline earnings','btn sm '+(state.settings.offlineEarnings!==false?'green':'primary'))+'</div>'+
  '<div class="progress18-chart-label">🏦 Credit score: '+Math.round(state.credit??680)+' · '+creditLabel()+'</div></section></div>'+
  '<section class="progress18-panel"><div class="progress18-panel-head"><div><span class="progress18-eyebrow">HOW YOUR GAME WORKS</span><h3>Core gameplay reminders</h3></div>'+btn('guide','❔ Full guide','btn ghost')+'</div><div class="progress18-safeguards"><p>🚘 Rentals last 20–300 real seconds and pay only when the car returns. The game runs at 1× speed.</p><p>🔧 Workshop ownership makes servicing and repairs free; Car Wash ownership makes washes free. Fuel and roadside recovery still cost money.</p><p>🕒 Game-day operating costs, payroll, contracts and offline rules are unchanged. Back up your saves before uninstalling an APK or clearing storage.</p></div></section>';
@@ -7318,6 +7358,12 @@ document.getElementById('app').addEventListener('click',e=>{
  if(action==='export'){exportSave();return;}
  if(action==='maptheme'){if(['auto','day','night'].includes(id))state.settings.mapTheme=id;afterAction();return;}
  if(action==='claimmission'){claimMission(id);afterAction();return;}
+ if(action==='togglerentalsound'){
+  state.settings.sound=!state.settings.sound;
+  if(state.settings.sound)unlockRentalAudio();
+  afterAction();
+  return;
+ }
  if(action==='toggleofflineearnings'){state.settings.offlineEarnings=state.settings.offlineEarnings===false;state.offlineLastActiveAt=now();note(`Offline earnings ${state.settings.offlineEarnings?'enabled':'paused'} by the owner.`);notify(`Earn while away ${state.settings.offlineEarnings?'ON':'OFF'}.`);afterAction();return;}
  if(action==='saveslot'){const n=Number(id);if(![1,2,3].includes(n))return;if(readSlot(n)){modalCar=n;modal='overwriteslot';render();}else{saveToSlot(n);render();}return;}
  if(action==='confirmsaveslot'){const n=Number(id);if(modal!=='overwriteslot'||n!==Number(modalCar))return;modal=null;saveToSlot(n);render();return;}
